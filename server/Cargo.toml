@@ -1,0 +1,32 @@
+[package]
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "appledb_server"
+repository.workspace = true
+version.workspace = true
+
+[dependencies]
+anyhow = "1.0.95"
+appledb_common = { path = "../common" }
+axum = { version = "0.8.1", features = ["macros"] }
+axum-macros = "0.5.0"
+clap = { version = "4.5.29", features = ["derive"] }
+entity = { path = "../entity" }
+env_logger = "0.11.6"
+log = "0.4.25"
+migration = { path = "../migration" }
+sea-orm = { version = "1.1.4", features = [
+    "runtime-tokio-rustls",
+    "sqlx-sqlite",
+] }
+serde = { version = "1.0.217", features = ["derive"] }
+strum = "0.27.1"
+tokio = { version = "1.43.0", features = ["fs", "rt", "rt-multi-thread"] }
+tower = "0.5.2"
+tower-http = { version = "0.6.2", features = ["compression-gzip"] }
+utoipa = { version = "5.3.1", features = ["axum_extras"] }
+utoipa-axum = "0.2.0"
+utoipa-swagger-ui = { version = "9.0.0", features = ["axum"] }

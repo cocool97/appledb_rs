@@ -1,0 +1,5 @@
+/target
+appledb.sqlite
+appledb.sqlite-shm
+appledb.sqlite-wal
+/.vscode

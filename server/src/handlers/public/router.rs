@@ -1,0 +1,153 @@
+use std::sync::Arc;
+use strum::EnumCount;
+
+use crate::handlers::public::{
+    entitlements::{
+        __path_diff_entitlements_for_executables, __path_get_entitlements,
+        __path_get_entitlements_by_id, __path_get_entitlements_for_executable,
+        diff_entitlements_for_executables,
+    },
+    executables::{
+        __path_get_executables, __path_get_executables_by_id, __path_get_executables_by_name,
+        __path_get_executables_with_entitlement_for_os_version, get_executables_by_name,
+    },
+    operating_system_versions::{
+        __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
+    },
+    operating_systems::{__path_get_operating_system_by_id, __path_get_operating_systems},
+};
+use appledb_common::routes::PublicRoutes;
+use axum::{Router, routing::get};
+use utoipa::OpenApi;
+use utoipa_swagger_ui::{Config, SwaggerUi};
+
+use crate::models::AppState;
+
+use super::{
+    entitlements::{get_entitlements, get_entitlements_by_id, get_entitlements_for_executable},
+    executables::{
+        get_executables, get_executables_by_id, get_executables_with_entitlement_for_os_version,
+    },
+    operating_system_versions::{
+        get_operating_system_versions, get_operating_system_versions_by_id,
+    },
+    operating_systems::{get_operating_system_by_id, get_operating_systems},
+};
+
+pub fn get_public_router() -> Router<Arc<AppState>> {
+    #[derive(OpenApi)]
+    #[openapi(paths(
+        get_operating_systems,
+        get_operating_system_by_id,
+        get_operating_system_versions,
+        get_operating_system_versions_by_id,
+        get_executables,
+        get_executables_by_id,
+        get_executables_by_name,
+        get_executables_with_entitlement_for_os_version,
+        get_entitlements,
+        get_entitlements_by_id,
+        get_entitlements_for_executable,
+        diff_entitlements_for_executables
+    ))]
+    struct ApiDoc;
+
+    // Update each path to add PUBLIC_ROUTES prefix
+    let mut openapi = ApiDoc::openapi();
+    openapi.paths.paths = openapi
+        .paths
+        .paths
+        .iter_mut()
+        .map(|(path, item)| {
+            (
+                format!("{}{}", PublicRoutes::route_prefix(), path),
+                item.to_owned(),
+            )
+        })
+        .collect();
+
+    assert_eq!(
+        openapi.paths.paths.len(),
+        PublicRoutes::COUNT,
+        "all public handlers aren't documented..."
+    );
+
+    Router::new()
+        .merge(
+            SwaggerUi::new("/swagger")
+                .config(Config::from(
+                    PublicRoutes::route_prefix().to_owned() + "/openapi.json",
+                ))
+                .url("/openapi.json", openapi),
+        )
+        // ##################
+        // Operating systems
+        // ##################
+        .route(
+            PublicRoutes::GetOperatingSystems.to_string().as_str(),
+            get(get_operating_systems),
+        )
+        .route(
+            PublicRoutes::GetOperatingSystemById.to_string().as_str(),
+            get(get_operating_system_by_id),
+        )
+        // ##################
+        // Operating system versions
+        // ##################
+        .route(
+            PublicRoutes::GetOperatingSystemVersions
+                .to_string()
+                .as_str(),
+            get(get_operating_system_versions),
+        )
+        .route(
+            PublicRoutes::GetOperatingSystemVersionsById
+                .to_string()
+                .as_str(),
+            get(get_operating_system_versions_by_id),
+        )
+        // ##################
+        // Executables
+        // ##################
+        .route(
+            PublicRoutes::GetExecutables.to_string().as_str(),
+            get(get_executables),
+        )
+        .route(
+            PublicRoutes::GetExecutablesById.to_string().as_str(),
+            get(get_executables_by_id),
+        )
+        .route(
+            PublicRoutes::GetExecutablesByName.to_string().as_str(),
+            get(get_executables_by_name),
+        )
+        .route(
+            PublicRoutes::GetExecutablesWithEntitlement
+                .to_string()
+                .as_str(),
+            get(get_executables_with_entitlement_for_os_version),
+        )
+        // ##################
+        // Entitlements
+        // ##################
+        .route(
+            PublicRoutes::GetEntitlements.to_string().as_str(),
+            get(get_entitlements),
+        )
+        .route(
+            PublicRoutes::GetEntitlementsById.to_string().as_str(),
+            get(get_entitlements_by_id),
+        )
+        .route(
+            PublicRoutes::GetEntitlementsForExecutable
+                .to_string()
+                .as_str(),
+            get(get_entitlements_for_executable),
+        )
+        .route(
+            PublicRoutes::DiffEntitlementsExecutables
+                .to_string()
+                .as_str(),
+            get(diff_entitlements_for_executables),
+        )
+}
