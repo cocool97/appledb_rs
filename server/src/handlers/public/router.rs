@@ -4,8 +4,9 @@ use strum::EnumCount;
 use crate::handlers::public::{
     entitlements::{
         __path_diff_entitlements_for_executables, __path_get_entitlements,
-        __path_get_entitlements_by_id, __path_get_entitlements_for_executable,
-        diff_entitlements_for_executables,
+        __path_get_entitlements_by_id, __path_get_entitlements_by_name,
+        __path_get_entitlements_for_executable, diff_entitlements_for_executables,
+        get_entitlements_by_name,
     },
     executables::{
         __path_get_executables, __path_get_executables_by_id, __path_get_executables_by_name,
@@ -47,6 +48,7 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         get_executables_with_entitlement_for_os_version,
         get_entitlements,
         get_entitlements_by_id,
+        get_entitlements_by_name,
         get_entitlements_for_executable,
         diff_entitlements_for_executables
     ))]
@@ -137,6 +139,10 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         .route(
             PublicRoutes::GetEntitlementsById.to_string().as_str(),
             get(get_entitlements_by_id),
+        )
+        .route(
+            PublicRoutes::GetEntitlementsByName.to_string().as_str(),
+            get(get_entitlements_by_name),
         )
         .route(
             PublicRoutes::GetEntitlementsForExecutable

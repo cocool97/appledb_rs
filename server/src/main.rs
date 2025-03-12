@@ -1,6 +1,7 @@
 mod crud;
 mod db_controller;
 mod handlers;
+mod middlewares;
 mod models;
 mod utils;
 
@@ -14,9 +15,10 @@ use appledb_common::{
 use axum::{Router, extract::DefaultBodyLimit};
 use clap::Parser;
 use db_controller::DBController;
+use middlewares::log_requests;
 use models::{AppState, Opts};
 use tokio::net::{TcpListener, UnixListener};
-use tower_http::compression::CompressionLayer;
+use tower::ServiceBuilder;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -31,11 +33,11 @@ async fn main() -> Result<()> {
     let state = AppState { db_controller };
 
     let app = Router::new()
-        .layer(CompressionLayer::new())
         .nest(ADMIN_ROUTES, handlers::get_admin_router())
         .nest(PublicRoutes::route_prefix(), handlers::get_public_router())
-        .with_state(Arc::new(state))
-        .layer(DefaultBodyLimit::max(configuration.http_max_body_size));
+        .layer(ServiceBuilder::new().layer(axum::middleware::from_fn(log_requests)))
+        .layer(DefaultBodyLimit::max(configuration.http_max_body_size))
+        .with_state(Arc::new(state));
 
     log::info!("Server listening on {}...", configuration.listen_mode);
     match configuration.listen_mode {

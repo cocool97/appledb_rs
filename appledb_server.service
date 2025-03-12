@@ -1,0 +1,15 @@
+[Unit]
+Description=Apple artifacts database
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+User=user
+ExecStart=/usr/bin/appledb_server --config config.yaml
+Environment="RUST_LOG=info"
+WorkingDirectory=/etc/appledb_server
+Restart=on-failure
+SyslogIdentifier=appledb_server
+
+[Install]
+WantedBy=multi-user.target

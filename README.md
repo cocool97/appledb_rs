@@ -43,7 +43,18 @@ RUST_LOG=info cargo run --bin appledb_server -- --config config.yaml
 cargo run --bin appledb_cli -- help
 ```
 
+## API documentation
+
+A swagger documentation is available at path `/api/v1/swagger/#/`
+
 ## Useful commands
+
+### Mount local IPSW file
+
+```bash
+ipsw extract --dmg fs IPSW_FILE
+apfs-fuse IMG_FILE MOUNT_POINT
+```
 
 ### Add entitlements from an IPSW
 

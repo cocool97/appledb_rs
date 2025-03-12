@@ -73,7 +73,7 @@ impl DBController {
         entitlement_key: S,
     ) -> Result<Vec<Executable>, DbErr> {
         let entitlements = entity::prelude::Entitlement::find()
-            .filter(entity::entitlement::Column::Key.eq(entitlement_key.to_string()))
+            .filter(entity::entitlement::Column::Key.contains(entitlement_key.to_string()))
             .all(self.get_connection())
             .await?;
 

@@ -1,5 +1,6 @@
 [package]
 authors.workspace = true
+description.workspace = true
 edition.workspace = true
 homepage.workspace = true
 keywords.workspace = true
@@ -26,7 +27,15 @@ serde = { version = "1.0.217", features = ["derive"] }
 strum = "0.27.1"
 tokio = { version = "1.43.0", features = ["fs", "rt", "rt-multi-thread"] }
 tower = "0.5.2"
-tower-http = { version = "0.6.2", features = ["compression-gzip"] }
 utoipa = { version = "5.3.1", features = ["axum_extras"] }
-utoipa-axum = "0.2.0"
 utoipa-swagger-ui = { version = "9.0.0", features = ["axum"] }
+
+#####################################
+# Debian package build instructions #
+#####################################
+[package.metadata.deb]
+assets = [
+    { source = "target/release/appledb_server", dest = "/usr/bin/", mode = "755" },
+]
+priority = "optional"
+section = "utility"

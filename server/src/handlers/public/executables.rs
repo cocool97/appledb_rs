@@ -40,7 +40,7 @@ pub async fn get_executables_by_id(
     get,
     path = PublicRoutes::GetExecutablesByName,
     params(
-        ("name" = i32, description = "Executables name to retrieve"),
+        ("name" = String, description = "Executables name to retrieve"),
     ),
     responses((status = OK, body = AppResponse<Vec<Executable>>))
 )]

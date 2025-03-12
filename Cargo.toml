@@ -4,6 +4,7 @@ resolver = "2"
 
 [workspace.package]
 authors = ["Corentin LIAUD"]
+description = "Apple artifacts database"
 edition = "2024"
 homepage = "https://github.com/cocool97/appledb_rs"
 keywords = ["apple", "database", "entitlements", "ios"]

@@ -26,6 +26,18 @@ impl DBController {
         Ok(entitlement.into())
     }
 
+    pub async fn crud_get_entitlements_by_name(&self, name: String) -> Result<Vec<Entitlement>> {
+        let entitlements = entity::prelude::Entitlement::find()
+            .filter(entity::entitlement::Column::Key.contains(name))
+            .all(self.get_connection())
+            .await?
+            .into_iter()
+            .map(Entitlement::from)
+            .collect();
+
+        Ok(entitlements)
+    }
+
     pub async fn crud_get_entitlements_for_executable(
         &self,
         executable_id: i32,
@@ -41,7 +53,7 @@ impl DBController {
             .await?
             .into_iter()
             .map(Entitlement::from)
-            .collect::<Vec<Entitlement>>();
+            .collect();
 
         Ok(entitlements)
     }
