@@ -1,6 +1,10 @@
 use std::sync::Arc;
 
-use appledb_common::{api_models::AppResponse, db_models::Executable, routes::PublicRoutes};
+use appledb_common::{
+    api_models::AppResponse,
+    db_models::{Entitlement, Executable},
+    routes::PublicRoutes,
+};
 use axum::{
     Json,
     extract::{Path, State},
@@ -76,6 +80,26 @@ pub async fn get_executables_with_entitlement_for_os_version(
                 operating_system_version_id,
                 entitlement_key,
             )
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetExecutableEntitlements,
+    params(
+        ("id" = i32, description = "Executable identifier"),
+    ),
+    responses((status = OK, body = AppResponse<Vec<Entitlement>>))
+)]
+pub async fn get_executable_entitlements(
+    State(state): State<Arc<AppState>>,
+    Path(executable_id): Path<i32>,
+) -> AppResult<Json<Vec<Entitlement>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_entitlements_for_executable(executable_id)
             .await?,
     ))
 }

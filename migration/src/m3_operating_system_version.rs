@@ -5,7 +5,7 @@ use sea_orm_migration::{
     sea_orm::{DeriveIden, DeriveMigrationName},
 };
 
-use crate::m1_operating_system::OperatingSystem;
+use crate::{m1_operating_system::OperatingSystem, m2_device::Device};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -35,6 +35,11 @@ impl MigrationTrait for Migration {
                             .integer()
                             .not_null(),
                     )
+                    .col(
+                        ColumnDef::new(OperatingSystemVersion::DeviceId)
+                            .integer()
+                            .not_null(),
+                    )
                     .index(
                         Index::create()
                             .table(OperatingSystemVersion::Table)
@@ -49,6 +54,14 @@ impl MigrationTrait for Migration {
                                 OperatingSystemVersion::OperatingSystemId,
                             )
                             .to(OperatingSystem::Table, OperatingSystem::Id),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(
+                                OperatingSystemVersion::Table,
+                                OperatingSystemVersion::DeviceId,
+                            )
+                            .to(Device::Table, Device::Id),
                     )
                     .to_owned(),
             )
@@ -72,4 +85,5 @@ pub enum OperatingSystemVersion {
     Id,
     Version,
     OperatingSystemId,
+    DeviceId,
 }

@@ -62,27 +62,7 @@ pub async fn get_entitlements_by_name(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetEntitlementsForExecutable,
-    params(
-        ("id" = i32, description = "Executable identifier"),
-    ),
-    responses((status = OK, body = AppResponse<Vec<Entitlement>>))
-)]
-pub async fn get_entitlements_for_executable(
-    State(state): State<Arc<AppState>>,
-    Path(executable_id): Path<i32>,
-) -> AppResult<Json<Vec<Entitlement>>> {
-    Ok(Json(
-        state
-            .db_controller
-            .crud_get_entitlements_for_executable(executable_id)
-            .await?,
-    ))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::DiffEntitlementsExecutables,
+    path = PublicRoutes::GetDiffEntitlementsExecutables,
     params(
         ("from_executable_id" = i32, description = "Initial executable identifier"),
         ("to_executable_id" = i32, description = "Final executable identifier"),

@@ -7,6 +7,8 @@ pub struct Opts {
     /// Path to configuration file
     #[clap(short = 'c', long = "config", default_value = "./config.yaml")]
     pub config_path: PathBuf,
+    #[clap(long = "debug")]
+    pub debug: bool,
     #[clap(subcommand)]
     pub command: OptsSubCommands,
 }
@@ -26,13 +28,17 @@ pub enum EntSubCommands {
     /// Parse and send entitlements of all mach-o executables in a directory.
     Parse {
         /// Path to local mount point where ipsw is already mounted
-        #[clap(short = 'm', long = "mount-point")]
+        #[clap(short = 'd', long = "mount-point")]
         mount_point: PathBuf,
         /// Platform from which this IPSW mount is originated
-        platform: Option<OptsPlatform>,
+        #[clap(short = 'p', long = "platform")]
+        platform: OptsPlatform,
         /// Version from which this IPSW is originated
         #[clap(short = 'v', long = "version")]
-        version: Option<String>,
+        version: String,
+        /// Device model (under iPhone17,5 - iPad15,5)...
+        #[clap(short = 'm', long = "model")]
+        model: String,
     },
     /// Dump entitlements from a Mach-o executable
     DumpEnt {

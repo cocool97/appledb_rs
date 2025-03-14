@@ -29,6 +29,9 @@ pub enum PublicRoutes {
     GetOperatingSystems,
     GetOperatingSystemById,
 
+    // Devices
+    GetDevices,
+
     // Operating system versions
     GetOperatingSystemVersions,
     GetOperatingSystemVersionsById,
@@ -38,13 +41,13 @@ pub enum PublicRoutes {
     GetExecutablesById,
     GetExecutablesByName,
     GetExecutablesWithEntitlement,
+    GetExecutableEntitlements,
 
     // Entitlements
     GetEntitlements,
     GetEntitlementsById,
     GetEntitlementsByName,
-    GetEntitlementsForExecutable,
-    DiffEntitlementsExecutables,
+    GetDiffEntitlementsExecutables,
 }
 
 impl PublicRoutes {
@@ -62,27 +65,26 @@ impl From<PublicRoutes> for String {
 impl From<&PublicRoutes> for String {
     fn from(value: &PublicRoutes) -> Self {
         match value {
-            PublicRoutes::GetOperatingSystems => "/operating_systems/get".to_string(),
-            PublicRoutes::GetOperatingSystemById => "/operating_systems/get/{id}".to_string(),
+            PublicRoutes::GetOperatingSystems => "/operating_systems/all".to_string(),
+            PublicRoutes::GetOperatingSystemById => "/operating_systems/{id}".to_string(),
+            PublicRoutes::GetDevices => "/devices/all".to_string(),
             PublicRoutes::GetOperatingSystemVersions => {
-                "/operating_system_versions/get".to_string()
+                "/operating_system_versions/all".to_string()
             }
             PublicRoutes::GetOperatingSystemVersionsById => {
-                "/operating_system_versions/get/{id}".to_string()
+                "/operating_system_versions/{id}".to_string()
             }
-            PublicRoutes::GetExecutables => "/executables/get".to_string(),
-            PublicRoutes::GetExecutablesById => "/executables/get/{id}".to_string(),
-            PublicRoutes::GetExecutablesByName => "/executables/get_by_name/{name}".to_string(),
+            PublicRoutes::GetExecutables => "/executables/all".to_string(),
+            PublicRoutes::GetExecutablesById => "/executables/{id}".to_string(),
+            PublicRoutes::GetExecutablesByName => "/executables/by_name/{name}".to_string(),
             PublicRoutes::GetExecutablesWithEntitlement => {
-                "/executables/get/{operating_system_version_id}/{entitlement_key}".to_string()
+                "/executables/{operating_system_version_id}/{entitlement_key}".to_string()
             }
-            PublicRoutes::GetEntitlements => "/entitlements/get".to_string(),
-            PublicRoutes::GetEntitlementsById => "/entitlements/get/{id}".to_string(),
-            PublicRoutes::GetEntitlementsByName => "/entitlements/get_by_name/{name}".to_string(),
-            PublicRoutes::GetEntitlementsForExecutable => {
-                "/entitlements/executable/get/{id}".to_string()
-            }
-            PublicRoutes::DiffEntitlementsExecutables => {
+            PublicRoutes::GetExecutableEntitlements => "/executable/{id}/entitlements".to_string(),
+            PublicRoutes::GetEntitlements => "/entitlements/all".to_string(),
+            PublicRoutes::GetEntitlementsById => "/entitlements/{id}".to_string(),
+            PublicRoutes::GetEntitlementsByName => "/entitlements/by_name/{name}".to_string(),
+            PublicRoutes::GetDiffEntitlementsExecutables => {
                 "/entitlements/diff/{from_executable_id}/{to_executable_id}".to_string()
             }
         }

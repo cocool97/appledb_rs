@@ -15,6 +15,7 @@ pub async fn post_operating_system_version(
         .db_controller
         .crud_create_operating_system_version(
             os_version_request.operating_system_id,
+            os_version_request.device_id,
             os_version_request.version,
         )
         .await?;

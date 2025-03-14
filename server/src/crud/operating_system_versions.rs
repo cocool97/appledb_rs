@@ -18,16 +18,19 @@ impl DBController {
     pub async fn crud_get_or_create_operating_system_version_by_platform_and_version(
         &self,
         platform_name: String,
+        device_model: String,
         version: String,
     ) -> Result<OperatingSystemVersion> {
         let operating_system_version = match entity::prelude::OperatingSystemVersion::find()
             .filter(entity::operating_system_version::Column::Version.eq(&version))
             .find_also_related(entity::prelude::OperatingSystem)
+            .find_also_related(entity::prelude::Device)
             .filter(entity::operating_system::Column::Name.eq(&platform_name))
+            .filter(entity::device::Column::Model.eq(&device_model))
             .one(self.get_connection())
             .await?
         {
-            Some((operating_system_version, _)) => operating_system_version,
+            Some((operating_system_version, _, _)) => operating_system_version,
             None => {
                 let operating_system = entity::prelude::OperatingSystem::find()
                     .filter(entity::operating_system::Column::Name.eq(&platform_name))
@@ -35,8 +38,14 @@ impl DBController {
                     .await?
                     .ok_or(anyhow!("Operating system not found"))?;
 
+                let device_id = self
+                    .crud_get_or_create_device(device_model)
+                    .await?
+                    .db_identifier();
+
                 let operating_system_version = entity::operating_system_version::ActiveModel {
                     id: ActiveValue::NotSet,
+                    device_id: ActiveValue::Set(device_id),
                     operating_system_id: ActiveValue::Set(operating_system.id),
                     version: ActiveValue::Set(version.clone()),
                 };
@@ -70,10 +79,12 @@ impl DBController {
     pub async fn crud_create_operating_system_version(
         &self,
         operating_system_id: i32,
+        device_id: i32,
         version: String,
     ) -> Result<i32> {
         let operating_system_version = entity::operating_system_version::ActiveModel {
             id: ActiveValue::NotSet,
+            device_id: ActiveValue::Set(device_id),
             operating_system_id: ActiveValue::set(operating_system_id),
             version: ActiveValue::Set(version),
         };

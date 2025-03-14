@@ -6,6 +6,7 @@ pub struct OperatingSystemVersion {
     pub id: i32,
     pub version: String,
     pub operating_system_id: i32,
+    pub device_id: i32,
 }
 
 impl From<entity::operating_system_version::Model> for OperatingSystemVersion {
@@ -14,6 +15,7 @@ impl From<entity::operating_system_version::Model> for OperatingSystemVersion {
             id: value.id,
             version: value.version,
             operating_system_id: value.operating_system_id,
+            device_id: value.device_id,
         }
     }
 }

@@ -8,6 +8,8 @@ use crate::Platform;
 pub struct IPSWEntitlements {
     /// Platform this IPSW originates from
     pub platform: Platform,
+    /// Device model
+    pub model: String,
     /// Software version of the platform
     pub version: String,
     /// Entitlements storage: key=EXECUTABLE_NAME; value=ENTITLEMENTS
@@ -15,10 +17,11 @@ pub struct IPSWEntitlements {
 }
 
 impl IPSWEntitlements {
-    pub fn new(platform: Platform, version: String) -> Self {
+    pub fn new(platform: Platform, model: String, version: String) -> Self {
         Self {
             platform,
             version,
+            model,
             executable_entitlements: BTreeMap::new(),
         }
     }
