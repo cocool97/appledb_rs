@@ -16,6 +16,7 @@ pub async fn post_executable_entitlements(
         .db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
             entitlements.platform.name().to_string(),
+            entitlements.model,
             entitlements.version,
         )
         .await?;
@@ -52,7 +53,10 @@ pub async fn post_executable_entitlements(
 
             if let Err(e) = state
                 .db_controller
-                .crud_create_executable_entitlement(executable_status.identifier(), entitlement_id)
+                .crud_create_executable_entitlement(
+                    executable_status.db_identifier(),
+                    entitlement_id,
+                )
                 .await
             {
                 if let Some(db_error) = e.sql_err() {
@@ -61,7 +65,7 @@ pub async fn post_executable_entitlements(
                             log::warn!(
                                 "Entitlement {} already exists for executable {}. Likely a twin...",
                                 entitlement_id,
-                                executable_status.identifier()
+                                executable_status.db_identifier()
                             );
                             continue;
                         }
@@ -75,7 +79,7 @@ pub async fn post_executable_entitlements(
         log::info!(
             "Added {} entitlements to executable {} - created: {} existing: {}",
             entitlements.len(),
-            executable_status.identifier(),
+            executable_status.db_identifier(),
             created,
             existing
         );

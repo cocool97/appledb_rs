@@ -5,7 +5,7 @@ use sea_orm_migration::{
     sea_orm::{DeriveIden, DeriveMigrationName},
 };
 
-use crate::m2_operating_system_version::OperatingSystemVersion;
+use crate::m3_operating_system_version::OperatingSystemVersion;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

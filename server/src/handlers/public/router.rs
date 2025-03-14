@@ -2,15 +2,16 @@ use std::sync::Arc;
 use strum::EnumCount;
 
 use crate::handlers::public::{
+    devices::{__path_get_devices, get_devices},
     entitlements::{
         __path_diff_entitlements_for_executables, __path_get_entitlements,
         __path_get_entitlements_by_id, __path_get_entitlements_by_name,
-        __path_get_entitlements_for_executable, diff_entitlements_for_executables,
-        get_entitlements_by_name,
+        diff_entitlements_for_executables, get_entitlements_by_name,
     },
     executables::{
-        __path_get_executables, __path_get_executables_by_id, __path_get_executables_by_name,
-        __path_get_executables_with_entitlement_for_os_version, get_executables_by_name,
+        __path_get_executable_entitlements, __path_get_executables, __path_get_executables_by_id,
+        __path_get_executables_by_name, __path_get_executables_with_entitlement_for_os_version,
+        get_executable_entitlements, get_executables_by_name,
     },
     operating_system_versions::{
         __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
@@ -25,7 +26,7 @@ use utoipa_swagger_ui::{Config, SwaggerUi};
 use crate::models::AppState;
 
 use super::{
-    entitlements::{get_entitlements, get_entitlements_by_id, get_entitlements_for_executable},
+    entitlements::{get_entitlements, get_entitlements_by_id},
     executables::{
         get_executables, get_executables_by_id, get_executables_with_entitlement_for_os_version,
     },
@@ -40,16 +41,17 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
     #[openapi(paths(
         get_operating_systems,
         get_operating_system_by_id,
+        get_devices,
         get_operating_system_versions,
         get_operating_system_versions_by_id,
         get_executables,
         get_executables_by_id,
         get_executables_by_name,
         get_executables_with_entitlement_for_os_version,
+        get_executable_entitlements,
         get_entitlements,
         get_entitlements_by_id,
         get_entitlements_by_name,
-        get_entitlements_for_executable,
         diff_entitlements_for_executables
     ))]
     struct ApiDoc;
@@ -92,6 +94,13 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         .route(
             PublicRoutes::GetOperatingSystemById.to_string().as_str(),
             get(get_operating_system_by_id),
+        )
+        // ##################
+        // Devices
+        // ##################
+        .route(
+            PublicRoutes::GetDevices.to_string().as_str(),
+            get(get_devices),
         )
         // ##################
         // Operating system versions
@@ -145,13 +154,11 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
             get(get_entitlements_by_name),
         )
         .route(
-            PublicRoutes::GetEntitlementsForExecutable
-                .to_string()
-                .as_str(),
-            get(get_entitlements_for_executable),
+            PublicRoutes::GetExecutableEntitlements.to_string().as_str(),
+            get(get_executable_entitlements),
         )
         .route(
-            PublicRoutes::DiffEntitlementsExecutables
+            PublicRoutes::GetDiffEntitlementsExecutables
                 .to_string()
                 .as_str(),
             get(diff_entitlements_for_executables),

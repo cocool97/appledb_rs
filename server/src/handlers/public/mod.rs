@@ -1,3 +1,4 @@
+mod devices;
 mod entitlements;
 mod executables;
 mod operating_system_versions;

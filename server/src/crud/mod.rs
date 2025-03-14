@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+mod devices;
 mod entitlements;
 mod executable_entitlement;
 mod executables;
@@ -13,7 +14,7 @@ pub enum DBStatus {
 }
 
 impl DBStatus {
-    pub fn identifier(&self) -> i32 {
+    pub fn db_identifier(&self) -> i32 {
         match self {
             DBStatus::AlreadyExists(id) => *id,
             DBStatus::Created(id) => *id,

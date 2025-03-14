@@ -13,9 +13,9 @@ use models::{Opts, OptsSubCommands};
 async fn main() -> Result<()> {
     let opts = Opts::parse();
 
-    let configuration = read_configuration(opts.config_path).await?;
+    utils::set_logger(opts.debug)?;
 
-    env_logger::init();
+    let configuration = read_configuration(opts.config_path).await?;
 
     match opts.command {
         OptsSubCommands::Ent(ent_sub_commands) => {

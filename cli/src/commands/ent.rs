@@ -7,7 +7,7 @@ use std::{collections::HashSet, io::Cursor, path::Path};
 use tokio::{fs::File, io::AsyncReadExt};
 use walkdir::WalkDir;
 
-use crate::{models::EntSubCommands, server_controller::ServerController, utils};
+use crate::{models::EntSubCommands, server_controller::ServerController};
 
 pub async fn parse_entitlements_command(
     configuration: ServerConfig,
@@ -18,15 +18,10 @@ pub async fn parse_entitlements_command(
             mount_point,
             platform,
             version,
+            model,
         } => {
-            let (platform, version) = match (platform, version) {
-                (None, None) | (None, Some(_)) | (Some(_), None) => {
-                    utils::read_platform_version_from_plist(&mount_point)?
-                }
-                (Some(platform), Some(version)) => (platform, version),
-            };
-            log::info!("IPSW has platform {} and version {}", platform, version);
-            let mut ipsw_entitlements = IPSWEntitlements::new(platform.into(), version);
+            log::info!("IPSW has platform={platform}, model={model} and version={version}");
+            let mut ipsw_entitlements = IPSWEntitlements::new(platform.into(), model, version);
             parse_entitlements(mount_point, &mut ipsw_entitlements).await?;
             log::info!("Sending entitlements to server...");
             let server_controller = ServerController::new(configuration.listen_mode)?;
