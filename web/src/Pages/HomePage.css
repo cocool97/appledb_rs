@@ -1,0 +1,18 @@
+.container {
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.container-card {
+    justify-self: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.grid-item {
+    text-decoration: none;
+}

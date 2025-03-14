@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use appledb_common::{
     api_models::AppResponse,
@@ -100,6 +100,26 @@ pub async fn get_executable_entitlements(
         state
             .db_controller
             .crud_get_entitlements_for_executable(executable_id)
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetAllExecutablesEntitlements,
+    params(
+        ("operating_system_version_id" = i32, description = "Operating system version identifier"),
+    ),
+    responses((status = OK, body = AppResponse<HashMap<String, Vec<Entitlement>>>))
+)]
+pub async fn get_all_executables_entitlements(
+    State(state): State<Arc<AppState>>,
+    Path(operating_system_version_id): Path<i32>,
+) -> AppResult<Json<HashMap<String, Vec<Entitlement>>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_all_executables_entitlements(operating_system_version_id)
             .await?,
     ))
 }

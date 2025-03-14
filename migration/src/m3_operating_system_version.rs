@@ -45,6 +45,7 @@ impl MigrationTrait for Migration {
                             .table(OperatingSystemVersion::Table)
                             .col(OperatingSystemVersion::Version)
                             .col(OperatingSystemVersion::OperatingSystemId)
+                            .col(OperatingSystemVersion::DeviceId)
                             .unique(),
                     )
                     .foreign_key(
