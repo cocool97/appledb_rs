@@ -37,7 +37,12 @@ impl DBController {
 
         Migrator::up(&connection, None).await?;
 
-        Ok(Self { connection })
+        let controller = Self { connection };
+
+        // Feed unknown Apple models display_name
+        controller.crud_devices_set_unknown_display_names().await?;
+
+        Ok(controller)
     }
 
     pub(crate) fn get_connection(&self) -> &DatabaseConnection {

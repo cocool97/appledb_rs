@@ -24,6 +24,8 @@ pub struct ServerConfig {
     pub http_max_body_size: usize,
     /// Path to database
     pub database_path: PathBuf,
+    /// Path to web sources
+    pub web_sources_path: PathBuf,
 }
 
 #[derive(Deserialize)]

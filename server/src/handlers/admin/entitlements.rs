@@ -16,7 +16,7 @@ pub async fn post_executable_entitlements(
         .db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
             entitlements.platform.name().to_string(),
-            entitlements.model,
+            entitlements.model_code,
             entitlements.version,
         )
         .await?;

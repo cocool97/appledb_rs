@@ -23,7 +23,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(
-                        ColumnDef::new(Device::Model)
+                        ColumnDef::new(Device::ModelCode)
                             .not_null()
                             .unique_key()
                             .string(),
@@ -45,6 +45,6 @@ impl MigrationTrait for Migration {
 pub enum Device {
     Table,
     Id,
-    Model,
+    ModelCode,
     DisplayName,
 }

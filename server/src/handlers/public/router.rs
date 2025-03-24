@@ -21,6 +21,7 @@ use crate::handlers::public::{
         __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
     },
     operating_systems::{__path_get_operating_system_by_id, __path_get_operating_systems},
+    stats::{__path_get_stats, get_stats},
 };
 use appledb_common::routes::PublicRoutes;
 use axum::{Router, routing::get};
@@ -43,6 +44,7 @@ use super::{
 pub fn get_public_router() -> Router<Arc<AppState>> {
     #[derive(OpenApi)]
     #[openapi(paths(
+        get_stats,
         get_operating_systems,
         get_operating_system_by_id,
         get_devices,
@@ -90,6 +92,7 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
                 ))
                 .url("/openapi.json", openapi),
         )
+        .route(PublicRoutes::GetStats.to_string().as_str(), get(get_stats))
         // ##################
         // Operating systems
         // ##################

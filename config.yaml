@@ -4,3 +4,5 @@ listen_mode: http://127.0.0.1:4000
 http_max_body_size: 10485760  # 10 MB
 
 database_path: appledb.sqlite
+
+web_sources_path: web/build

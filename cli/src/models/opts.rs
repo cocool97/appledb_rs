@@ -37,8 +37,8 @@ pub enum EntSubCommands {
         #[clap(short = 'v', long = "version")]
         version: String,
         /// Device model (under iPhone17,5 - iPad15,5)...
-        #[clap(short = 'm', long = "model")]
-        model: String,
+        #[clap(short = 'm', long = "model_code")]
+        model_code: String,
     },
     /// Dump entitlements from a Mach-o executable
     DumpEnt {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { GoVersions } from "react-icons/go";
 import "./HomePage.css"
-import Card from '../Components/Card';
+import Card from '../components/Card';
 
 const ModelPage = () => {
     const { modelId } = useParams();
@@ -24,7 +24,7 @@ const ModelPage = () => {
                             <Card
                                 id={version.id}
                                 icon={<GoVersions />}
-                                span={version.version}
+                                main={version.version}
                             />
                         </Link>
                     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import CustomDataTable from '../components/CustomDataTable';
 
 
 const VersionPage = () => {
@@ -20,20 +21,20 @@ const VersionPage = () => {
 
     function filterObject(obj) {
         const result = {};
-    
+
         for (const [key, value] of Object.entries(obj)) {
             if (!key.includes(executableInput)) continue;
-    
-            const filteredArray = value.filter(item => 
-                item.key.toLowerCase().includes(entitlementKeyInput.toLowerCase()) && 
+
+            const filteredArray = value.filter(item =>
+                item.key.toLowerCase().includes(entitlementKeyInput.toLowerCase()) &&
                 item.value.toLowerCase().includes(entitlementValueInput.toLowerCase())
-            );            
-    
+            );
+
             if (filteredArray.length > 0) {
                 result[key] = filteredArray;
             }
         }
-    
+
         return result;
     }
 
@@ -52,7 +53,7 @@ const VersionPage = () => {
             </label>
 
             <div>
-                {JSON.stringify(filterObject(results), null, 2)}
+                <CustomDataTable data={filterObject(results)} />
             </div>
         </div>
     );

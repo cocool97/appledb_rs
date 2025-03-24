@@ -1,7 +1,10 @@
 use appledb_common::db_models::Entitlement;
 
 use anyhow::{Result, anyhow};
-use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, ModelTrait, QueryFilter};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, ModelTrait, PaginatorTrait,
+    QueryFilter,
+};
 
 use crate::db_controller::DBController;
 
@@ -15,6 +18,12 @@ impl DBController {
             .into_iter()
             .map(Entitlement::from)
             .collect::<Vec<Entitlement>>())
+    }
+
+    pub async fn crud_get_entitlements_count(&self) -> Result<u64> {
+        Ok(entity::prelude::Entitlement::find()
+            .count(self.get_connection())
+            .await?)
     }
 
     pub async fn crud_get_entitlement_by_id(&self, id: i32) -> Result<Entitlement> {

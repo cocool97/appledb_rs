@@ -25,6 +25,9 @@ pub const POST_EXECUTABLE_ENTITLEMENTS_ROUTE: &str = "/executable/entitlements";
 // Operating systems
 #[derive(EnumCount)]
 pub enum PublicRoutes {
+    // Get stats about server
+    GetStats,
+
     // Operating systems
     GetOperatingSystems,
     GetOperatingSystemById,
@@ -67,6 +70,7 @@ impl From<PublicRoutes> for String {
 impl From<&PublicRoutes> for String {
     fn from(value: &PublicRoutes) -> Self {
         match value {
+            PublicRoutes::GetStats => "/stats".to_string(),
             PublicRoutes::GetOperatingSystems => "/operating_systems/all".to_string(),
             PublicRoutes::GetOperatingSystemById => "/operating_systems/{id}".to_string(),
             PublicRoutes::GetAllExecutablesEntitlements => {

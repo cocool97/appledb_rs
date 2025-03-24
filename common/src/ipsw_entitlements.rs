@@ -9,7 +9,7 @@ pub struct IPSWEntitlements {
     /// Platform this IPSW originates from
     pub platform: Platform,
     /// Device model
-    pub model: String,
+    pub model_code: String,
     /// Software version of the platform
     pub version: String,
     /// Entitlements storage: key=EXECUTABLE_NAME; value=ENTITLEMENTS
@@ -17,11 +17,11 @@ pub struct IPSWEntitlements {
 }
 
 impl IPSWEntitlements {
-    pub fn new(platform: Platform, model: String, version: String) -> Self {
+    pub fn new(platform: Platform, model_code: String, version: String) -> Self {
         Self {
             platform,
             version,
-            model,
+            model_code,
             executable_entitlements: BTreeMap::new(),
         }
     }

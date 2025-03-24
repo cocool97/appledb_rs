@@ -18,10 +18,12 @@ pub async fn parse_entitlements_command(
             mount_point,
             platform,
             version,
-            model,
+            model_code,
         } => {
-            log::info!("IPSW has platform={platform}, model={model} and version={version}");
-            let mut ipsw_entitlements = IPSWEntitlements::new(platform.into(), model, version);
+            log::info!(
+                "IPSW has platform={platform}, model_code={model_code} and version={version}"
+            );
+            let mut ipsw_entitlements = IPSWEntitlements::new(platform.into(), model_code, version);
             parse_entitlements(mount_point, &mut ipsw_entitlements).await?;
             log::info!("Sending entitlements to server...");
             let server_controller = ServerController::new(configuration.listen_mode)?;

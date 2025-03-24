@@ -24,12 +24,19 @@ sea-orm = { version = "1.1.4", features = [
     "sqlx-sqlite",
 ] }
 serde = { version = "1.0.217", features = ["derive"] }
+serde_json = "1.0.140"
 strum = "0.27.1"
 tokio = { version = "1.43.0", features = ["fs", "rt", "rt-multi-thread"] }
 tower = "0.5.2"
-tower-http = { version = "0.6.2", features = ["cors"] }
+tower-http = { version = "0.6.2", features = ["cors", "fs"] }
 utoipa = { version = "5.3.1", features = ["axum_extras"] }
 utoipa-swagger-ui = { version = "9.0.0", features = ["axum", "vendored"] }
+
+# Waiting for library to bump versions
+# zip -> utoipa-swagger-ui
+# deranger -> apple-codesign -> plist
+zip = "=2.4.2"
+deranged = "=0.4.0"
 
 #####################################
 # Debian package build instructions #
@@ -37,6 +44,7 @@ utoipa-swagger-ui = { version = "9.0.0", features = ["axum", "vendored"] }
 [package.metadata.deb]
 assets = [
     { source = "target/release/appledb_server", dest = "/usr/bin/", mode = "755" },
+    { source = "../web/build/*", dest = "/etc/appledb_rs/", mode = "0644" },
 ]
 priority = "optional"
 section = "utility"

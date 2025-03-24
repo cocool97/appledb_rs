@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::BTreeMap, sync::Arc};
 
 use appledb_common::{
     api_models::AppResponse,
@@ -110,12 +110,12 @@ pub async fn get_executable_entitlements(
     params(
         ("operating_system_version_id" = i32, description = "Operating system version identifier"),
     ),
-    responses((status = OK, body = AppResponse<HashMap<String, Vec<Entitlement>>>))
+    responses((status = OK, body = AppResponse<BTreeMap<String, Vec<Entitlement>>>))
 )]
 pub async fn get_all_executables_entitlements(
     State(state): State<Arc<AppState>>,
     Path(operating_system_version_id): Path<i32>,
-) -> AppResult<Json<HashMap<String, Vec<Entitlement>>>> {
+) -> AppResult<Json<BTreeMap<String, Vec<Entitlement>>>> {
     Ok(Json(
         state
             .db_controller

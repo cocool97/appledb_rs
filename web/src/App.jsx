@@ -1,15 +1,15 @@
 import './App.css';
 import React from 'react';
-import HomePage from './Pages/HomePage';
-import ModelPage from './Pages/ModelPage';
 
+import HomePage from './routes/HomePage';
+import ModelPage from './routes/ModelPage';
+import VersionPage from './routes/VersionPage';
 
 import {
   BrowserRouter as Router,
   Route,
   Routes
 } from "react-router-dom";
-import VersionPage from './Pages/VersionPage';
 
 const App = () => {
   return (
