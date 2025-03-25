@@ -1,4 +1,4 @@
-use anyhow::{Result, anyhow};
+use anyhow::{Context, Result, anyhow};
 use serde::Deserialize;
 use std::{
     fmt::Display,
@@ -10,8 +10,11 @@ use tokio::fs::File;
 use url::Url;
 
 pub async fn read_configuration<P: AsRef<Path>>(path: P) -> Result<ServerConfig> {
-    let file = File::open(path).await?;
-    Ok(serde_yaml::from_reader(file.into_std().await)?)
+    let file = File::open(&path).await.context(format!(
+        "Cannot open configuration file at path {}...",
+        path.as_ref().to_string_lossy()
+    ))?;
+    Ok(serde_norway::from_reader(file.into_std().await)?)
 }
 
 #[derive(Deserialize)]
@@ -24,6 +27,8 @@ pub struct ServerConfig {
     pub http_max_body_size: usize,
     /// Path to database
     pub database_path: PathBuf,
+    /// Path to web sources
+    pub web_sources_path: PathBuf,
 }
 
 #[derive(Deserialize)]

@@ -2,21 +2,26 @@ use std::sync::Arc;
 use strum::EnumCount;
 
 use crate::handlers::public::{
-    devices::{__path_get_devices, get_devices},
+    devices::{
+        __path_get_device_operating_system_versions, __path_get_devices,
+        get_device_operating_system_versions, get_devices,
+    },
     entitlements::{
         __path_diff_entitlements_for_executables, __path_get_entitlements,
         __path_get_entitlements_by_id, __path_get_entitlements_by_name,
         diff_entitlements_for_executables, get_entitlements_by_name,
     },
     executables::{
-        __path_get_executable_entitlements, __path_get_executables, __path_get_executables_by_id,
-        __path_get_executables_by_name, __path_get_executables_with_entitlement_for_os_version,
+        __path_get_all_executables_entitlements, __path_get_executable_entitlements,
+        __path_get_executables, __path_get_executables_by_id, __path_get_executables_by_name,
+        __path_get_executables_with_entitlement_for_os_version, get_all_executables_entitlements,
         get_executable_entitlements, get_executables_by_name,
     },
     operating_system_versions::{
         __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
     },
     operating_systems::{__path_get_operating_system_by_id, __path_get_operating_systems},
+    stats::{__path_get_stats, get_stats},
 };
 use appledb_common::routes::PublicRoutes;
 use axum::{Router, routing::get};
@@ -39,15 +44,18 @@ use super::{
 pub fn get_public_router() -> Router<Arc<AppState>> {
     #[derive(OpenApi)]
     #[openapi(paths(
+        get_stats,
         get_operating_systems,
         get_operating_system_by_id,
         get_devices,
+        get_device_operating_system_versions,
         get_operating_system_versions,
         get_operating_system_versions_by_id,
         get_executables,
         get_executables_by_id,
         get_executables_by_name,
         get_executables_with_entitlement_for_os_version,
+        get_all_executables_entitlements,
         get_executable_entitlements,
         get_entitlements,
         get_entitlements_by_id,
@@ -70,6 +78,7 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         })
         .collect();
 
+    // Check at compile time that every registered endpoint is documented
     assert_eq!(
         openapi.paths.paths.len(),
         PublicRoutes::COUNT,
@@ -84,6 +93,7 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
                 ))
                 .url("/openapi.json", openapi),
         )
+        .route(PublicRoutes::GetStats.to_string().as_str(), get(get_stats))
         // ##################
         // Operating systems
         // ##################
@@ -101,6 +111,10 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         .route(
             PublicRoutes::GetDevices.to_string().as_str(),
             get(get_devices),
+        )
+        .route(
+            PublicRoutes::GetDeviceVersions.to_string().as_str(),
+            get(get_device_operating_system_versions),
         )
         // ##################
         // Operating system versions
@@ -137,6 +151,12 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
                 .to_string()
                 .as_str(),
             get(get_executables_with_entitlement_for_os_version),
+        )
+        .route(
+            PublicRoutes::GetAllExecutablesEntitlements
+                .to_string()
+                .as_str(),
+            get(get_all_executables_entitlements),
         )
         // ##################
         // Entitlements

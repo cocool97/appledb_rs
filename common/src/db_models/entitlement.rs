@@ -1,7 +1,7 @@
 use serde::Serialize;
 use utoipa::ToSchema;
 
-#[derive(Serialize, PartialEq, Eq, Hash, Clone, ToSchema)]
+#[derive(Serialize, PartialEq, Eq, Hash, Clone, ToSchema, Debug)]
 pub struct Entitlement {
     pub id: i32,
     pub key: String,

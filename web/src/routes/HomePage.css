@@ -1,0 +1,14 @@
+.container-card {
+    justify-self: center;
+}
+
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-around;
+}
+
+.grid-item {
+    height: fit-content;
+}
