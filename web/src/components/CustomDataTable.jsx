@@ -1,58 +1,79 @@
-import React from "react";
-import DataTable from "react-data-table-component";
+import React, { useState, useEffect } from 'react';
+
+import { TableContainer, Table, TableBody, TableCell, TableRow, TableHead, IconButton, Typography, Collapse, Box } from "@mui/material"
+import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icons/md";
+
 import "./CustomDataTable.css"
 
-const columns = [
-    {
-        name: "Executable",
-        selector: row => row.executable,
-        sortable: false,
-    }
-];
-
-const ExpandedRow = (props) => {
-    const expandedColumns = [
-        {
-            name: "Entitlement key",
-            selector: row => row.key,
-            sortable: true,
-        },
-        {
-            name: "Entitlement value",
-            selector: row => row.value,
-            sortable: true,
-        },
-    ];
+const ExpandableRow = ({ executable, items }) => {
+    const [open, setOpen] = useState(false);
 
     return (
-        <div className="expanded-row">
-            <DataTable
-                columns={expandedColumns}
-                data={props.data.data}
-                noHeader
-                highlightOnHover
-                pointerOnHover
-            />
-        </div>
+        <>
+            <TableRow>
+                <TableCell width={"64px"} sx={{ textAlign: "center" }}>
+                    <IconButton size="medium" onClick={() => setOpen(!open)}>
+                        {open ? <MdOutlineKeyboardArrowUp color="white" /> : <MdOutlineKeyboardArrowDown color="white" />}
+                    </IconButton>
+                </TableCell>
+                <TableCell width={"33%"}>
+                    <Typography sx={{ fontWeight: "bold", color: "white" }}>{executable} ({items.length})</Typography>
+                </TableCell>
+                <TableCell width={"33%"}></TableCell>
+                <TableCell width={"33%"}></TableCell>
+            </TableRow>
+
+            {open && <TableRow>
+                <TableCell colSpan={4} style={{ padding: 0 }}>
+                    <Collapse in={open}>
+                        <Box sx={{ display: "flex", justifyContent: "center", margin: 0 }}>
+                            <Table size="small" sx={{ width: "100%" }}>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell sx={{ border: 0 }} width={"64px"}></TableCell>
+                                        <TableCell sx={{ border: 0 }} width={"33%"}></TableCell>
+                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Entitlement name</Typography></TableCell>
+                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Entitlement value</Typography></TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {items.map((item) => (
+                                        <TableRow key={item.id} className="table-cell-entitlement">
+                                            <TableCell sx={{ border: 0 }} width={"64px"}></TableCell>
+                                            <TableCell sx={{ border: 0 }} width={"33%"}></TableCell>
+                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{item.key}</TableCell>
+                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{item.value}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    </Collapse>
+                </TableCell>
+            </TableRow>}
+        </>
     );
 };
 
 const CustomDataTable = (props) => {
-    const mainData = Object.entries(props.data).map(([executable, items]) => ({
-        executable: `${executable} (${items.length})`,
-        data: items,
-    }));
-
     return (
-        <DataTable
-            title={"Entitlements per executables"}
-            columns={columns}
-            data={mainData}
-            expandableRows
-            expandableRowsComponent={ExpandedRow}
-            highlightOnHover
-            responsive
-        />
+        <TableContainer>
+            <Table size="small" sx={{ tableLayout: "fixed" }}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell sx={{ width: "64px" }}></TableCell>
+                        <TableCell sx={{ width: "33%" }}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Executables ({Object.keys(props.data).length})</Typography></TableCell>
+                        <TableCell sx={{ width: "33%" }}></TableCell>
+                        <TableCell sx={{ width: "33%" }}></TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {Object.entries(props.data).map(([executable, items]) => (
+                        <ExpandableRow key={executable} executable={executable} items={items} />
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 };
 

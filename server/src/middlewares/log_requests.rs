@@ -23,10 +23,10 @@ pub async fn log_requests(request: Request<Body>, next: Next) -> Response<Body> 
         method, uri, version, status, duration
     );
 
-    if response.status().is_success() {
-        log::info!("{}", log_message);
+    if response.status().is_client_error() || response.status().is_server_error() {
+        log::error!("{}", log_message);
     } else {
-        log::warn!("{}", log_message);
+        log::info!("{}", log_message);
     }
 
     response

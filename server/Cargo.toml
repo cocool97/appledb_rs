@@ -34,9 +34,7 @@ utoipa-swagger-ui = { version = "9.0.0", features = ["axum", "vendored"] }
 
 # Waiting for library to bump versions
 # zip -> utoipa-swagger-ui
-# deranger -> apple-codesign -> plist
 zip = "=2.4.2"
-deranged = "=0.4.0"
 
 #####################################
 # Debian package build instructions #
@@ -44,7 +42,8 @@ deranged = "=0.4.0"
 [package.metadata.deb]
 assets = [
     { source = "target/release/appledb_server", dest = "/usr/bin/", mode = "755" },
-    { source = "../web/build/*", dest = "/etc/appledb_rs/", mode = "0644" },
+    { source = "../web/dist/*", dest = "/etc/appledb_server/web/", mode = "0644" },
+    { source = "../web/dist/assets/*", dest = "/etc/appledb_server/web/assets", mode = "0644" },
 ]
 priority = "optional"
 section = "utility"

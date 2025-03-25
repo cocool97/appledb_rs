@@ -1,10 +1,6 @@
 use std::{collections::HashSet, sync::Arc, vec};
 
-use appledb_common::{
-    api_models::{AppResponse, EntitlementsDiff},
-    db_models::Entitlement,
-    routes::PublicRoutes,
-};
+use appledb_common::{api_models::EntitlementsDiff, db_models::Entitlement, routes::PublicRoutes};
 use axum::{
     Json,
     extract::{Path, State},
@@ -15,7 +11,7 @@ use crate::{models::AppState, utils::AppResult};
 #[utoipa::path(
     get,
     path = PublicRoutes::GetEntitlements,
-    responses((status = OK, body = AppResponse<Vec<Entitlement>>))
+    responses((status = OK, body = Vec<Entitlement>))
 )]
 pub async fn get_entitlements(
     State(state): State<Arc<AppState>>,
@@ -29,7 +25,7 @@ pub async fn get_entitlements(
     params(
         ("id" = i32, description = "Entitlement identifier"),
     ),
-    responses((status = OK, body = AppResponse<Entitlement>))
+    responses((status = OK, body = Entitlement))
 )]
 pub async fn get_entitlements_by_id(
     State(state): State<Arc<AppState>>,
@@ -46,7 +42,7 @@ pub async fn get_entitlements_by_id(
     params(
         ("name" = String, description = "Entitlement name (key)"),
     ),
-    responses((status = OK, body = AppResponse<Vec<Entitlement>>))
+    responses((status = OK, body = Vec<Entitlement>))
 )]
 pub async fn get_entitlements_by_name(
     State(state): State<Arc<AppState>>,
@@ -67,7 +63,7 @@ pub async fn get_entitlements_by_name(
         ("from_executable_id" = i32, description = "Initial executable identifier"),
         ("to_executable_id" = i32, description = "Final executable identifier"),
     ),
-    responses((status = OK, body = AppResponse<EntitlementsDiff>))
+    responses((status = OK, body = EntitlementsDiff))
 )]
 pub async fn diff_entitlements_for_executables(
     State(state): State<Arc<AppState>>,

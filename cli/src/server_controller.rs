@@ -1,6 +1,6 @@
 use anyhow::{Result, bail};
 use appledb_common::IPSWEntitlements;
-use appledb_common::api_models::{AppResponse, ServerErrorResponse};
+use appledb_common::api_models::ServerErrorResponse;
 use appledb_common::config::ListenMode;
 use appledb_common::db_models::OperatingSystem;
 use appledb_common::routes::{ADMIN_ROUTES, POST_EXECUTABLE_ENTITLEMENTS_ROUTE, PublicRoutes};
@@ -12,7 +12,7 @@ use std::net::SocketAddr;
 macro_rules! response_to_result {
     ($response:expr) => {{
         match $response.status() {
-            StatusCode::OK => Ok($response.json::<AppResponse<T>>().await?.data),
+            StatusCode::OK => Ok($response.json::<T>().await?),
             _ => {
                 let error_response: ServerErrorResponse = $response.json().await?;
                 bail!(format!("Server error: {}", error_response.reason))

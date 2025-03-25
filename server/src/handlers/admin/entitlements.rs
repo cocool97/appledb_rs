@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use anyhow::anyhow;
-use appledb_common::{IPSWEntitlements, api_models::AppResponse};
+use appledb_common::IPSWEntitlements;
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
 
@@ -11,7 +11,7 @@ use crate::{crud::DBStatus, models::AppState, utils::AppResult};
 pub async fn post_executable_entitlements(
     State(state): State<Arc<AppState>>,
     Json(entitlements): Json<IPSWEntitlements>,
-) -> AppResult<Json<AppResponse<String>>> {
+) -> AppResult<Json<String>> {
     let operating_system_version = state
         .db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
@@ -85,7 +85,5 @@ pub async fn post_executable_entitlements(
         );
     }
 
-    Ok(Json(AppResponse {
-        data: "ok".to_string(),
-    }))
+    Ok(Json("ok".to_string()))
 }

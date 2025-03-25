@@ -78,6 +78,7 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         })
         .collect();
 
+    // Check at compile time that every registered endpoint is documented
     assert_eq!(
         openapi.paths.paths.len(),
         PublicRoutes::COUNT,

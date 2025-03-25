@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use appledb_common::{
-    api_models::AppResponse,
     db_models::{Device, OperatingSystemVersion},
     routes::PublicRoutes,
 };
@@ -15,7 +14,7 @@ use crate::{models::AppState, utils::AppResult};
 #[utoipa::path(
     get,
     path = PublicRoutes::GetDevices,
-    responses((status = OK, body = AppResponse<Vec<Device>>))
+    responses((status = OK, body = Vec<Device>))
 )]
 pub async fn get_devices(State(state): State<Arc<AppState>>) -> AppResult<Json<Vec<Device>>> {
     Ok(Json(state.db_controller.crud_get_devices().await?))
@@ -24,7 +23,7 @@ pub async fn get_devices(State(state): State<Arc<AppState>>) -> AppResult<Json<V
 #[utoipa::path(
     get,
     path = PublicRoutes::GetDeviceVersions,
-    responses((status = OK, body = AppResponse<Vec<OperatingSystemVersion>>))
+    responses((status = OK, body = Vec<OperatingSystemVersion>))
 )]
 pub async fn get_device_operating_system_versions(
     State(state): State<Arc<AppState>>,

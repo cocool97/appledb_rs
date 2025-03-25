@@ -1,7 +1,6 @@
 use std::{collections::BTreeMap, sync::Arc};
 
 use appledb_common::{
-    api_models::AppResponse,
     db_models::{Entitlement, Executable},
     routes::PublicRoutes,
 };
@@ -15,7 +14,7 @@ use crate::{models::AppState, utils::AppResult};
 #[utoipa::path(
     get,
     path = PublicRoutes::GetExecutables,
-    responses((status = OK, body = AppResponse<Vec<Executable>>))
+    responses((status = OK, body = Vec<Executable>))
 )]
 pub async fn get_executables(
     State(state): State<Arc<AppState>>,
@@ -29,7 +28,7 @@ pub async fn get_executables(
     params(
         ("id" = i32, description = "Executable identifier to retrieve"),
     ),
-    responses((status = OK, body = AppResponse<Executable>))
+    responses((status = OK, body = Executable))
 )]
 pub async fn get_executables_by_id(
     State(state): State<Arc<AppState>>,
@@ -46,7 +45,7 @@ pub async fn get_executables_by_id(
     params(
         ("name" = String, description = "Executables name to retrieve"),
     ),
-    responses((status = OK, body = AppResponse<Vec<Executable>>))
+    responses((status = OK, body = Vec<Executable>))
 )]
 pub async fn get_executables_by_name(
     State(state): State<Arc<AppState>>,
@@ -67,7 +66,7 @@ pub async fn get_executables_by_name(
         ("operating_system_version_id" = i32, description = "Operating system version identifier to retrieve"),
         ("entitlement_key" = String, description = "Entitlement key value to retrieve")
     ),
-    responses((status = OK, body = AppResponse<Executable>))
+    responses((status = OK, body = Executable))
 )]
 pub async fn get_executables_with_entitlement_for_os_version(
     State(state): State<Arc<AppState>>,
@@ -90,7 +89,7 @@ pub async fn get_executables_with_entitlement_for_os_version(
     params(
         ("id" = i32, description = "Executable identifier"),
     ),
-    responses((status = OK, body = AppResponse<Vec<Entitlement>>))
+    responses((status = OK, body = Vec<Entitlement>))
 )]
 pub async fn get_executable_entitlements(
     State(state): State<Arc<AppState>>,
@@ -110,7 +109,7 @@ pub async fn get_executable_entitlements(
     params(
         ("operating_system_version_id" = i32, description = "Operating system version identifier"),
     ),
-    responses((status = OK, body = AppResponse<BTreeMap<String, Vec<Entitlement>>>))
+    responses((status = OK, body = BTreeMap<String, Vec<Entitlement>>))
 )]
 pub async fn get_all_executables_entitlements(
     State(state): State<Arc<AppState>>,

@@ -5,10 +5,10 @@
 .grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 2rem;
     justify-content: space-around;
 }
 
 .grid-item {
-    text-decoration: none;
+    height: fit-content;
 }

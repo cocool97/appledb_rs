@@ -5,4 +5,4 @@ http_max_body_size: 10485760  # 10 MB
 
 database_path: appledb.sqlite
 
-web_sources_path: web/build
+web_sources_path: web/dist
