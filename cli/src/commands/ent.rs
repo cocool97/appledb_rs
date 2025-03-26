@@ -67,7 +67,7 @@ async fn parse_entitlements<P: AsRef<Path>>(
                             );
                         }
                     }
-                    Err(e) => log::error!("{e}"),
+                    Err(e) => log::error!("error with path {}: {e}", entry.into_path().display()),
                 }
             }
         }
@@ -104,10 +104,7 @@ async fn parse_entitlements_file<P: AsRef<Path>>(
 
     let macho = match MachOBinary::parse(&macho_bin_data) {
         Ok(macho) => macho,
-        Err(e) => {
-            log::error!("{e}");
-            return Ok(None);
-        }
+        Err(e) => return Err(e.into()),
     };
 
     if !macho.is_executable() {
