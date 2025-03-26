@@ -50,29 +50,30 @@ impl DBController {
             full_path.to_string()
         ))?;
 
-        if let Some(executable) = entity::prelude::Executable::find()
+        // Create executable
+        let executable = if let Some(executable) = entity::prelude::Executable::find()
             .filter(entity::executable::Column::Name.eq(executable_name.to_string_lossy()))
             .filter(entity::executable::Column::FullPath.eq(full_path.to_string()))
-            .filter(
-                entity::executable::Column::OperatingSystemVersionId
-                    .eq(operating_system_version_id),
-            )
             .one(self.get_connection())
             .await?
         {
-            // Already exists in DB
-            return Ok(DBStatus::AlreadyExists(executable.id));
-        }
+            executable
+        } else {
+            let executable = entity::executable::ActiveModel {
+                id: ActiveValue::NotSet,
+                full_path: ActiveValue::Set(full_path.to_string()),
+                name: ActiveValue::Set(executable_name.to_string_lossy().to_string()),
+            };
 
-        let executable = entity::executable::ActiveModel {
-            id: ActiveValue::NotSet,
-            operating_system_version_id: ActiveValue::set(operating_system_version_id),
-            full_path: ActiveValue::Set(full_path.to_string()),
-            name: ActiveValue::Set(executable_name.to_string_lossy().to_string()),
+            executable.insert(self.get_connection()).await?
         };
 
-        let res = executable.insert(self.get_connection()).await?;
-
-        Ok(DBStatus::Created(res.id))
+        // Create executable <-> operating_
+        Ok(self
+            .crud_get_or_create_executable_operating_system_version(
+                executable.id,
+                operating_system_version_id,
+            )
+            .await?)
     }
 }

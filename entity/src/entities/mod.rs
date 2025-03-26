@@ -6,5 +6,6 @@ pub mod device;
 pub mod entitlement;
 pub mod executable;
 pub mod executable_entitlement;
+pub mod executable_operating_system_version;
 pub mod operating_system;
 pub mod operating_system_version;

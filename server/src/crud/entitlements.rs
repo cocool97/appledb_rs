@@ -2,8 +2,8 @@ use appledb_common::db_models::Entitlement;
 
 use anyhow::{Result, anyhow};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, ModelTrait, PaginatorTrait,
-    QueryFilter,
+    ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, JoinType, PaginatorTrait, QueryFilter,
+    QuerySelect, RelationTrait,
 };
 
 use crate::db_controller::DBController;
@@ -49,15 +49,21 @@ impl DBController {
 
     pub async fn crud_get_entitlements_for_executable(
         &self,
-        executable_id: i32,
+        executable_operating_system_id: i32,
     ) -> Result<Vec<Entitlement>> {
-        let executable = entity::prelude::Executable::find_by_id(executable_id)
-            .one(self.get_connection())
-            .await?
-            .ok_or(anyhow!("unknown executable id {executable_id}"))?;
-
-        let entitlements = executable
-            .find_related(entity::prelude::Entitlement)
+        let entitlements = entity::prelude::Entitlement::find()
+            .join(
+                JoinType::LeftJoin,
+                entity::entitlement::Relation::ExecutableEntitlement.def(),
+            )
+            .join(
+                JoinType::LeftJoin,
+                entity::executable_entitlement::Relation::ExecutableOperatingSystemVersion.def(),
+            )
+            .filter(
+                entity::executable_operating_system_version::Column::Id
+                    .eq(executable_operating_system_id),
+            )
             .all(self.get_connection())
             .await?
             .into_iter()

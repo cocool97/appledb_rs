@@ -5,7 +5,10 @@ use sea_orm_migration::{
     sea_orm::{DeriveIden, DeriveMigrationName},
 };
 
-use crate::{m4_executable::Executable, m5_entitlement::Entitlement};
+use crate::{
+    m5_entitlement::Entitlement,
+    m7_executable_operating_system_version::ExecutableOperatingSystemVersion,
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -19,7 +22,7 @@ impl MigrationTrait for Migration {
                     .table(ExecutableEntitlement::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(ExecutableEntitlement::ExecutableId)
+                        ColumnDef::new(ExecutableEntitlement::ExecutableOperatingSystemId)
                             .not_null()
                             .integer(),
                     )
@@ -32,22 +35,25 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .from(
                                 ExecutableEntitlement::Table,
-                                ExecutableEntitlement::ExecutableId,
+                                ExecutableEntitlement::ExecutableOperatingSystemId,
                             )
-                            .to(Executable::Table, Executable::Id),
+                            .to(
+                                ExecutableOperatingSystemVersion::Table,
+                                ExecutableOperatingSystemVersion::Id,
+                            ),
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .from(
                                 ExecutableEntitlement::Table,
-                                ExecutableEntitlement::EntitlementId,
+                                ExecutableEntitlement::ExecutableOperatingSystemId,
                             )
                             .to(Entitlement::Table, Entitlement::Id),
                     )
                     .primary_key(
                         Index::create()
                             .table(ExecutableEntitlement::Table)
-                            .col(ExecutableEntitlement::ExecutableId)
+                            .col(ExecutableEntitlement::ExecutableOperatingSystemId)
                             .col(ExecutableEntitlement::EntitlementId),
                     )
                     .to_owned(),
@@ -67,6 +73,6 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 pub enum ExecutableEntitlement {
     Table,
-    ExecutableId,
+    ExecutableOperatingSystemId,
     EntitlementId,
 }

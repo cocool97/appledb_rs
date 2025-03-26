@@ -1,11 +1,9 @@
-use sea_orm::sea_query::{ForeignKey, Index};
+use sea_orm::sea_query::Index;
 use sea_orm_migration::{
     DbErr, MigrationTrait, SchemaManager, async_trait,
     prelude::{ColumnDef, Table},
     sea_orm::{DeriveIden, DeriveMigrationName},
 };
-
-use crate::m3_operating_system_version::OperatingSystemVersion;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -27,23 +25,12 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Executable::FullPath).not_null().string())
                     .col(ColumnDef::new(Executable::Name).not_null().string())
-                    .col(
-                        ColumnDef::new(Executable::OperatingSystemVersionId)
-                            .integer()
-                            .not_null(),
-                    )
                     .index(
                         Index::create()
                             .table(Executable::Table)
                             .col(Executable::Name)
                             .col(Executable::FullPath)
-                            .col(Executable::OperatingSystemVersionId)
                             .unique(),
-                    )
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from(Executable::Table, Executable::OperatingSystemVersionId)
-                            .to(OperatingSystemVersion::Table, OperatingSystemVersion::Id),
                     )
                     .to_owned(),
             )
@@ -63,5 +50,4 @@ pub enum Executable {
     Id,
     FullPath,
     Name,
-    OperatingSystemVersionId,
 }

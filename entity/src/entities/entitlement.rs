@@ -23,9 +23,9 @@ impl Related<super::executable_entitlement::Entity> for Entity {
     }
 }
 
-impl Related<super::executable::Entity> for Entity {
+impl Related<super::executable_operating_system_version::Entity> for Entity {
     fn to() -> RelationDef {
-        super::executable_entitlement::Relation::Executable.def()
+        super::executable_entitlement::Relation::ExecutableOperatingSystemVersion.def()
     }
     fn via() -> Option<RelationDef> {
         Some(

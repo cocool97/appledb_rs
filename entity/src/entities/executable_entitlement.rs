@@ -6,7 +6,7 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "executable_entitlement")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub executable_id: i32,
+    pub executable_operating_system_id: i32,
     #[sea_orm(primary_key, auto_increment = false)]
     pub entitlement_id: i32,
 }
@@ -15,20 +15,20 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::entitlement::Entity",
-        from = "Column::EntitlementId",
+        from = "Column::ExecutableOperatingSystemId",
         to = "super::entitlement::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
     Entitlement,
     #[sea_orm(
-        belongs_to = "super::executable::Entity",
-        from = "Column::ExecutableId",
-        to = "super::executable::Column::Id",
+        belongs_to = "super::executable_operating_system_version::Entity",
+        from = "Column::ExecutableOperatingSystemId",
+        to = "super::executable_operating_system_version::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
-    Executable,
+    ExecutableOperatingSystemVersion,
 }
 
 impl Related<super::entitlement::Entity> for Entity {
@@ -37,9 +37,9 @@ impl Related<super::entitlement::Entity> for Entity {
     }
 }
 
-impl Related<super::executable::Entity> for Entity {
+impl Related<super::executable_operating_system_version::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Executable.def()
+        Relation::ExecutableOperatingSystemVersion.def()
     }
 }
 

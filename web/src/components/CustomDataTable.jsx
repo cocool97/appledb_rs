@@ -16,15 +16,13 @@ const ExpandableRow = ({ executable, executable_fullpath, items }) => {
                         {open ? <MdOutlineKeyboardArrowUp color="white" /> : <MdOutlineKeyboardArrowDown color="white" />}
                     </IconButton>
                 </TableCell>
-                <TableCell width={"33%"}>
+                <TableCell width={"100%"}>
                     <div className="executable-name-cell">
                         <Typography>{executable}</Typography>
                         <Typography>({items.length})</Typography>
                         <Typography sx={{ fontStyle: "italic", fontSize: "0.8rem" }}>{executable_fullpath}</Typography>
                     </div>
                 </TableCell>
-                <TableCell width={"33%"}></TableCell>
-                <TableCell width={"33%"}></TableCell>
             </TableRow>
 
             {open && <TableRow>
@@ -67,8 +65,6 @@ const CustomDataTable = (props) => {
                     <TableRow>
                         <TableCell sx={{ width: "64px" }}></TableCell>
                         <TableCell sx={{ width: "100%" }}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Executables ({Object.keys(props.data).length})</Typography></TableCell>
-                        {/* <TableCell sx={{ width: "33%" }}></TableCell>
-                        <TableCell sx={{ width: "33%" }}></TableCell> */}
                     </TableRow>
                 </TableHead>
                 <TableBody>

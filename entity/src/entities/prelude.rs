@@ -4,5 +4,6 @@ pub use super::device::Entity as Device;
 pub use super::entitlement::Entity as Entitlement;
 pub use super::executable::Entity as Executable;
 pub use super::executable_entitlement::Entity as ExecutableEntitlement;
+pub use super::executable_operating_system_version::Entity as ExecutableOperatingSystemVersion;
 pub use super::operating_system::Entity as OperatingSystem;
 pub use super::operating_system_version::Entity as OperatingSystemVersion;

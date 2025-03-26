@@ -22,8 +22,8 @@ pub enum Relation {
         on_delete = "NoAction"
     )]
     Device,
-    #[sea_orm(has_many = "super::executable::Entity")]
-    Executable,
+    #[sea_orm(has_many = "super::executable_operating_system_version::Entity")]
+    ExecutableOperatingSystemVersion,
     #[sea_orm(
         belongs_to = "super::operating_system::Entity",
         from = "Column::OperatingSystemId",
@@ -40,9 +40,9 @@ impl Related<super::device::Entity> for Entity {
     }
 }
 
-impl Related<super::executable::Entity> for Entity {
+impl Related<super::executable_operating_system_version::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Executable.def()
+        Relation::ExecutableOperatingSystemVersion.def()
     }
 }
 
