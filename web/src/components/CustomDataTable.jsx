@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { TableContainer, Table, TableBody, TableCell, TableRow, TableHead, IconButton, Typography, Collapse, Box } from "@mui/material"
 import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icons/md";
 
 import "./CustomDataTable.css"
 
-const ExpandableRow = ({ executable, items }) => {
+const ExpandableRow = ({ executable, executable_fullpath, items }) => {
     const [open, setOpen] = useState(false);
 
     return (
@@ -17,7 +17,11 @@ const ExpandableRow = ({ executable, items }) => {
                     </IconButton>
                 </TableCell>
                 <TableCell width={"33%"}>
-                    <Typography sx={{ fontWeight: "bold", color: "white" }}>{executable} ({items.length})</Typography>
+                    <div className="executable-name-cell">
+                        <Typography>{executable}</Typography>
+                        <Typography>({items.length})</Typography>
+                        <Typography sx={{ fontStyle: "italic", fontSize: "0.8rem" }}>{executable_fullpath}</Typography>
+                    </div>
                 </TableCell>
                 <TableCell width={"33%"}></TableCell>
                 <TableCell width={"33%"}></TableCell>
@@ -62,14 +66,14 @@ const CustomDataTable = (props) => {
                 <TableHead>
                     <TableRow>
                         <TableCell sx={{ width: "64px" }}></TableCell>
-                        <TableCell sx={{ width: "33%" }}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Executables ({Object.keys(props.data).length})</Typography></TableCell>
-                        <TableCell sx={{ width: "33%" }}></TableCell>
-                        <TableCell sx={{ width: "33%" }}></TableCell>
+                        <TableCell sx={{ width: "100%" }}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Executables ({Object.keys(props.data).length})</Typography></TableCell>
+                        {/* <TableCell sx={{ width: "33%" }}></TableCell>
+                        <TableCell sx={{ width: "33%" }}></TableCell> */}
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {Object.entries(props.data).map(([executable, items]) => (
-                        <ExpandableRow key={executable} executable={executable} items={items} />
+                    {Object.entries(props.data).map(([executable_fullpath, { name, entitlements }]) => (
+                        <ExpandableRow key={executable_fullpath} executable={name} executable_fullpath={executable_fullpath} items={entitlements} />
                     ))}
                 </TableBody>
             </Table>

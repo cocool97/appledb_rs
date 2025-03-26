@@ -1,10 +1,9 @@
+use std::{path::PathBuf, str::FromStr};
+
 use appledb_common::db_models::Executable;
 
 use anyhow::{Result, anyhow};
-use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, QueryFilter,
-    QuerySelect, RelationTrait,
-};
+use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, QueryFilter};
 
 use crate::db_controller::DBController;
 
@@ -41,10 +40,19 @@ impl DBController {
     pub async fn crud_get_or_create_executable<S: ToString>(
         &self,
         operating_system_version_id: i32,
-        name: S,
+        full_path: S,
     ) -> Result<DBStatus> {
+        let executable_name = full_path.to_string();
+        let executable_name = PathBuf::from_str(executable_name.as_str())?;
+
+        let executable_name = executable_name.file_name().ok_or(anyhow!(
+            "cannot get file name from path {}",
+            full_path.to_string()
+        ))?;
+
         if let Some(executable) = entity::prelude::Executable::find()
-            .filter(entity::executable::Column::Name.eq(name.to_string()))
+            .filter(entity::executable::Column::Name.eq(executable_name.to_string_lossy()))
+            .filter(entity::executable::Column::FullPath.eq(full_path.to_string()))
             .filter(
                 entity::executable::Column::OperatingSystemVersionId
                     .eq(operating_system_version_id),
@@ -59,50 +67,12 @@ impl DBController {
         let executable = entity::executable::ActiveModel {
             id: ActiveValue::NotSet,
             operating_system_version_id: ActiveValue::set(operating_system_version_id),
-            name: ActiveValue::Set(name.to_string()),
+            full_path: ActiveValue::Set(full_path.to_string()),
+            name: ActiveValue::Set(executable_name.to_string_lossy().to_string()),
         };
 
         let res = executable.insert(self.get_connection()).await?;
 
         Ok(DBStatus::Created(res.id))
-    }
-
-    pub async fn crud_get_executables_with_entitlement_for_os_version<S: ToString>(
-        &self,
-        operating_system_version_id: i32,
-        entitlement_key: S,
-    ) -> Result<Vec<Executable>, DbErr> {
-        let entitlements = entity::prelude::Entitlement::find()
-            .filter(entity::entitlement::Column::Key.contains(entitlement_key.to_string()))
-            .all(self.get_connection())
-            .await?;
-
-        let entitlement_ids: Vec<i32> = entitlements.into_iter().map(|e| e.id).collect();
-
-        if entitlement_ids.is_empty() {
-            return Ok(vec![]);
-        }
-
-        // Fetch executables with matching OS version and entitlement
-        let executables = entity::prelude::Executable::find()
-            .join(
-                JoinType::LeftJoin,
-                entity::executable::Relation::ExecutableEntitlement.def(),
-            )
-            .join(
-                JoinType::LeftJoin,
-                entity::executable_entitlement::Relation::Entitlement.def(),
-            )
-            .filter(
-                entity::executable::Column::OperatingSystemVersionId
-                    .eq(operating_system_version_id),
-            )
-            .filter(entity::entitlement::Column::Key.contains(entitlement_key.to_string()))
-            .distinct()
-            .into_model::<entity::executable::Model>()
-            .all(self.get_connection())
-            .await?;
-
-        Ok(executables.into_iter().map(|v| v.into()).collect())
     }
 }

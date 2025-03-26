@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use appledb_common::db_models::Entitlement;
+use appledb_common::{api_models::ExecutableInfos, db_models::Entitlement};
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, ModelTrait, QueryFilter,
     QueryOrder,
@@ -27,7 +27,7 @@ impl DBController {
     pub async fn crud_get_all_executables_entitlements(
         &self,
         operating_system_version_id: i32,
-    ) -> Result<BTreeMap<String, Vec<Entitlement>>, DbErr> {
+    ) -> Result<BTreeMap<String, ExecutableInfos>, DbErr> {
         let executables = entity::prelude::Executable::find()
             .filter(
                 entity::executable::Column::OperatingSystemVersionId
@@ -47,7 +47,13 @@ impl DBController {
                 .into_iter()
                 .map(Entitlement::from)
                 .collect::<Vec<Entitlement>>();
-            result.insert(executable.name, executable_entitlements);
+            result.insert(
+                executable.full_path,
+                ExecutableInfos {
+                    name: executable.name,
+                    entitlements: executable_entitlements,
+                },
+            );
         }
 
         Ok(result)

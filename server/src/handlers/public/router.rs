@@ -14,8 +14,7 @@ use crate::handlers::public::{
     executables::{
         __path_get_all_executables_entitlements, __path_get_executable_entitlements,
         __path_get_executables, __path_get_executables_by_id, __path_get_executables_by_name,
-        __path_get_executables_with_entitlement_for_os_version, get_all_executables_entitlements,
-        get_executable_entitlements, get_executables_by_name,
+        get_all_executables_entitlements, get_executable_entitlements, get_executables_by_name,
     },
     operating_system_versions::{
         __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
@@ -32,9 +31,7 @@ use crate::models::AppState;
 
 use super::{
     entitlements::{get_entitlements, get_entitlements_by_id},
-    executables::{
-        get_executables, get_executables_by_id, get_executables_with_entitlement_for_os_version,
-    },
+    executables::{get_executables, get_executables_by_id},
     operating_system_versions::{
         get_operating_system_versions, get_operating_system_versions_by_id,
     },
@@ -54,7 +51,6 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         get_executables,
         get_executables_by_id,
         get_executables_by_name,
-        get_executables_with_entitlement_for_os_version,
         get_all_executables_entitlements,
         get_executable_entitlements,
         get_entitlements,
@@ -145,12 +141,6 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         .route(
             PublicRoutes::GetExecutablesByName.to_string().as_str(),
             get(get_executables_by_name),
-        )
-        .route(
-            PublicRoutes::GetExecutablesWithEntitlement
-                .to_string()
-                .as_str(),
-            get(get_executables_with_entitlement_for_os_version),
         )
         .route(
             PublicRoutes::GetAllExecutablesEntitlements

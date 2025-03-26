@@ -25,6 +25,7 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Executable::FullPath).not_null().string())
                     .col(ColumnDef::new(Executable::Name).not_null().string())
                     .col(
                         ColumnDef::new(Executable::OperatingSystemVersionId)
@@ -35,6 +36,7 @@ impl MigrationTrait for Migration {
                         Index::create()
                             .table(Executable::Table)
                             .col(Executable::Name)
+                            .col(Executable::FullPath)
                             .col(Executable::OperatingSystemVersionId)
                             .unique(),
                     )
@@ -59,6 +61,7 @@ impl MigrationTrait for Migration {
 pub enum Executable {
     Table,
     Id,
+    FullPath,
     Name,
     OperatingSystemVersionId,
 }
