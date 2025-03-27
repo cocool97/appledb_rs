@@ -15,7 +15,7 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::entitlement::Entity",
-        from = "Column::ExecutableOperatingSystemId",
+        from = "Column::EntitlementId",
         to = "super::entitlement::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"

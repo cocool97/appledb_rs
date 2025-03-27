@@ -46,7 +46,7 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .from(
                                 ExecutableEntitlement::Table,
-                                ExecutableEntitlement::ExecutableOperatingSystemId,
+                                ExecutableEntitlement::EntitlementId,
                             )
                             .to(Entitlement::Table, Entitlement::Id),
                     )
