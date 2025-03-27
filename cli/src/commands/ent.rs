@@ -3,7 +3,12 @@ use apple_codesign::{MachOBinary, path_is_macho};
 use appledb_common::{IPSWEntitlements, IPSWExecutableEntitlements, config::ServerConfig};
 use base64::{Engine, prelude::BASE64_STANDARD};
 use plist::Value;
-use std::{collections::HashSet, io::Cursor, path::Path};
+use std::{
+    collections::HashSet,
+    io::Cursor,
+    path::{Path, PathBuf},
+    str::FromStr,
+};
 use tokio::{fs::File, io::AsyncReadExt};
 use walkdir::WalkDir;
 
@@ -43,20 +48,26 @@ async fn parse_entitlements<P: AsRef<Path>>(
     mount_point: P,
     ipsw_entitlements: &mut IPSWEntitlements,
 ) -> Result<()> {
-    for entry in WalkDir::new(mount_point) {
+    for entry in WalkDir::new(&mount_point) {
         let entry = entry?;
         if let Ok(is_executable) = path_is_macho(entry.path()) {
             if is_executable {
                 match parse_entitlements_file(entry.path()).await {
                     Ok(res) => {
                         if let Some(entitlements) = res {
+                            let entry = entry.into_path();
+                            let stripped_path = entry.strip_prefix(&mount_point)?;
+                            let full_absolute_path = match &stripped_path.is_absolute() {
+                                true => stripped_path.to_path_buf(),
+                                false => PathBuf::from_str("/")?.join(stripped_path),
+                            };
                             ipsw_entitlements.add_executable_entitlements(
-                                entry.file_name().to_string_lossy().to_string(),
+                                full_absolute_path.to_string_lossy(),
                                 entitlements,
                             );
                         }
                     }
-                    Err(e) => log::error!("{e}"),
+                    Err(e) => log::error!("error with path {}: {e}", entry.into_path().display()),
                 }
             }
         }
@@ -93,10 +104,7 @@ async fn parse_entitlements_file<P: AsRef<Path>>(
 
     let macho = match MachOBinary::parse(&macho_bin_data) {
         Ok(macho) => macho,
-        Err(e) => {
-            log::error!("{e}");
-            return Ok(None);
-        }
+        Err(e) => return Err(e.into()),
     };
 
     if !macho.is_executable() {

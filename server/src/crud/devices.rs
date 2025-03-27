@@ -1,7 +1,7 @@
 use anyhow::anyhow;
 use appledb_common::db_models::{Device, OperatingSystemVersion};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter,
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter,
     QueryOrder,
 };
 
@@ -11,7 +11,7 @@ use crate::{APPLE_MODELS, Result};
 use super::DBStatus;
 
 impl DBController {
-    pub async fn crud_get_devices(&self) -> Result<Vec<Device>> {
+    pub async fn crud_get_devices(&self) -> Result<Vec<Device>, DbErr> {
         Ok(entity::prelude::Device::find()
             .order_by_desc(entity::device::Column::ModelCode)
             .all(self.get_connection())
@@ -21,13 +21,16 @@ impl DBController {
             .collect::<Vec<Device>>())
     }
 
-    pub async fn crud_get_devices_count(&self) -> Result<u64> {
-        Ok(entity::prelude::Device::find()
+    pub async fn crud_get_devices_count(&self) -> Result<u64, DbErr> {
+        entity::prelude::Device::find()
             .count(self.get_connection())
-            .await?)
+            .await
     }
 
-    pub async fn crud_get_or_create_device<S: ToString>(&self, model: S) -> Result<DBStatus> {
+    pub async fn crud_get_or_create_device<S: ToString>(
+        &self,
+        model: S,
+    ) -> Result<DBStatus, DbErr> {
         let model_code = model.to_string();
         if let Some(device) = entity::prelude::Device::find()
             .filter(entity::device::Column::ModelCode.eq(&model_code))
@@ -59,7 +62,7 @@ impl DBController {
     pub async fn crud_get_device_operating_system_versions(
         &self,
         device_id: i32,
-    ) -> Result<Vec<OperatingSystemVersion>> {
+    ) -> Result<Vec<OperatingSystemVersion>, DbErr> {
         Ok(entity::prelude::OperatingSystemVersion::find()
             .filter(entity::operating_system_version::Column::DeviceId.eq(device_id))
             .all(self.get_connection())
@@ -69,7 +72,7 @@ impl DBController {
             .collect::<Vec<OperatingSystemVersion>>())
     }
 
-    pub async fn crud_devices_set_unknown_display_names(&self) -> Result<()> {
+    pub async fn crud_set_devices_unknown_display_names(&self) -> Result<()> {
         let missing_display_names = entity::prelude::Device::find()
             .filter(entity::device::Column::DisplayName.is_null())
             .all(self.get_connection())

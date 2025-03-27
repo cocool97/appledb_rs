@@ -1,6 +1,7 @@
 use std::{collections::BTreeMap, sync::Arc};
 
 use appledb_common::{
+    api_models::ExecutableInfos,
     db_models::{Entitlement, Executable},
     routes::PublicRoutes,
 };
@@ -61,30 +62,6 @@ pub async fn get_executables_by_name(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetExecutablesWithEntitlement,
-    params(
-        ("operating_system_version_id" = i32, description = "Operating system version identifier to retrieve"),
-        ("entitlement_key" = String, description = "Entitlement key value to retrieve")
-    ),
-    responses((status = OK, body = Executable))
-)]
-pub async fn get_executables_with_entitlement_for_os_version(
-    State(state): State<Arc<AppState>>,
-    Path((operating_system_version_id, entitlement_key)): Path<(i32, String)>,
-) -> AppResult<Json<Vec<Executable>>> {
-    Ok(Json(
-        state
-            .db_controller
-            .crud_get_executables_with_entitlement_for_os_version(
-                operating_system_version_id,
-                entitlement_key,
-            )
-            .await?,
-    ))
-}
-
-#[utoipa::path(
-    get,
     path = PublicRoutes::GetExecutableEntitlements,
     params(
         ("id" = i32, description = "Executable identifier"),
@@ -114,7 +91,7 @@ pub async fn get_executable_entitlements(
 pub async fn get_all_executables_entitlements(
     State(state): State<Arc<AppState>>,
     Path(operating_system_version_id): Path<i32>,
-) -> AppResult<Json<BTreeMap<String, Vec<Entitlement>>>> {
+) -> AppResult<Json<BTreeMap<String, ExecutableInfos>>> {
     Ok(Json(
         state
             .db_controller

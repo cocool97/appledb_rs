@@ -9,3 +9,9 @@ pub struct EntitlementsDiff {
     pub removed: Vec<Entitlement>,
     pub unchanged: Vec<Entitlement>,
 }
+
+#[derive(Serialize, ToSchema)]
+pub struct ExecutableInfos {
+    pub name: String,
+    pub entitlements: Vec<Entitlement>,
+}

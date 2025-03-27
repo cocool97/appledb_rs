@@ -5,7 +5,7 @@ use utoipa::ToSchema;
 pub struct Executable {
     pub id: i32,
     pub name: String,
-    pub operating_system_version_id: i32,
+    pub full_path: String,
 }
 
 impl From<entity::executable::Model> for Executable {
@@ -13,7 +13,7 @@ impl From<entity::executable::Model> for Executable {
         Self {
             id: value.id,
             name: value.name,
-            operating_system_version_id: value.operating_system_version_id,
+            full_path: value.full_path,
         }
     }
 }

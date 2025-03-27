@@ -40,7 +40,7 @@ impl DBController {
         let controller = Self { connection };
 
         // Feed unknown Apple models display_name
-        controller.crud_devices_set_unknown_display_names().await?;
+        controller.crud_set_devices_unknown_display_names().await?;
 
         Ok(controller)
     }

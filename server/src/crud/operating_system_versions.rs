@@ -2,13 +2,15 @@ use appledb_common::db_models::OperatingSystemVersion;
 
 use anyhow::{Result, anyhow};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter,
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter,
 };
 
 use crate::db_controller::DBController;
 
 impl DBController {
-    pub async fn crud_get_operating_system_version(&self) -> Result<Vec<OperatingSystemVersion>> {
+    pub async fn crud_get_operating_system_version(
+        &self,
+    ) -> Result<Vec<OperatingSystemVersion>, DbErr> {
         Ok(entity::prelude::OperatingSystemVersion::find()
             .all(self.get_connection())
             .await?
@@ -17,10 +19,10 @@ impl DBController {
             .collect::<Vec<OperatingSystemVersion>>())
     }
 
-    pub async fn crud_get_operating_system_version_count(&self) -> Result<u64> {
-        Ok(entity::prelude::OperatingSystemVersion::find()
+    pub async fn crud_get_operating_system_version_count(&self) -> Result<u64, DbErr> {
+        entity::prelude::OperatingSystemVersion::find()
             .count(self.get_connection())
-            .await?)
+            .await
     }
 
     pub async fn crud_get_or_create_operating_system_version_by_platform_and_version(
@@ -89,7 +91,7 @@ impl DBController {
         operating_system_id: i32,
         device_id: i32,
         version: String,
-    ) -> Result<i32> {
+    ) -> Result<i32, DbErr> {
         let operating_system_version = entity::operating_system_version::ActiveModel {
             id: ActiveValue::NotSet,
             device_id: ActiveValue::Set(device_id),

@@ -17,12 +17,18 @@ async fn main() -> Result<()> {
 
     let configuration = read_configuration(opts.config_path).await?;
 
-    match opts.command {
+    let res = match opts.command {
         OptsSubCommands::Ent(ent_sub_commands) => {
             parse_entitlements_command(configuration, ent_sub_commands).await
         }
         OptsSubCommands::OperatingSystem(operating_systems_subcommands) => {
             parse_os_subcommand(configuration, operating_systems_subcommands).await
         }
+    };
+
+    if let Err(e) = res {
+        log::error!("{}", e);
     }
+
+    Ok(())
 }

@@ -42,8 +42,8 @@ zip = "=2.4.2"
 [package.metadata.deb]
 assets = [
     { source = "target/release/appledb_server", dest = "/usr/bin/", mode = "755" },
-    { source = "../web/dist/*", dest = "/etc/appledb_server/web/", mode = "0644" },
-    { source = "../web/dist/assets/*", dest = "/etc/appledb_server/web/assets", mode = "0644" },
+    { source = "../web/dist/*", dest = "/etc/appledb_server/web", mode = "755" },
+    { source = "../web/dist/assets/*", dest = "/etc/appledb_server/web/assets", mode = "755" },
 ]
 priority = "optional"
 section = "utility"

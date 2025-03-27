@@ -44,7 +44,6 @@ pub enum PublicRoutes {
     GetExecutables,
     GetExecutablesById,
     GetExecutablesByName,
-    GetExecutablesWithEntitlement,
     GetExecutableEntitlements,
     GetAllExecutablesEntitlements,
 
@@ -89,9 +88,6 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetExecutables => "/executables/all".to_string(),
             PublicRoutes::GetExecutablesById => "/executables/{id}".to_string(),
             PublicRoutes::GetExecutablesByName => "/executables/by_name/{name}".to_string(),
-            PublicRoutes::GetExecutablesWithEntitlement => {
-                "/executables/{operating_system_version_id}/{entitlement_key}".to_string()
-            }
             PublicRoutes::GetExecutableEntitlements => "/executable/{id}/entitlements".to_string(),
             PublicRoutes::GetEntitlements => "/entitlements/all".to_string(),
             PublicRoutes::GetEntitlementsById => "/entitlements/{id}".to_string(),
