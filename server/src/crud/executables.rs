@@ -3,14 +3,14 @@ use std::{path::PathBuf, str::FromStr};
 use appledb_common::db_models::Executable;
 
 use anyhow::{Result, anyhow};
-use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, QueryFilter};
 
 use crate::db_controller::DBController;
 
 use super::DBStatus;
 
 impl DBController {
-    pub async fn crud_get_executables(&self) -> Result<Vec<Executable>> {
+    pub async fn crud_get_executables(&self) -> Result<Vec<Executable>, DbErr> {
         Ok(entity::prelude::Executable::find()
             .all(self.get_connection())
             .await?
@@ -28,7 +28,10 @@ impl DBController {
         Ok(executable.into())
     }
 
-    pub async fn crud_get_executables_by_name(&self, name: String) -> Result<Vec<Executable>> {
+    pub async fn crud_get_executables_by_name(
+        &self,
+        name: String,
+    ) -> Result<Vec<Executable>, DbErr> {
         let executables = entity::prelude::Executable::find()
             .filter(entity::executable::Column::Name.eq(name))
             .all(self.get_connection())
