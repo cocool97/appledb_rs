@@ -6,7 +6,7 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "executable_entitlement")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub executable_operating_system_id: i32,
+    pub executable_operating_system_version_id: i32,
     #[sea_orm(primary_key, auto_increment = false)]
     pub entitlement_id: i32,
 }
@@ -23,7 +23,7 @@ pub enum Relation {
     Entitlement,
     #[sea_orm(
         belongs_to = "super::executable_operating_system_version::Entity",
-        from = "Column::ExecutableOperatingSystemId",
+        from = "Column::ExecutableOperatingSystemVersionId",
         to = "super::executable_operating_system_version::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"

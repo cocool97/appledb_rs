@@ -3,11 +3,24 @@ use std::{path::PathBuf, str::FromStr};
 use appledb_common::db_models::Executable;
 
 use anyhow::{Result, anyhow};
-use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, QueryFilter};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, FromQueryResult, JoinType,
+    QueryFilter, QuerySelect, RelationTrait, SelectColumns,
+};
+use serde::Serialize;
+use utoipa::ToSchema;
 
 use crate::db_controller::DBController;
 
 use super::DBStatus;
+
+#[derive(FromQueryResult, ToSchema, Serialize)]
+pub struct ExecutableVersion {
+    pub id: i32,
+    pub display_name: String,
+    pub model_code: String,
+    pub version: String,
+}
 
 impl DBController {
     pub async fn crud_get_executables(&self) -> Result<Vec<Executable>, DbErr> {
@@ -38,6 +51,34 @@ impl DBController {
             .await?;
 
         Ok(executables.into_iter().map(|v| v.into()).collect())
+    }
+
+    pub async fn crud_get_executable_versions(
+        &self,
+        executable_id: i32,
+    ) -> Result<Vec<ExecutableVersion>, DbErr> {
+        entity::prelude::Device::find()
+            .join(
+                JoinType::LeftJoin,
+                entity::device::Relation::OperatingSystemVersion.def(),
+            )
+            .join(
+                JoinType::LeftJoin,
+                entity::operating_system_version::Relation::ExecutableOperatingSystemVersion.def(),
+            )
+            .join(
+                JoinType::LeftJoin,
+                entity::executable_operating_system_version::Relation::Executable.def(),
+            )
+            .select_only()
+            .select_column(entity::device::Column::DisplayName)
+            .select_column(entity::device::Column::ModelCode)
+            .select_column(entity::operating_system_version::Column::Version)
+            .select_column(entity::executable_operating_system_version::Column::Id)
+            .filter(entity::executable::Column::Id.eq(executable_id))
+            .into_model::<ExecutableVersion>()
+            .all(self.get_connection())
+            .await
     }
 
     pub async fn crud_get_or_create_executable<S: ToString>(

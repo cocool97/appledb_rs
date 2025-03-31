@@ -16,7 +16,7 @@ impl DBController {
         entitlement_id: i32,
     ) -> Result<(), DbErr> {
         let executable_entitlement = entity::executable_entitlement::ActiveModel {
-            executable_operating_system_id: ActiveValue::Set(
+            executable_operating_system_version_id: ActiveValue::Set(
                 executable_operating_system_version_id,
             ),
             entitlement_id: ActiveValue::Set(entitlement_id),
@@ -59,7 +59,7 @@ impl DBController {
                     entity::entitlement::Relation::ExecutableEntitlement.def(),
                 )
                 .filter(
-                    entity::executable_entitlement::Column::ExecutableOperatingSystemId
+                    entity::executable_entitlement::Column::ExecutableOperatingSystemVersionId
                         .eq(executable_os.id),
                 )
                 .order_by_asc(entity::entitlement::Column::Key)

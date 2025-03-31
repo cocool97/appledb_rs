@@ -18,7 +18,7 @@ const Stats = () => {
         <TableContainer sx={{ display: "flex", justifyContent: "center" }}>
             <Table sx={{ width: "50%", height: "fit-content" }} >
                 <TableBody>
-                    {Object.entries(stats).map(([key, value], _) => (
+                    {Object.entries(stats).map(([key, value]) => (
                         <TableRow
                             key={key}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

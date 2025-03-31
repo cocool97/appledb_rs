@@ -8,6 +8,8 @@ mod executables;
 mod operating_system_versions;
 mod operating_systems;
 
+pub use executables::ExecutableVersion;
+
 #[derive(Serialize)]
 pub enum DBStatus {
     AlreadyExists(i32),

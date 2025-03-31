@@ -22,7 +22,7 @@ impl MigrationTrait for Migration {
                     .table(ExecutableEntitlement::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(ExecutableEntitlement::ExecutableOperatingSystemId)
+                        ColumnDef::new(ExecutableEntitlement::ExecutableOperatingSystemVersionId)
                             .not_null()
                             .integer(),
                     )
@@ -35,7 +35,7 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .from(
                                 ExecutableEntitlement::Table,
-                                ExecutableEntitlement::ExecutableOperatingSystemId,
+                                ExecutableEntitlement::ExecutableOperatingSystemVersionId,
                             )
                             .to(
                                 ExecutableOperatingSystemVersion::Table,
@@ -53,7 +53,7 @@ impl MigrationTrait for Migration {
                     .primary_key(
                         Index::create()
                             .table(ExecutableEntitlement::Table)
-                            .col(ExecutableEntitlement::ExecutableOperatingSystemId)
+                            .col(ExecutableEntitlement::ExecutableOperatingSystemVersionId)
                             .col(ExecutableEntitlement::EntitlementId),
                     )
                     .to_owned(),
@@ -73,6 +73,6 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 pub enum ExecutableEntitlement {
     Table,
-    ExecutableOperatingSystemId,
+    ExecutableOperatingSystemVersionId,
     EntitlementId,
 }

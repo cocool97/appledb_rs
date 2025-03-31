@@ -10,7 +10,7 @@ use axum::{
     extract::{Path, State},
 };
 
-use crate::{models::AppState, utils::AppResult};
+use crate::{crud::ExecutableVersion, models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
@@ -76,6 +76,26 @@ pub async fn get_executable_entitlements(
         state
             .db_controller
             .crud_get_entitlements_for_executable(executable_id)
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetExecutableVersions,
+    params(
+        ("id" = i32, description = "Executable identifier"),
+    ),
+    responses((status = OK, body = Vec<ExecutableVersion>))
+)]
+pub async fn get_executable_versions(
+    State(state): State<Arc<AppState>>,
+    Path(executable_id): Path<i32>,
+) -> AppResult<Json<Vec<ExecutableVersion>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_executable_versions(executable_id)
             .await?,
     ))
 }
