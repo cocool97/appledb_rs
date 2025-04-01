@@ -68,7 +68,8 @@ async fn handle_webapp(
 async fn main() -> Result<()> {
     let opts = Opts::parse();
     let configuration = read_configuration(opts.config_path).await?;
-    env_logger::init();
+
+    utils::setup_logger();
 
     let db_controller = DBController::new(configuration.database_url).await?;
     let state = Arc::new(AppState {

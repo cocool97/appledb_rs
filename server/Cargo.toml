@@ -14,7 +14,7 @@ anyhow = "1.0.95"
 appledb_common = { path = "../common" }
 axum = { version = "0.8.1", features = ["macros"] }
 axum-macros = "0.5.0"
-clap = { version = "4.5.29", features = ["derive"] }
+clap = { version = "4.5.29", features = ["derive", "env"] }
 entity = { path = "../entity" }
 env_logger = "0.11.6"
 log = "0.4.25"

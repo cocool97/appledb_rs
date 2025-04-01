@@ -31,7 +31,7 @@ pub struct ServerConfig {
     /// SQLite: sqlite://path/to/db.sqlite?mode=rwc
     pub database_url: String,
     /// Path to web sources
-    pub web_sources_path: PathBuf,
+    pub web_sources_path: PathBuf
 }
 
 #[derive(Deserialize)]
