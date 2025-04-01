@@ -11,9 +11,9 @@ const DiffResults = (props) => {
             {
                 diff && (
                     <>
+                        <DiffResult header="Unchanged" color="orange" result={diff.unchanged} />
                         <DiffResult header="Added" color="green" result={diff.added} />
                         <DiffResult header="Removed" color="red" result={diff.removed} />
-                        <DiffResult header="Unchanged" color="orange" result={diff.unchanged} />
                     </>
                 )
             }
@@ -32,8 +32,8 @@ const DiffResult = (props) => {
                 {result.map((result) => {
                     return (
                         <ListItem key={result.id}>
-                            <ListItemText sx={{ display: "flex", flex: 1 }}>{result.key}</ListItemText>
-                            <ListItemText sx={{ display: "flex", flex: 1, justifyContent: "center" }}>{result.value}</ListItemText>
+                            <ListItemText sx={{ display: "flex", flex: 1, textAlign: "center" }}>{result.key}</ListItemText>
+                            <ListItemText sx={{ display: "flex", flex: 1, textAlign: "center", justifyContent: "center" }}>{result.value}</ListItemText>
                         </ListItem>
                     )
                 })}

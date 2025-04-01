@@ -40,20 +40,28 @@ async fn handle_webapp(
     State(state): State<Arc<AppState>>,
     request: Request<Body>,
 ) -> impl IntoResponse {
-    let mut response = ServeDir::new(&state.web_sources_path)
-        .append_index_html_on_directories(true)
-        .not_found_service(ServeFile::new(state.web_sources_path.join("index.html")))
-        .try_call(request)
-        .await
-        .unwrap();
+    let mut serve_dir =
+        ServeDir::new(&state.web_sources_path).append_index_html_on_directories(true);
 
-    // 404 pages are handled directly by SPA own router.
-    // We just return the default index.html file as 200 OK
-    if response.status() == StatusCode::NOT_FOUND {
-        *response.status_mut() = StatusCode::OK;
+    match serve_dir.try_call(request).await {
+        Ok(response) if response.status() != StatusCode::NOT_FOUND => {
+            response.map(axum::body::Body::new)
+        }
+        _ => {
+            // Return 'index.html' for all requests to let client-side routing do the job
+            let index_path = state.web_sources_path.join("index.html");
+            match ServeFile::new(index_path)
+                .try_call(Request::new(Body::empty()))
+                .await
+            {
+                Ok(response) => response.map(axum::body::Body::new),
+                Err(e) => {
+                    log::error!("Error while serving file: {e}");
+                    (StatusCode::INTERNAL_SERVER_ERROR, "Internal Server Error").into_response()
+                }
+            }
+        }
     }
-
-    response
 }
 
 #[tokio::main]

@@ -40,6 +40,7 @@ zip = "=2.4.2"
 # Debian package build instructions #
 #####################################
 [package.metadata.deb]
+depends = ''
 assets = [
     { source = "target/release/appledb_server", dest = "/usr/bin/", mode = "755" },
     { source = "../web/dist/*", dest = "/etc/appledb_server/web", mode = "755" },
