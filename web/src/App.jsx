@@ -1,34 +1,17 @@
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
-import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { Collapse } from '@mui/material';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Route, BrowserRouter as Router, Routes, useNavigate } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import HomeRoute from "./routes/HomeRoute"
 import Stats from "./routes/Stats"
 import Diffing from "./routes/Diffing"
 import ModelPage from "./routes/ModelPage"
 import EntitlementsRoute from "./routes/EntitlementsRoute"
+import CustomAppBar from './components/CustomAppBar';
+import { DIFF_ROUTE, DRAWER_WIDTH, ENTITLEMENTS_VERSION, MAIN_ROUTE, MODELS, STATS_ROUTE } from './Constants';
+import CustomDrawer from './components/CustomDrawer';
 
-const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme }) => ({
@@ -38,7 +21,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: `-${drawerWidth}px`,
+        marginLeft: `-${DRAWER_WIDTH}px`,
         variants: [
             {
                 props: ({ open }) => open,
@@ -53,147 +36,6 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
         ],
     }),
 );
-
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme }) => ({
-    transition: theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    variants: [
-        {
-            props: ({ open }) => open,
-            style: {
-                width: `calc(100% - ${drawerWidth}px)`,
-                marginLeft: `${drawerWidth}px`,
-                transition: theme.transitions.create(['margin', 'width'], {
-                    easing: theme.transitions.easing.easeOut,
-                    duration: theme.transitions.duration.enteringScreen,
-                }),
-            },
-        },
-    ],
-}));
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-    backgroundColor: "#555555"
-}));
-
-import logo from './logo.png';
-
-
-const CustomAppBar = (props) => {
-    const { handleDrawerOpen, open } = props;
-    const navigate = useNavigate();
-
-    return (
-        <AppBar position="fixed" open={open} sx={{ backgroundColor: "#555555" }}>
-            <Toolbar>
-                <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={handleDrawerOpen}
-                    edge="start"
-                    sx={[
-                        {
-                            mr: 2,
-                        },
-                        open && { display: 'none' },
-                    ]}
-                >
-                    <MenuIcon />
-                </IconButton>
-                <IconButton
-                    sx={{ height: "64px", maxHeight: "64px" }}
-                    onClick={() => navigate("/")}
-                >
-                    <img style={{ height: "inherit", maxHeight: "inherit", filter: "grayscale(0.5)" }} src={logo} alt="logo" />
-                </IconButton>
-                <Typography variant="h6" noWrap component="div">AppleDB</Typography>
-            </Toolbar>
-        </AppBar>
-    )
-}
-
-const CustomDrawer = (props) => {
-    const theme = useTheme();
-    const { handleDrawerClose, open } = props;
-
-    const navigate = useNavigate();
-
-
-    const [listOpen, setListOpen] = React.useState(false);
-    const handleListChange = () => {
-        setListOpen(!listOpen);
-    };
-
-    return (
-        <Drawer
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                '& .MuiDrawer-paper': {
-                    width: drawerWidth,
-                    boxSizing: 'border-box',
-                    backgroundColor: "#555555"
-                },
-            }}
-            variant="persistent"
-            anchor="left"
-            open={open}
-        >
-            <DrawerHeader>
-                <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === 'ltr' ? <ChevronLeftIcon style={{ color: "white" }} /> : <ChevronRightIcon style={{ color: "white" }} />}
-                </IconButton>
-            </DrawerHeader>
-            <Divider />
-            <List sx={{ height: "inherit" }}>
-                <ListItemButton onClick={handleListChange}>
-                    <ListItemIcon>
-                        <InboxIcon style={{ color: "white" }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Entitlements" sx={{ color: "white", }} />
-                    {listOpen ? <ExpandLess style={{ color: "white" }} /> : <ExpandMore style={{ color: "white" }} />}
-                </ListItemButton>
-                <Collapse in={listOpen} sx={{ padding: "0 1rem" }} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-
-                        {[{ text: "Diffing", to: "/diff", icon: <InboxIcon style={{ color: "white" }} /> }, { text: "Versions", to: "/", icon: <InboxIcon style={{ color: "white" }} /> }].map((item, index) => (
-                            <ListItem key={index} disablePadding>
-                                <ListItemButton onClick={() => navigate(item.to)}>
-                                    <ListItemIcon>
-                                        {item.icon}
-                                    </ListItemIcon>
-                                    <ListItemText primary={item.text} sx={{ color: "white", }} />
-                                </ListItemButton>
-                            </ListItem>
-                        ))}
-                    </List>
-                </Collapse>
-                <Divider />
-                <ListItem key="stats" disablePadding>
-                    <ListItemButton onClick={() => navigate("/stats")}>
-                        <ListItemIcon>
-                            <InboxIcon style={{ color: "white" }} />
-                        </ListItemIcon>
-                        <ListItemText primary="Stats" sx={{ color: "white", }} />
-                    </ListItemButton>
-                </ListItem>
-                <Divider />
-
-                <Typography sx={{ position: "absolute", bottom: 0, width: "100%", textAlign: "center", color: "white", fontWeight: "bold", marginBottom: "1rem" }}>{__APP_VERSION__}</Typography>
-            </List>
-        </Drawer>
-    )
-}
 
 export default function App() {
     const [open, setOpen] = React.useState(false);
@@ -222,12 +64,12 @@ export default function App() {
 
                 <Main open={open} sx={{ position: "relative", top: "64px", height: "calc(100vh - 64px)", overflowY: "scroll" }}>
                     <Routes>
-                        <Route exact path="/" element={<HomeRoute />} />
-                        <Route exact path="/stats" element={<Stats />} />
-                        <Route exact path="/diff" element={<Diffing />} />
-                        <Route exact path="/model/:modelId" element={<ModelPage />} />
-                        <Route exact path="/model/:modelId/version/:versionId" element={<EntitlementsRoute />} />
-                        <Route path="*" element={<div>NOT IMPLEMENTED YET !</div>} />
+                        <Route exact path={MAIN_ROUTE} element={<HomeRoute />} />
+                        <Route exact path={STATS_ROUTE} element={<Stats />} />
+                        <Route exact path={DIFF_ROUTE} element={<Diffing />} />
+                        <Route exact path={MODELS} element={<ModelPage />} />
+                        <Route exact path={ENTITLEMENTS_VERSION} element={<EntitlementsRoute />} />
+                        <Route path="*" element={<div>NOT FOUND :)</div>} />
                     </Routes>
                 </Main>
             </Router>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
-import { Autocomplete, TextField, createTheme } from "@mui/material";
+import { Autocomplete, List, ListItem, ListItemText, TextField } from "@mui/material";
 import CustomSelect from "../components/Select";
 
 const DiffResults = (props) => {
@@ -11,9 +11,9 @@ const DiffResults = (props) => {
             {
                 diff && (
                     <>
-                        <DiffResult result={diff.added} />
-                        <DiffResult result={diff.removed} />
-                        <DiffResult result={diff.unchanged} />
+                        <DiffResult header="Added" color="green" result={diff.added} />
+                        <DiffResult header="Removed" color="red" result={diff.removed} />
+                        <DiffResult header="Unchanged" color="orange" result={diff.unchanged} />
                     </>
                 )
             }
@@ -22,10 +22,23 @@ const DiffResults = (props) => {
 }
 
 const DiffResult = (props) => {
-    const { result } = props;
+    const { header, result, color } = props;
     return (
-        <div style={{ display: "flex", flex: 1, color: "white" }}>
-            {JSON.stringify(result, null, '\t')}
+        <div style={{ display: "flex", flex: 1, color: "white", flexDirection: "column" }}>
+            <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.5rem", marginBottom: "2rem", color: color }}>
+                {header}
+            </div>
+            <List>
+                {result.map((result) => {
+                    return (
+                        <ListItem key={result.id}>
+                            <ListItemText sx={{ display: "flex", flex: 1 }}>{result.key}</ListItemText>
+                            <ListItemText sx={{ display: "flex", flex: 1, justifyContent: "center" }}>{result.value}</ListItemText>
+                        </ListItem>
+                    )
+                })}
+
+            </List>
         </div>
     )
 }
@@ -68,7 +81,7 @@ const Diffing = () => {
     }, [from, to]);
 
     const displayVersionChoice = (version) => {
-        return version.display_name + " - " + version.model_code + " - " + version.version
+        return (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
     }
 
     const versionIDGetter = (version) => {

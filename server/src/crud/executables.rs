@@ -17,7 +17,7 @@ use super::DBStatus;
 #[derive(FromQueryResult, ToSchema, Serialize)]
 pub struct ExecutableVersion {
     pub id: i32,
-    pub display_name: String,
+    pub display_name: Option<String>,
     pub model_code: String,
     pub version: String,
 }
