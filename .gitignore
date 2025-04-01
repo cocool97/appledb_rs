@@ -4,3 +4,6 @@ appledb.sqlite-shm
 appledb.sqlite-wal
 /.vscode
 /data
+/venv
+.mypy_cache
+.ruff_cache

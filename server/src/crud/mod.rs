@@ -3,9 +3,12 @@ use serde::Serialize;
 mod devices;
 mod entitlements;
 mod executable_entitlement;
+mod executable_operating_system_version;
 mod executables;
 mod operating_system_versions;
 mod operating_systems;
+
+pub use executables::ExecutableVersion;
 
 #[derive(Serialize)]
 pub enum DBStatus {

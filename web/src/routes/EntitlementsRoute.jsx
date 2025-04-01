@@ -30,15 +30,15 @@ const EntitlementsRoute = () => {
         const result = {};
 
         for (const [key, value] of Object.entries(obj)) {
-            if (!key.includes(executableInput)) continue;
+            if (!value.name.includes(executableInput)) continue;
 
-            const filteredArray = value.filter(item =>
+            const filteredArray = value.entitlements.filter(item =>
                 item.key.toLowerCase().includes(entitlementKeyInput.toLowerCase()) &&
                 item.value.toLowerCase().includes(entitlementValueInput.toLowerCase())
             );
 
             if (filteredArray.length > 0) {
-                result[key] = filteredArray;
+                result[key] = {name: value.name, entitlements: filteredArray};
             }
         }
 

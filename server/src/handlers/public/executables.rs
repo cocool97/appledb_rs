@@ -1,87 +1,12 @@
 use std::{collections::BTreeMap, sync::Arc};
 
-use appledb_common::{
-    db_models::{Entitlement, Executable},
-    routes::PublicRoutes,
-};
+use appledb_common::{api_models::ExecutableInfos, db_models::Entitlement, routes::PublicRoutes};
 use axum::{
     Json,
     extract::{Path, State},
 };
 
-use crate::{models::AppState, utils::AppResult};
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetExecutables,
-    responses((status = OK, body = Vec<Executable>))
-)]
-pub async fn get_executables(
-    State(state): State<Arc<AppState>>,
-) -> AppResult<Json<Vec<Executable>>> {
-    Ok(Json(state.db_controller.crud_get_executables().await?))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetExecutablesById,
-    params(
-        ("id" = i32, description = "Executable identifier to retrieve"),
-    ),
-    responses((status = OK, body = Executable))
-)]
-pub async fn get_executables_by_id(
-    State(state): State<Arc<AppState>>,
-    Path(id): Path<i32>,
-) -> AppResult<Json<Executable>> {
-    Ok(Json(
-        state.db_controller.crud_get_executable_by_id(id).await?,
-    ))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetExecutablesByName,
-    params(
-        ("name" = String, description = "Executables name to retrieve"),
-    ),
-    responses((status = OK, body = Vec<Executable>))
-)]
-pub async fn get_executables_by_name(
-    State(state): State<Arc<AppState>>,
-    Path(name): Path<String>,
-) -> AppResult<Json<Vec<Executable>>> {
-    Ok(Json(
-        state
-            .db_controller
-            .crud_get_executables_by_name(name)
-            .await?,
-    ))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetExecutablesWithEntitlement,
-    params(
-        ("operating_system_version_id" = i32, description = "Operating system version identifier to retrieve"),
-        ("entitlement_key" = String, description = "Entitlement key value to retrieve")
-    ),
-    responses((status = OK, body = Executable))
-)]
-pub async fn get_executables_with_entitlement_for_os_version(
-    State(state): State<Arc<AppState>>,
-    Path((operating_system_version_id, entitlement_key)): Path<(i32, String)>,
-) -> AppResult<Json<Vec<Executable>>> {
-    Ok(Json(
-        state
-            .db_controller
-            .crud_get_executables_with_entitlement_for_os_version(
-                operating_system_version_id,
-                entitlement_key,
-            )
-            .await?,
-    ))
-}
+use crate::{crud::ExecutableVersion, models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
@@ -105,6 +30,26 @@ pub async fn get_executable_entitlements(
 
 #[utoipa::path(
     get,
+    path = PublicRoutes::GetExecutableVersions,
+    params(
+        ("id" = i32, description = "Executable identifier"),
+    ),
+    responses((status = OK, body = Vec<ExecutableVersion>))
+)]
+pub async fn get_executable_versions(
+    State(state): State<Arc<AppState>>,
+    Path(executable_id): Path<i32>,
+) -> AppResult<Json<Vec<ExecutableVersion>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_executable_versions(executable_id)
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
     path = PublicRoutes::GetAllExecutablesEntitlements,
     params(
         ("operating_system_version_id" = i32, description = "Operating system version identifier"),
@@ -114,7 +59,7 @@ pub async fn get_executable_entitlements(
 pub async fn get_all_executables_entitlements(
     State(state): State<Arc<AppState>>,
     Path(operating_system_version_id): Path<i32>,
-) -> AppResult<Json<BTreeMap<String, Vec<Entitlement>>>> {
+) -> AppResult<Json<BTreeMap<String, ExecutableInfos>>> {
     Ok(Json(
         state
             .db_controller

@@ -12,7 +12,7 @@ pub struct IPSWEntitlements {
     pub model_code: String,
     /// Software version of the platform
     pub version: String,
-    /// Entitlements storage: key=EXECUTABLE_NAME; value=ENTITLEMENTS
+    /// Entitlements storage: key=EXECUTABLE_FULLPATH; value=ENTITLEMENTS
     pub executable_entitlements: BTreeMap<String, HashSet<IPSWExecutableEntitlements>>,
 }
 
@@ -26,13 +26,13 @@ impl IPSWEntitlements {
         }
     }
 
-    pub fn add_executable_entitlements(
+    pub fn add_executable_entitlements<S: ToString>(
         &mut self,
-        executable_name: String,
+        executable_fullpath: S,
         entitlements: HashSet<IPSWExecutableEntitlements>,
     ) {
         self.executable_entitlements
-            .insert(executable_name, entitlements);
+            .insert(executable_fullpath.to_string(), entitlements);
     }
 }
 

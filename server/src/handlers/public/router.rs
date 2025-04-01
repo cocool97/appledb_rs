@@ -6,16 +6,11 @@ use crate::handlers::public::{
         __path_get_device_operating_system_versions, __path_get_devices,
         get_device_operating_system_versions, get_devices,
     },
-    entitlements::{
-        __path_diff_entitlements_for_executables, __path_get_entitlements,
-        __path_get_entitlements_by_id, __path_get_entitlements_by_name,
-        diff_entitlements_for_executables, get_entitlements_by_name,
-    },
+    entitlements::{__path_diff_entitlements_for_executables, diff_entitlements_for_executables},
     executables::{
         __path_get_all_executables_entitlements, __path_get_executable_entitlements,
-        __path_get_executables, __path_get_executables_by_id, __path_get_executables_by_name,
-        __path_get_executables_with_entitlement_for_os_version, get_all_executables_entitlements,
-        get_executable_entitlements, get_executables_by_name,
+        __path_get_executable_versions, get_all_executables_entitlements,
+        get_executable_entitlements, get_executable_versions,
     },
     operating_system_versions::{
         __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
@@ -31,10 +26,6 @@ use utoipa_swagger_ui::{Config, SwaggerUi};
 use crate::models::AppState;
 
 use super::{
-    entitlements::{get_entitlements, get_entitlements_by_id},
-    executables::{
-        get_executables, get_executables_by_id, get_executables_with_entitlement_for_os_version,
-    },
     operating_system_versions::{
         get_operating_system_versions, get_operating_system_versions_by_id,
     },
@@ -51,15 +42,9 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         get_device_operating_system_versions,
         get_operating_system_versions,
         get_operating_system_versions_by_id,
-        get_executables,
-        get_executables_by_id,
-        get_executables_by_name,
-        get_executables_with_entitlement_for_os_version,
+        get_executable_versions,
         get_all_executables_entitlements,
         get_executable_entitlements,
-        get_entitlements,
-        get_entitlements_by_id,
-        get_entitlements_by_name,
         diff_entitlements_for_executables
     ))]
     struct ApiDoc;
@@ -78,8 +63,8 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         })
         .collect();
 
-    // Check at compile time that every registered endpoint is documented
-    assert_eq!(
+    // Check that every registered endpoint is documented (only in debug builds)
+    debug_assert_eq!(
         openapi.paths.paths.len(),
         PublicRoutes::COUNT,
         "all public handlers aren't documented..."
@@ -93,94 +78,60 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
                 ))
                 .url("/openapi.json", openapi),
         )
-        .route(PublicRoutes::GetStats.to_string().as_str(), get(get_stats))
+        // ##################
+        // Stats
+        // ##################
+        .route(&PublicRoutes::GetStats.to_string(), get(get_stats))
         // ##################
         // Operating systems
         // ##################
         .route(
-            PublicRoutes::GetOperatingSystems.to_string().as_str(),
+            &PublicRoutes::GetOperatingSystems.to_string(),
             get(get_operating_systems),
         )
         .route(
-            PublicRoutes::GetOperatingSystemById.to_string().as_str(),
+            &PublicRoutes::GetOperatingSystemById.to_string(),
             get(get_operating_system_by_id),
         )
         // ##################
         // Devices
         // ##################
+        .route(&PublicRoutes::GetDevices.to_string(), get(get_devices))
         .route(
-            PublicRoutes::GetDevices.to_string().as_str(),
-            get(get_devices),
-        )
-        .route(
-            PublicRoutes::GetDeviceVersions.to_string().as_str(),
+            &PublicRoutes::GetDeviceVersions.to_string(),
             get(get_device_operating_system_versions),
         )
         // ##################
         // Operating system versions
         // ##################
         .route(
-            PublicRoutes::GetOperatingSystemVersions
-                .to_string()
-                .as_str(),
+            &PublicRoutes::GetOperatingSystemVersions.to_string(),
             get(get_operating_system_versions),
         )
         .route(
-            PublicRoutes::GetOperatingSystemVersionsById
-                .to_string()
-                .as_str(),
+            &PublicRoutes::GetOperatingSystemVersionsById.to_string(),
             get(get_operating_system_versions_by_id),
         )
         // ##################
         // Executables
         // ##################
         .route(
-            PublicRoutes::GetExecutables.to_string().as_str(),
-            get(get_executables),
-        )
-        .route(
-            PublicRoutes::GetExecutablesById.to_string().as_str(),
-            get(get_executables_by_id),
-        )
-        .route(
-            PublicRoutes::GetExecutablesByName.to_string().as_str(),
-            get(get_executables_by_name),
-        )
-        .route(
-            PublicRoutes::GetExecutablesWithEntitlement
-                .to_string()
-                .as_str(),
-            get(get_executables_with_entitlement_for_os_version),
-        )
-        .route(
-            PublicRoutes::GetAllExecutablesEntitlements
-                .to_string()
-                .as_str(),
+            &PublicRoutes::GetAllExecutablesEntitlements.to_string(),
             get(get_all_executables_entitlements),
+        )
+        .route(
+            &PublicRoutes::GetExecutableVersions.to_string(),
+            get(get_executable_versions),
         )
         // ##################
         // Entitlements
         // ##################
         .route(
-            PublicRoutes::GetEntitlements.to_string().as_str(),
-            get(get_entitlements),
-        )
-        .route(
-            PublicRoutes::GetEntitlementsById.to_string().as_str(),
-            get(get_entitlements_by_id),
-        )
-        .route(
-            PublicRoutes::GetEntitlementsByName.to_string().as_str(),
-            get(get_entitlements_by_name),
-        )
-        .route(
-            PublicRoutes::GetExecutableEntitlements.to_string().as_str(),
+            &PublicRoutes::GetExecutableEntitlements.to_string(),
             get(get_executable_entitlements),
         )
         .route(
-            PublicRoutes::GetDiffEntitlementsExecutables
-                .to_string()
-                .as_str(),
+            &PublicRoutes::GetDiffEntitlementsExecutables.to_string(),
             get(diff_entitlements_for_executables),
         )
 }

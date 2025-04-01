@@ -7,6 +7,21 @@ body {
   margin: 0;
   height: inherit;
   width: inherit;
+  background-color: #242424 !important;
+}
+
+#root {
+  height: inherit;
+}
+
+main>div {
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
+}
+
+* {
+  color: white
 }
 
 :root {
@@ -25,8 +40,6 @@ body {
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
 }
 

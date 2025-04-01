@@ -1,3 +1,18 @@
 .table-cell-entitlement:last-child>td {
     border: 0;
 }
+
+.executable-name-cell {
+    display: flex;
+}
+
+.executable-name-cell>* {
+    /* font-weight: bold !important; */
+    color: white;
+    margin-right: 1rem !important;
+    align-content: center;
+}
+
+.executable-name-cell:last-child {
+    margin-right: 0;
+}
