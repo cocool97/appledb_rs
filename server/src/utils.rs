@@ -2,6 +2,14 @@ use anyhow::Result;
 use appledb_common::api_models::ServerErrorResponse;
 use axum::{http::StatusCode, response::IntoResponse};
 
+pub fn setup_logger() {
+    if std::env::var("RUST_LOG").is_err() {
+        unsafe { std::env::set_var("RUST_LOG", "info") }
+    }
+
+    env_logger::init();
+}
+
 pub type AppResult<T> = Result<T, AppError>;
 
 pub struct AppError {
