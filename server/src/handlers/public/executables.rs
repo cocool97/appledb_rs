@@ -1,64 +1,12 @@
 use std::{collections::BTreeMap, sync::Arc};
 
-use appledb_common::{
-    api_models::ExecutableInfos,
-    db_models::{Entitlement, Executable},
-    routes::PublicRoutes,
-};
+use appledb_common::{api_models::ExecutableInfos, db_models::Entitlement, routes::PublicRoutes};
 use axum::{
     Json,
     extract::{Path, State},
 };
 
 use crate::{crud::ExecutableVersion, models::AppState, utils::AppResult};
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetExecutables,
-    responses((status = OK, body = Vec<Executable>))
-)]
-pub async fn get_executables(
-    State(state): State<Arc<AppState>>,
-) -> AppResult<Json<Vec<Executable>>> {
-    Ok(Json(state.db_controller.crud_get_executables().await?))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetExecutablesById,
-    params(
-        ("id" = i32, description = "Executable identifier to retrieve"),
-    ),
-    responses((status = OK, body = Executable))
-)]
-pub async fn get_executables_by_id(
-    State(state): State<Arc<AppState>>,
-    Path(id): Path<i32>,
-) -> AppResult<Json<Executable>> {
-    Ok(Json(
-        state.db_controller.crud_get_executable_by_id(id).await?,
-    ))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetExecutablesByName,
-    params(
-        ("name" = String, description = "Executables name to retrieve"),
-    ),
-    responses((status = OK, body = Vec<Executable>))
-)]
-pub async fn get_executables_by_name(
-    State(state): State<Arc<AppState>>,
-    Path(name): Path<String>,
-) -> AppResult<Json<Vec<Executable>>> {
-    Ok(Json(
-        state
-            .db_controller
-            .crud_get_executables_by_name(name)
-            .await?,
-    ))
-}
 
 #[utoipa::path(
     get,

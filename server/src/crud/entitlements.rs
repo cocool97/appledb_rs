@@ -1,6 +1,6 @@
 use appledb_common::db_models::Entitlement;
 
-use anyhow::{Result, anyhow};
+use anyhow::Result;
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, PaginatorTrait,
     QueryFilter, QuerySelect, RelationTrait,
@@ -11,43 +11,10 @@ use crate::db_controller::DBController;
 use super::DBStatus;
 
 impl DBController {
-    pub async fn crud_get_entitlements(&self) -> Result<Vec<Entitlement>, DbErr> {
-        Ok(entity::prelude::Entitlement::find()
-            .all(self.get_connection())
-            .await?
-            .into_iter()
-            .map(Entitlement::from)
-            .collect::<Vec<Entitlement>>())
-    }
-
     pub async fn crud_get_entitlements_count(&self) -> Result<u64, DbErr> {
         entity::prelude::Entitlement::find()
             .count(self.get_connection())
             .await
-    }
-
-    pub async fn crud_get_entitlement_by_id(&self, id: i32) -> Result<Entitlement> {
-        let entitlement = entity::prelude::Entitlement::find_by_id(id)
-            .one(self.get_connection())
-            .await?
-            .ok_or(anyhow!("unknown entitlement id {id}"))?;
-
-        Ok(entitlement.into())
-    }
-
-    pub async fn crud_get_entitlements_by_name(
-        &self,
-        name: String,
-    ) -> Result<Vec<Entitlement>, DbErr> {
-        let entitlements = entity::prelude::Entitlement::find()
-            .filter(entity::entitlement::Column::Key.contains(name))
-            .all(self.get_connection())
-            .await?
-            .into_iter()
-            .map(Entitlement::from)
-            .collect();
-
-        Ok(entitlements)
     }
 
     pub async fn crud_get_entitlements_for_executable(

@@ -10,54 +10,6 @@ use crate::{models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetEntitlements,
-    responses((status = OK, body = Vec<Entitlement>))
-)]
-pub async fn get_entitlements(
-    State(state): State<Arc<AppState>>,
-) -> AppResult<Json<Vec<Entitlement>>> {
-    Ok(Json(state.db_controller.crud_get_entitlements().await?))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetEntitlementsById,
-    params(
-        ("id" = i32, description = "Entitlement identifier"),
-    ),
-    responses((status = OK, body = Entitlement))
-)]
-pub async fn get_entitlements_by_id(
-    State(state): State<Arc<AppState>>,
-    Path(id): Path<i32>,
-) -> AppResult<Json<Entitlement>> {
-    Ok(Json(
-        state.db_controller.crud_get_entitlement_by_id(id).await?,
-    ))
-}
-
-#[utoipa::path(
-    get,
-    path = PublicRoutes::GetEntitlementsByName,
-    params(
-        ("name" = String, description = "Entitlement name (key)"),
-    ),
-    responses((status = OK, body = Vec<Entitlement>))
-)]
-pub async fn get_entitlements_by_name(
-    State(state): State<Arc<AppState>>,
-    Path(name): Path<String>,
-) -> AppResult<Json<Vec<Entitlement>>> {
-    Ok(Json(
-        state
-            .db_controller
-            .crud_get_entitlements_by_name(name)
-            .await?,
-    ))
-}
-
-#[utoipa::path(
-    get,
     path = PublicRoutes::GetDiffEntitlementsExecutables,
     params(
         ("from_executable_id" = i32, description = "Initial executable identifier"),

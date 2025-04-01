@@ -91,5 +91,6 @@ impl From<Platform> for OptsPlatform {
 
 #[derive(Subcommand)]
 pub enum OperatingSystemsSubcommands {
+    /// List known operating systems
     List {},
 }
