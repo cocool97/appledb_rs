@@ -26,7 +26,10 @@ pub struct ServerConfig {
     /// Maximum HTTP body size
     pub http_max_body_size: usize,
     /// Path to database
-    pub database_path: PathBuf,
+    /// e.g:
+    /// Postgres: postgres://username:pass@host/schema_name
+    /// SQLite: sqlite://path/to/db.sqlite?mode=rwc
+    pub database_url: String,
     /// Path to web sources
     pub web_sources_path: PathBuf,
 }

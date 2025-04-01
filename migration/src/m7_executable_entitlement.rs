@@ -7,7 +7,7 @@ use sea_orm_migration::{
 
 use crate::{
     m5_entitlement::Entitlement,
-    m7_executable_operating_system_version::ExecutableOperatingSystemVersion,
+    m6_executable_operating_system_version::ExecutableOperatingSystemVersion,
 };
 
 #[derive(DeriveMigrationName)]

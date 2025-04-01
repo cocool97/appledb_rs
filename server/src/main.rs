@@ -70,7 +70,7 @@ async fn main() -> Result<()> {
     let configuration = read_configuration(opts.config_path).await?;
     env_logger::init();
 
-    let db_controller = DBController::new(configuration.database_path).await?;
+    let db_controller = DBController::new(configuration.database_url).await?;
     let state = Arc::new(AppState {
         db_controller,
         web_sources_path: configuration.web_sources_path,

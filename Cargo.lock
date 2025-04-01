@@ -334,6 +334,7 @@ dependencies = [
  "tokio",
  "tower",
  "tower-http",
+ "url",
  "utoipa",
  "utoipa-swagger-ui",
  "zip",
