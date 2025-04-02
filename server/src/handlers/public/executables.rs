@@ -1,6 +1,10 @@
 use std::{collections::BTreeMap, sync::Arc};
 
-use appledb_common::{api_models::ExecutableInfos, db_models::Entitlement, routes::PublicRoutes};
+use appledb_common::{
+    api_models::ExecutableInfos,
+    db_models::{Entitlement, Executable},
+    routes::PublicRoutes,
+};
 use axum::{
     Json,
     extract::{Path, State},
@@ -46,6 +50,19 @@ pub async fn get_executable_versions(
             .crud_get_executable_versions(executable_id)
             .await?,
     ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetAllExecutables,
+    params(
+    ),
+    responses((status = OK, body = Vec<Executable>))
+)]
+pub async fn get_all_executables(
+    State(state): State<Arc<AppState>>,
+) -> AppResult<Json<Vec<Executable>>> {
+    Ok(Json(state.db_controller.crud_get_all_executables().await?))
 }
 
 #[utoipa::path(
