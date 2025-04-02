@@ -8,9 +8,9 @@ use crate::handlers::public::{
     },
     entitlements::{__path_diff_entitlements_for_executables, diff_entitlements_for_executables},
     executables::{
-        __path_get_all_executables_entitlements, __path_get_executable_entitlements,
-        __path_get_executable_versions, get_all_executables_entitlements,
-        get_executable_entitlements, get_executable_versions,
+        __path_get_all_executables, __path_get_all_executables_entitlements,
+        __path_get_executable_entitlements, __path_get_executable_versions, get_all_executables,
+        get_all_executables_entitlements, get_executable_entitlements, get_executable_versions,
     },
     operating_system_versions::{
         __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
@@ -43,6 +43,7 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         get_operating_system_versions,
         get_operating_system_versions_by_id,
         get_executable_versions,
+        get_all_executables,
         get_all_executables_entitlements,
         get_executable_entitlements,
         diff_entitlements_for_executables
@@ -122,6 +123,10 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         .route(
             &PublicRoutes::GetExecutableVersions.to_string(),
             get(get_executable_versions),
+        )
+        .route(
+            &PublicRoutes::GetAllExecutables.to_string(),
+            get(get_all_executables),
         )
         // ##################
         // Entitlements

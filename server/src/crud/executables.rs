@@ -1,6 +1,7 @@
 use std::{path::PathBuf, str::FromStr};
 
 use anyhow::{Result, anyhow};
+use appledb_common::db_models::Executable;
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, FromQueryResult, JoinType,
     QueryFilter, QuerySelect, RelationTrait, SelectColumns,
@@ -21,6 +22,15 @@ pub struct ExecutableVersion {
 }
 
 impl DBController {
+    pub async fn crud_get_all_executables(&self) -> Result<Vec<Executable>> {
+        Ok(entity::prelude::Executable::find()
+            .all(self.get_connection())
+            .await?
+            .into_iter()
+            .map(Executable::from)
+            .collect())
+    }
+
     pub async fn crud_get_executable_versions(
         &self,
         executable_id: i32,
