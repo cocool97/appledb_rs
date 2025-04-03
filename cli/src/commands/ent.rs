@@ -52,22 +52,23 @@ async fn parse_entitlements<P: AsRef<Path>>(
         let entry = entry?;
         if let Ok(is_executable) = path_is_macho(entry.path()) {
             if is_executable {
-                match parse_entitlements_file(entry.path()).await {
+                let entry = entry.into_path();
+                let stripped_path = entry.strip_prefix(&mount_point)?;
+                let full_absolute_path = match &stripped_path.is_absolute() {
+                    true => stripped_path.to_path_buf(),
+                    false => PathBuf::from_str("/")?.join(stripped_path),
+                };
+
+                match parse_entitlements_file(&entry).await {
                     Ok(res) => {
                         if let Some(entitlements) = res {
-                            let entry = entry.into_path();
-                            let stripped_path = entry.strip_prefix(&mount_point)?;
-                            let full_absolute_path = match &stripped_path.is_absolute() {
-                                true => stripped_path.to_path_buf(),
-                                false => PathBuf::from_str("/")?.join(stripped_path),
-                            };
                             ipsw_entitlements.add_executable_entitlements(
                                 full_absolute_path.to_string_lossy(),
                                 entitlements,
                             );
                         }
                     }
-                    Err(e) => log::error!("error with path {}: {e}", entry.into_path().display()),
+                    Err(e) => log::error!("error with path {}: {e}", full_absolute_path.display()),
                 }
             }
         }
