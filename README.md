@@ -52,8 +52,16 @@ A swagger documentation is available at path `/api/v1/swagger/#/`
 ### Mount local IPSW file
 
 ```bash
-ipsw extract --dmg fs IPSW_FILE
+# 1st method: Manually
+## Download AEA fcs-keys
+ipsw extract --fcs-key IPSW_FILE
+## Extract IPSW filesystem
+ipsw fw aea --pem EXTRACTED_AEA_PEM_FILE EXTRACTED_AEA_FILE
+## Mount it
 apfs-fuse IMG_FILE MOUNT_POINT
+
+# 2nd method: All-in-one
+ipsw mount fs IPSW_FILE
 ```
 
 ### Add entitlements from an IPSW
