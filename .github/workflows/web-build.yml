@@ -1,0 +1,16 @@
+name: Web - Build
+
+on: [push, pull_request]
+
+jobs:
+  build-web:
+    name: "build-web"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install yarn
+      run: sudo apt install yarnpkg
+    - name: Install web-dependencies
+      run: cd web; yarnpkg install --no-progress
+    - name: Build web application
+      run: cd web; yarnpkg build
