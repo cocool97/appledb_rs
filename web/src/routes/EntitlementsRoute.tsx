@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import CustomDataTable from '../components/CustomDataTable';
 import StyledInput from '../components/StyledInput';
 import { API_URL } from "../Constants";
-import { BarLoader } from "react-spinners"
+import { BarLoader } from "react-spinners";
 
-import "./EntitlementRoute.css"
-
+import "./EntitlementRoute.css";
 
 const EntitlementsRoute = () => {
     const { versionId } = useParams();
 
     const [results, setResults] = useState({});
-    const [isLoading, setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(true);
 
     const [executableInput, setExecutableInput] = useState('');
     const [entitlementKeyInput, setEntitlementKeyInput] = useState('');
@@ -26,9 +25,8 @@ const EntitlementsRoute = () => {
             .catch((error) => console.log(error));
     }, [versionId]);
 
-    function filterObject(obj) {
+    const filterObject = useCallback((obj) => {
         const result = {};
-
         for (const [key, value] of Object.entries(obj)) {
             if (!value.name.toLowerCase().includes(executableInput.toLowerCase())) continue;
 
@@ -38,12 +36,13 @@ const EntitlementsRoute = () => {
             );
 
             if (filteredArray.length > 0) {
-                result[key] = {name: value.name, entitlements: filteredArray};
+                result[key] = { name: value.name, entitlements: filteredArray };
             }
         }
-
         return result;
-    }
+    }, [executableInput, entitlementKeyInput, entitlementValueInput]);
+
+    const filteredResults = useMemo(() => filterObject(results), [results, filterObject]);
 
     const renderDataTable = () => {
         if (isLoading) {
@@ -51,21 +50,14 @@ const EntitlementsRoute = () => {
                 <div style={{ width: "inherit", height: "inherit", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "inherit" }}>
                     <BarLoader color="white" width="10rem" />
                 </div>
-            )
+            );
         }
-
-        return <CustomDataTable data={filterObject(results)} />
-    }
+        return <CustomDataTable data={filteredResults} />;
+    };
 
     return (
         <div>
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                    marginBottom: "2rem"
-                }}
-            >
+            <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "2rem" }}>
                 <StyledInput placeholder="Filter by executable name" value={executableInput} onChange={setExecutableInput} />
                 <StyledInput placeholder="Filter by entitlement key" value={entitlementKeyInput} onChange={setEntitlementKeyInput} />
                 <StyledInput placeholder="Filter by entitlement value" value={entitlementValueInput} onChange={setEntitlementValueInput} />
@@ -73,6 +65,6 @@ const EntitlementsRoute = () => {
             {renderDataTable()}
         </div>
     );
-}
+};
 
-export default EntitlementsRoute
+export default EntitlementsRoute;

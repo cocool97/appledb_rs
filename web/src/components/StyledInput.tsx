@@ -1,3 +1,4 @@
+import React from "react";
 import "./StyledInput.css"
 
 const StyledInput = (props) => {

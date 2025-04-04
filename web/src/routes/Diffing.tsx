@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
 import { Autocomplete, List, ListItem, ListItemText, TextField } from "@mui/material";
 import CustomSelect from "../components/Select";
+import React from "react";
 
 const DiffResults = (props) => {
     const { diff } = props;
