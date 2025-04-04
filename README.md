@@ -66,6 +66,20 @@ ipsw mount fs IPSW_FILE
 
 ### Add entitlements from an IPSW
 
-TODO
+With a mounted IPSW on local filesystem, a `POST` request can be made on `/api/admin/executable/entitlements` endpoint with given JSON data
+
+```json
+{
+    "platform": "ios",
+    "model_code": "iPhone17,4",
+    "version": "18.3.1",
+    "executable_entitlements": {
+        "EXECUTABLE_FULL_PATH": {
+            "entitlement#1": {...},
+            ...
+        }
+    },
+}
+```
 
 Some features may still be missing, all pull requests are welcome !

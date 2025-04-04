@@ -1,17 +1,79 @@
-use std::sync::Arc;
+use std::{collections::HashSet, sync::Arc};
 
-use anyhow::anyhow;
-use appledb_common::IPSWEntitlements;
+use anyhow::{Result, anyhow};
+use appledb_common::{
+    IPSWEntitlements, IPSWExecutableEntitlements, api_models::EntitlementsInsertionStatus,
+};
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
+use serde_json::Value;
 
 use crate::{crud::DBStatus, models::AppState, utils::AppResult};
+
+fn format_entitlements(value: &Value) -> Result<HashSet<IPSWExecutableEntitlements>> {
+    let mut entitlements = HashSet::new();
+
+    match value {
+        Value::Array(values) => {
+            for value in values {
+                entitlements = entitlements
+                    .union(&format_entitlements(value)?)
+                    .cloned()
+                    .collect();
+            }
+        }
+        Value::Object(dictionary) => {
+            for (key, value) in dictionary {
+                let sub_entitlements = format_entitlements(value)?;
+                for ent in sub_entitlements {
+                    if ent.key.is_empty() {
+                        entitlements.insert(IPSWExecutableEntitlements {
+                            key: key.clone(),
+                            value: ent.value,
+                        });
+                    } else {
+                        entitlements.insert(IPSWExecutableEntitlements {
+                            key: format!("{}.{}", key, ent.key),
+                            value: ent.value,
+                        });
+                    }
+                }
+            }
+        }
+        Value::Bool(b) => {
+            entitlements.insert(IPSWExecutableEntitlements {
+                key: String::new(),
+                value: b.to_string(),
+            });
+        }
+        Value::Number(num) => {
+            entitlements.insert(IPSWExecutableEntitlements {
+                key: String::new(),
+                value: num.to_string(),
+            });
+        }
+        Value::String(s) => {
+            entitlements.insert(IPSWExecutableEntitlements {
+                key: String::new(),
+                value: s.clone(),
+            });
+        }
+        Value::Null => {
+            entitlements.insert(IPSWExecutableEntitlements {
+                key: String::new(),
+                value: "null".to_string(),
+            });
+        }
+    }
+
+    Ok(entitlements)
+}
 
 // #[axum_macros::debug_handler]
 pub async fn post_executable_entitlements(
     State(state): State<Arc<AppState>>,
     Json(entitlements): Json<IPSWEntitlements>,
-) -> AppResult<Json<String>> {
+) -> AppResult<Json<EntitlementsInsertionStatus>> {
     let operating_system_version = state
         .db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
@@ -21,20 +83,26 @@ pub async fn post_executable_entitlements(
         )
         .await?;
 
+    let mut entitlements_insertion = EntitlementsInsertionStatus::default();
+
     for (executable, entitlements) in entitlements.executable_entitlements {
         let executable_status = state
             .db_controller
             .crud_get_or_create_executable(operating_system_version.id, &executable)
             .await?;
-        log::info!("Created executable {executable}");
 
-        if let DBStatus::AlreadyExists(executable_id) = executable_status {
-            log::warn!("Executable {} already exists, skipping...", executable_id);
-            continue;
+        match executable_status {
+            DBStatus::AlreadyExists(executable_id) => {
+                log::warn!("Executable {} already exists, skipping...", executable_id);
+                entitlements_insertion.existing_executables += 1;
+                continue;
+            }
+            DBStatus::Created(_) => {
+                entitlements_insertion.inserted_executables += 1;
+            }
         }
 
-        let mut created = 0;
-        let mut existing = 0;
+        let entitlements = format_entitlements(&entitlements)?;
         for entitlement in &entitlements {
             let entitlement_id = match state
                 .db_controller
@@ -42,11 +110,11 @@ pub async fn post_executable_entitlements(
                 .await?
             {
                 DBStatus::AlreadyExists(id) => {
-                    existing += 1;
+                    entitlements_insertion.existing_entitlements += 1;
                     id
                 }
                 DBStatus::Created(id) => {
-                    created += 1;
+                    entitlements_insertion.inserted_entitlements += 1;
                     id
                 }
             };
@@ -77,13 +145,11 @@ pub async fn post_executable_entitlements(
         }
 
         log::info!(
-            "Added {} entitlements to executable {} - created: {} existing: {}",
+            "Added {} entitlements to executable {}",
             entitlements.len(),
             executable_status.db_identifier(),
-            created,
-            existing
         );
     }
 
-    Ok(Json("ok".to_string()))
+    Ok(Json(entitlements_insertion))
 }

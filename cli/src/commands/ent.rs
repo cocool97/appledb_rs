@@ -1,10 +1,7 @@
 use anyhow::{Result, bail};
 use apple_codesign::{MachOBinary, path_is_macho};
-use appledb_common::{IPSWEntitlements, IPSWExecutableEntitlements, config::ServerConfig};
-use base64::{Engine, prelude::BASE64_STANDARD};
-use plist::Value;
+use appledb_common::{IPSWEntitlements, config::ServerConfig};
 use std::{
-    collections::HashSet,
     io::Cursor,
     path::{Path, PathBuf},
     str::FromStr,
@@ -35,7 +32,7 @@ pub async fn parse_entitlements_command(
             let response = server_controller
                 .post_executable_entitlements(ipsw_entitlements)
                 .await?;
-            log::info!("Received response: {}", response);
+            log::info!("Received response: {}", serde_json::to_string(&response)?);
             Ok(())
         }
         EntSubCommands::DumpEnt { executable_path } => {
@@ -92,9 +89,7 @@ async fn dump_executable_entitlements<P: AsRef<Path>>(executable_path: P) -> Res
     }
 }
 
-async fn parse_entitlements_file<P: AsRef<Path>>(
-    path: P,
-) -> Result<Option<HashSet<IPSWExecutableEntitlements>>> {
+async fn parse_entitlements_file<P: AsRef<Path>>(path: P) -> Result<Option<serde_json::Value>> {
     if !path_is_macho(&path)? {
         return Ok(None);
     }
@@ -115,89 +110,11 @@ async fn parse_entitlements_file<P: AsRef<Path>>(
     // If executable is fat, only treat first ? / add two entries in database ?
     if let Some(code_signature) = macho.code_signature()? {
         if let Some(entitlements) = code_signature.entitlements()? {
-            let plist_value = Value::from_reader(Cursor::new(entitlements.as_str()))?;
-
-            return Ok(Some(parse_entitlement(plist_value)?));
+            let plist_value = plist::Value::from_reader(Cursor::new(entitlements.as_str()))?;
+            let json_value = serde_json::to_value(plist_value)?;
+            return Ok(Some(json_value));
         }
     }
 
     Ok(None)
-}
-
-fn parse_entitlement(value: Value) -> Result<HashSet<IPSWExecutableEntitlements>> {
-    let mut entitlements = HashSet::new();
-    match value {
-        Value::Array(values) => {
-            for value in values {
-                entitlements = entitlements
-                    .union(&parse_entitlement(value)?)
-                    .cloned()
-                    .collect();
-            }
-        }
-        Value::Dictionary(dictionary) => {
-            for (key, value) in dictionary {
-                let key = key.to_owned();
-                let sub_entitlements = parse_entitlement(value)?;
-                for ent in sub_entitlements.into_iter() {
-                    if ent.key.is_empty() {
-                        // entitlement type with no key (bool, integer, real...)
-                        entitlements.insert(IPSWExecutableEntitlements {
-                            key: key.clone(),
-                            value: ent.value,
-                        });
-                    } else {
-                        entitlements.insert(IPSWExecutableEntitlements {
-                            key: format!("{}.{}", key, ent.key),
-                            value: ent.value,
-                        });
-                    }
-                }
-            }
-        }
-        Value::Boolean(value) => {
-            entitlements.insert(IPSWExecutableEntitlements {
-                key: String::new(),
-                value: value.to_string(),
-            });
-        }
-        Value::Data(items) => {
-            entitlements.insert(IPSWExecutableEntitlements {
-                key: String::new(),
-                value: BASE64_STANDARD.encode(items),
-            });
-        }
-        Value::Date(date) => {
-            entitlements.insert(IPSWExecutableEntitlements {
-                key: String::new(),
-                value: date.to_xml_format(),
-            });
-        }
-        Value::Real(real) => {
-            entitlements.insert(IPSWExecutableEntitlements {
-                key: String::new(),
-                value: real.to_string(),
-            });
-        }
-        Value::Integer(integer) => {
-            entitlements.insert(IPSWExecutableEntitlements {
-                key: String::new(),
-                value: integer.to_string(),
-            });
-        }
-        Value::String(s) => {
-            entitlements.insert(IPSWExecutableEntitlements {
-                key: String::new(),
-                value: s.to_string(),
-            });
-        }
-        Value::Uid(uid) => {
-            entitlements.insert(IPSWExecutableEntitlements {
-                key: String::new(),
-                value: uid.get().to_string(),
-            });
-        }
-        _ => bail!("unknown value type"),
-    }
-    Ok(entitlements)
 }

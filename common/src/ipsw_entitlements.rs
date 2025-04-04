@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashSet};
+use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +13,7 @@ pub struct IPSWEntitlements {
     /// Software version of the platform
     pub version: String,
     /// Entitlements storage: key=EXECUTABLE_FULLPATH; value=ENTITLEMENTS
-    pub executable_entitlements: BTreeMap<String, HashSet<IPSWExecutableEntitlements>>,
+    pub executable_entitlements: BTreeMap<String, serde_json::Value>,
 }
 
 impl IPSWEntitlements {
@@ -29,7 +29,7 @@ impl IPSWEntitlements {
     pub fn add_executable_entitlements<S: ToString>(
         &mut self,
         executable_fullpath: S,
-        entitlements: HashSet<IPSWExecutableEntitlements>,
+        entitlements: serde_json::Value,
     ) {
         self.executable_entitlements
             .insert(executable_fullpath.to_string(), entitlements);

@@ -1,6 +1,6 @@
 use anyhow::{Result, bail};
 use appledb_common::IPSWEntitlements;
-use appledb_common::api_models::ServerErrorResponse;
+use appledb_common::api_models::{EntitlementsInsertionStatus, ServerErrorResponse};
 use appledb_common::config::ListenMode;
 use appledb_common::db_models::OperatingSystem;
 use appledb_common::routes::{ADMIN_ROUTES, POST_EXECUTABLE_ENTITLEMENTS_ROUTE, PublicRoutes};
@@ -66,7 +66,7 @@ impl ServerController {
     pub async fn post_executable_entitlements(
         &self,
         entitlements: IPSWEntitlements,
-    ) -> Result<String> {
+    ) -> Result<EntitlementsInsertionStatus> {
         return self
             .post(
                 self.gen_admin_url(POST_EXECUTABLE_ENTITLEMENTS_ROUTE),
