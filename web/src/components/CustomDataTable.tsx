@@ -5,22 +5,22 @@ import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icon
 
 import "./CustomDataTable.css"
 
-const ExpandableRow = ({ executable, executable_fullpath, items }) => {
+export const ExpandableTableRow = ({ label, secondary, items }: { label: string, secondary?: string, items: [] }) => {
     const [open, setOpen] = useState(false);
 
     return (
         <>
             <TableRow>
                 <TableCell width={"64px"} sx={{ textAlign: "center" }}>
-                    <IconButton size="medium" onClick={() => setOpen(!open)}>
+                    <IconButton size="medium" onClick={items.length !== 0 ? () => setOpen(!open) : undefined}>
                         {open ? <MdOutlineKeyboardArrowUp color="white" /> : <MdOutlineKeyboardArrowDown color="white" />}
                     </IconButton>
                 </TableCell>
                 <TableCell width={"100%"}>
                     <div className="executable-name-cell">
-                        <Typography>{executable}</Typography>
+                        <Typography>{label}</Typography>
                         <Typography>({items.length})</Typography>
-                        <Typography sx={{ fontStyle: "italic", fontSize: "0.8rem" }}>{executable_fullpath}</Typography>
+                        {secondary && <Typography sx={{ fontStyle: "italic", fontSize: "0.8rem" }}>{secondary}</Typography>}
                     </div>
                 </TableCell>
             </TableRow>
@@ -39,7 +39,7 @@ const ExpandableRow = ({ executable, executable_fullpath, items }) => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {items.map((item) => (
+                                    {items.map((item: { id: number, key: string, value: string }) => (
                                         <TableRow key={item.id} className="table-cell-entitlement">
                                             <TableCell sx={{ border: 0 }} width={"64px"}></TableCell>
                                             <TableCell sx={{ border: 0 }} width={"33%"}></TableCell>
@@ -57,7 +57,7 @@ const ExpandableRow = ({ executable, executable_fullpath, items }) => {
     );
 };
 
-const CustomDataTable = (props) => {
+export const CustomDataTable = (props) => {
     return (
         <TableContainer>
             <Table size="small" sx={{ tableLayout: "fixed" }}>
@@ -69,12 +69,10 @@ const CustomDataTable = (props) => {
                 </TableHead>
                 <TableBody>
                     {Object.entries(props.data).map(([executable_fullpath, { name, entitlements }]) => (
-                        <ExpandableRow key={executable_fullpath} executable={name} executable_fullpath={executable_fullpath} items={entitlements} />
+                        <ExpandableTableRow key={executable_fullpath} label={name} secondary={executable_fullpath} items={entitlements} />
                     ))}
                 </TableBody>
             </Table>
         </TableContainer>
     );
 };
-
-export default CustomDataTable;

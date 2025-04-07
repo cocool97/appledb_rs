@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import CustomDataTable from '../components/CustomDataTable';
+import { CustomDataTable } from '../components/CustomDataTable';
 import StyledInput from '../components/StyledInput';
 import { API_URL } from "../Constants";
 import { BarLoader } from "react-spinners";
