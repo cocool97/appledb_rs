@@ -99,18 +99,18 @@ pub async fn get_all_executables_entitlements(
 )]
 pub async fn diff_executables_for_versions(
     State(state): State<Arc<AppState>>,
-    Path((from_executable_id, to_executable_id)): Path<(i32, i32)>,
+    Path((from_operating_system_version_id, to_operating_system_version_id)): Path<(i32, i32)>,
 ) -> AppResult<Json<Diff<Executable>>> {
     let executables_from: HashSet<Executable> = state
         .db_controller
-        .crud_get_operating_system_version_executables(from_executable_id)
+        .crud_get_operating_system_version_executables(from_operating_system_version_id)
         .await?
         .into_iter()
         .collect();
 
     let entitlements_to: HashSet<Executable> = state
         .db_controller
-        .crud_get_operating_system_version_executables(to_executable_id)
+        .crud_get_operating_system_version_executables(to_operating_system_version_id)
         .await?
         .into_iter()
         .collect();

@@ -15,9 +15,30 @@ const DiffResults = (props) => {
                     <TableContainer>
                         <Table size="small" sx={{ tableLayout: "fixed" }}>
                             <TableBody>
-                                <ExpandableTableRow label="Added" items={diff.added} />
-                                <ExpandableTableRow label="Removed" items={diff.removed} />
-                                <ExpandableTableRow label="Unchanged" items={diff.unchanged} />
+                                <ExpandableTableRow
+                                    label="Added"
+                                    mainCellLabel="Entitlement name"
+                                    mainCellLabelGetter={(item) => item.key}
+                                    secondaryCellLabel="Entitlement value"
+                                    secondaryCellLabelGetter={(item) => item.value}
+                                    items={diff.added}
+                                />
+                                <ExpandableTableRow
+                                    label="Removed"
+                                    mainCellLabel="Entitlement name"
+                                    mainCellLabelGetter={(item) => item.key}
+                                    secondaryCellLabel="Entitlement value"
+                                    secondaryCellLabelGetter={(item) => item.value}
+                                    items={diff.removed}
+                                />
+                                <ExpandableTableRow
+                                    label="Unchanged"
+                                    mainCellLabel="Entitlement name"
+                                    mainCellLabelGetter={(item) => item.key}
+                                    secondaryCellLabel="Entitlement value"
+                                    secondaryCellLabelGetter={(item) => item.value}
+                                    items={diff.unchanged}
+                                />
                             </TableBody>
                         </Table>
                     </TableContainer>

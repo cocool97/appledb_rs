@@ -5,7 +5,10 @@ import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icon
 
 import "./CustomDataTable.css"
 
-export const ExpandableTableRow = ({ label, secondary, items }: { label: string, secondary?: string, items: [] }) => {
+export const ExpandableTableRow = (
+    { label, secondary, mainCellLabel, mainCellLabelGetter, secondaryCellLabel, secondaryCellLabelGetter, items }:
+        { label: string, secondary?: string, mainCellLabel: string, mainCellLabelGetter: (item) => string, secondaryCellLabelGetter: (item) => string, secondaryCellLabel: string, items: [] }
+) => {
     const [open, setOpen] = useState(false);
 
     return (
@@ -34,17 +37,17 @@ export const ExpandableTableRow = ({ label, secondary, items }: { label: string,
                                     <TableRow>
                                         <TableCell sx={{ border: 0 }} width={"64px"}></TableCell>
                                         <TableCell sx={{ border: 0 }} width={"33%"}></TableCell>
-                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Entitlement name</Typography></TableCell>
-                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Entitlement value</Typography></TableCell>
+                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabel}</Typography></TableCell>
+                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabel}</Typography></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {items.map((item: { id: number, key: string, value: string }) => (
+                                    {items.map((item) => (
                                         <TableRow key={item.id} className="table-cell-entitlement">
                                             <TableCell sx={{ border: 0 }} width={"64px"}></TableCell>
                                             <TableCell sx={{ border: 0 }} width={"33%"}></TableCell>
-                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{item.key}</TableCell>
-                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{item.value}</TableCell>
+                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabelGetter(item)}</TableCell>
+                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabelGetter(item)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
