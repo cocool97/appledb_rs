@@ -1,4 +1,4 @@
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Context, Result, anyhow, bail};
 use serde::Deserialize;
 use std::{
     fmt::Display,
@@ -20,7 +20,7 @@ pub async fn read_configuration<P: AsRef<Path>>(path: P) -> Result<ServerConfig>
 #[derive(Deserialize)]
 pub struct ServerConfig {
     /// Server listen mode
-    /// Can be http://127.0.0.1 or unix:///path/to/socket
+    /// Can be http://127.0.0.1 or unix:/path/to/socket
     #[serde(deserialize_with = "deserialize_listen_mode")]
     pub listen_mode: ListenMode,
     /// Maximum HTTP body size
@@ -52,7 +52,13 @@ impl FromStr for ListenMode {
                 let port = url.port().ok_or_else(|| anyhow!("No port"))?;
                 Ok(Self::SocketAddr(SocketAddr::new(host.parse()?, port)))
             }
-            "unix" => Ok(Self::UnixSocket(PathBuf::from(url.path()))),
+            "unix" => {
+                let path = url.path();
+                if path.is_empty() {
+                    bail!("empty unix socket path specified...")
+                }
+                Ok(Self::UnixSocket(PathBuf::from(path)))
+            }
             scheme => Err(anyhow!("Invalid scheme {scheme}")),
         }
     }
@@ -62,7 +68,7 @@ impl Display for ListenMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ListenMode::SocketAddr(socket_addr) => write!(f, "http://{}", socket_addr),
-            ListenMode::UnixSocket(path) => write!(f, "unix://{}", path.display()),
+            ListenMode::UnixSocket(path) => write!(f, "unix:{}", path.display()),
         }
     }
 }
