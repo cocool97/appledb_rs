@@ -5,7 +5,7 @@ mod middlewares;
 mod models;
 mod utils;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use appledb_common::{
     config::{ListenMode, read_configuration},
     routes::{ADMIN_ROUTES, PublicRoutes},
@@ -98,6 +98,12 @@ async fn main() -> Result<()> {
         )
         .await?),
         ListenMode::UnixSocket(path) => {
+            if path.try_exists()? {
+                log::info!("Removing old unix socket...");
+                std::fs::remove_file(&path)
+                    .with_context(|| format!("cannot delete unix socket at path {:?}", path))?;
+            }
+
             Ok(axum::serve(UnixListener::bind(path)?, app.into_make_service()).await?)
         }
     }

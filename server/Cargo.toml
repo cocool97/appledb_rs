@@ -32,11 +32,7 @@ tower = "0.5.2"
 tower-http = { version = "0.6.2", features = ["cors", "fs"] }
 url = "2.5.4"
 utoipa = { version = "5.3.1", features = ["axum_extras"] }
-utoipa-swagger-ui = { version = "9.0.0", features = ["axum", "vendored"] }
-
-# Waiting for library to bump versions
-# zip -> utoipa-swagger-ui
-zip = "=2.4.2"
+utoipa-swagger-ui = { version = "9.0.1", features = ["axum", "vendored"] }
 
 #####################################
 # Debian package build instructions #
