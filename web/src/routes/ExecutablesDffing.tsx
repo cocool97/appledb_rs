@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from "react"
-import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
+import { useEffect, useState } from "react"
+import { API_URL, GET_EXTENDED_OPERATING_SYSTEM_VERSIONS } from "../Constants";
 import { Autocomplete, Table, TableBody, TableContainer, TextField } from "@mui/material";
-import CustomSelect from "../components/CustomSelect";
 import React from "react";
 import { ExpandableTableRow } from "../components/CustomDataTable";
 
@@ -27,49 +26,31 @@ const DiffResults = (props) => {
     )
 }
 
-const Diffing = () => {
-    const [executables, setExecutables] = useState([]);
+const ExecutablesDiffing = () => {
+    const [devices, setDevices] = useState([]);
 
-    const [executable, setExecutable] = useState(null);
-    const [executableVersions, setExecutableVersions] = useState([]);
-    const prevExecutable = useRef(null);
-
-    const [from, setFrom] = useState(null);
-    const [to, setTo] = useState(null);
-
+    const [deviceFrom, setDeviceFrom] = useState(null);
+    const [deviceTo, setDeviceTo] = useState(null);
     const [diff, setDiff] = useState(null);
 
     useEffect(() => {
-        fetch(GET_ALL_EXECUTABLES_ENDPOINT)
+        fetch(GET_EXTENDED_OPERATING_SYSTEM_VERSIONS)
             .then((response) => response.json())
-            .then((data) => setExecutables(data))
+            .then((data) => setDevices(data))
             .catch((error) => console.log(error));
     }, []);
 
     useEffect(() => {
-        if (executable && executable !== prevExecutable.current) {
-            fetch(`${API_URL}/api/v1/executables/${executable.id}/versions`)
-                .then((response) => response.json())
-                .then((data) => setExecutableVersions(data))
-                .catch((error) => console.log(error));
-        }
-    }, [executable]);
-
-    useEffect(() => {
-        if (from && to) {
-            fetch(`${API_URL}/api/v1/entitlements/diff/${from}/${to}`)
+        if (deviceFrom && deviceTo) {
+            fetch(`${API_URL}/api/v1/executables/diff/${deviceFrom.id}/${deviceTo.id}`)
                 .then((response) => response.json())
                 .then((data) => setDiff(data))
                 .catch((error) => console.log(error));
         }
-    }, [from, to]);
+    }, [deviceFrom, deviceTo]);
 
     const displayVersionChoice = (version) => {
         return (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
-    }
-
-    const versionIDGetter = (version) => {
-        return version.id
     }
 
     return (
@@ -93,28 +74,39 @@ const Diffing = () => {
                         color: "black"
                     },
                 }}
-                options={executables.map((executable) => { return executable.full_path })}
-                renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.full_path} {...params} label="Executable" />}
+                options={devices.map((device) => { return { label: displayVersionChoice(device), id: device.id } })}
+                renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.id} {...params} label="From version" />}
                 onChange={(event, newValue) => {
-                    const selectedExecutable = executables.find(exec => exec.full_path === newValue);
-                    setExecutable(selectedExecutable || null);
+                    const selectedDevice = devices.find(device => device.id === newValue.id);
+                    setDeviceFrom(selectedDevice || null);
                 }}
             />
 
-            <CustomSelect
-                label="From"
-                onChange={setFrom}
-                choices={executableVersions}
-                labelDisplayFunc={displayVersionChoice}
-                idGetter={versionIDGetter}
-            />
-
-            <CustomSelect
-                label="To"
-                onChange={setTo}
-                choices={executableVersions}
-                labelDisplayFunc={displayVersionChoice}
-                idGetter={versionIDGetter}
+            <Autocomplete
+                fullWidth
+                disablePortal
+                sx={{   // magic...
+                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option": {
+                        backgroundColor: "transparent",
+                        color: "black"
+                    },
+                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected='true']":
+                    {
+                        backgroundColor: "transparent",
+                        color: "black"
+                    },
+                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected ='true'] .Mui-focused":
+                    {
+                        backgroundColor: "transparent",
+                        color: "black"
+                    },
+                }}
+                options={devices.map((device) => { return { label: displayVersionChoice(device), id: device.id } })}
+                renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.id} {...params} label="To version" />}
+                onChange={(event, newValue) => {
+                    const selectedDevice = devices.find(device => device.id === newValue.id);
+                    setDeviceTo(selectedDevice || null);
+                }}
             />
 
             <DiffResults diff={diff} />
@@ -122,4 +114,4 @@ const Diffing = () => {
     )
 }
 
-export default Diffing;
+export default ExecutablesDiffing;

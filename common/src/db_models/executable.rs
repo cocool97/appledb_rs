@@ -1,7 +1,7 @@
 use serde::Serialize;
 use utoipa::ToSchema;
 
-#[derive(Serialize, ToSchema)]
+#[derive(Serialize, ToSchema, Clone, PartialEq, Eq, Hash)]
 pub struct Executable {
     pub id: i32,
     pub name: String,

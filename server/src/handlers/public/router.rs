@@ -8,12 +8,14 @@ use crate::handlers::public::{
     },
     entitlements::{__path_diff_entitlements_for_executables, diff_entitlements_for_executables},
     executables::{
-        __path_get_all_executables, __path_get_all_executables_entitlements,
-        __path_get_executable_entitlements, __path_get_executable_versions, get_all_executables,
+        __path_diff_executables_for_versions, __path_get_all_executables,
+        __path_get_all_executables_entitlements, __path_get_executable_entitlements,
+        __path_get_executable_versions, diff_executables_for_versions, get_all_executables,
         get_all_executables_entitlements, get_executable_entitlements, get_executable_versions,
     },
     operating_system_versions::{
-        __path_get_operating_system_versions, __path_get_operating_system_versions_by_id,
+        __path_get_extended_operating_system_versions, __path_get_operating_system_versions,
+        __path_get_operating_system_versions_by_id, get_extended_operating_system_versions,
     },
     operating_systems::{__path_get_operating_system_by_id, __path_get_operating_systems},
     stats::{__path_get_stats, get_stats},
@@ -42,10 +44,12 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         get_device_operating_system_versions,
         get_operating_system_versions,
         get_operating_system_versions_by_id,
+        get_extended_operating_system_versions,
         get_executable_versions,
         get_all_executables,
         get_all_executables_entitlements,
         get_executable_entitlements,
+        diff_executables_for_versions,
         diff_entitlements_for_executables
     ))]
     struct ApiDoc;
@@ -113,6 +117,10 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
             &PublicRoutes::GetOperatingSystemVersionsById.to_string(),
             get(get_operating_system_versions_by_id),
         )
+        .route(
+            &PublicRoutes::GetOperatingSystemVersionsExtended.to_string(),
+            get(get_extended_operating_system_versions),
+        )
         // ##################
         // Executables
         // ##################
@@ -127,6 +135,10 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         .route(
             &PublicRoutes::GetAllExecutables.to_string(),
             get(get_all_executables),
+        )
+        .route(
+            &PublicRoutes::GetDiffExecutablesOperatingSystemVersion.to_string(),
+            get(diff_executables_for_versions),
         )
         // ##################
         // Entitlements

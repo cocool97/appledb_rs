@@ -39,12 +39,14 @@ pub enum PublicRoutes {
     // Operating system versions
     GetOperatingSystemVersions,
     GetOperatingSystemVersionsById,
+    GetOperatingSystemVersionsExtended,
 
     // Executables
     GetExecutableVersions,
     GetExecutableEntitlements,
     GetAllExecutables,
     GetAllExecutablesEntitlements,
+    GetDiffExecutablesOperatingSystemVersion,
 
     // Entitlements
     GetDiffEntitlementsExecutables,
@@ -82,8 +84,14 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetOperatingSystemVersionsById => {
                 "/operating_system_versions/{id}".to_string()
             }
+            PublicRoutes::GetOperatingSystemVersionsExtended => {
+                "/operating_system_versions/extended".to_string()
+            }
             PublicRoutes::GetExecutableVersions => "/executables/{id}/versions".to_string(),
             PublicRoutes::GetExecutableEntitlements => "/executable/{id}/entitlements".to_string(),
+            PublicRoutes::GetDiffExecutablesOperatingSystemVersion => {
+                "/executables/diff/{from_executable_id}/{to_executable_id}".to_string()
+            }
             PublicRoutes::GetDiffEntitlementsExecutables => {
                 "/entitlements/diff/{from_executable_id}/{to_executable_id}".to_string()
             }
