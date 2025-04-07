@@ -14,9 +14,30 @@ const DiffResults = (props) => {
                     <TableContainer>
                         <Table size="small" sx={{ tableLayout: "fixed" }}>
                             <TableBody>
-                                <ExpandableTableRow label="Added" items={diff.added} />
-                                <ExpandableTableRow label="Removed" items={diff.removed} />
-                                <ExpandableTableRow label="Unchanged" items={diff.unchanged} />
+                                <ExpandableTableRow
+                                    label="Added"
+                                    mainCellLabel="Executable name"
+                                    mainCellLabelGetter={(item) => item.name}
+                                    secondaryCellLabel="Executable full path"
+                                    secondaryCellLabelGetter={(item) => item.full_path}
+                                    items={diff.added}
+                                />
+                                <ExpandableTableRow
+                                    label="Removed"
+                                    mainCellLabel="Executable name"
+                                    mainCellLabelGetter={(item) => item.name}
+                                    secondaryCellLabel="Executable full path"
+                                    secondaryCellLabelGetter={(item) => item.full_path}
+                                    items={diff.removed}
+                                />
+                                <ExpandableTableRow
+                                    label="Unchanged"
+                                    mainCellLabel="Executable name"
+                                    mainCellLabelGetter={(item) => item.name}
+                                    secondaryCellLabel="Executable full path"
+                                    secondaryCellLabelGetter={(item) => item.full_path}
+                                    items={diff.unchanged}
+                                />
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -74,7 +95,7 @@ const ExecutablesDiffing = () => {
                         color: "black"
                     },
                 }}
-                options={devices.map((device) => { return { label: displayVersionChoice(device), id: device.id } })}
+                options={devices.map((device) => { return { id: device.id, label: displayVersionChoice(device) } })}
                 renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.id} {...params} label="From version" />}
                 onChange={(event, newValue) => {
                     const selectedDevice = devices.find(device => device.id === newValue.id);
@@ -101,7 +122,7 @@ const ExecutablesDiffing = () => {
                         color: "black"
                     },
                 }}
-                options={devices.map((device) => { return { label: displayVersionChoice(device), id: device.id } })}
+                options={devices.map((device) => { return { id: device.id, label: displayVersionChoice(device) } })}
                 renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.id} {...params} label="To version" />}
                 onChange={(event, newValue) => {
                     const selectedDevice = devices.find(device => device.id === newValue.id);

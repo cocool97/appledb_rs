@@ -90,7 +90,7 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetExecutableVersions => "/executables/{id}/versions".to_string(),
             PublicRoutes::GetExecutableEntitlements => "/executable/{id}/entitlements".to_string(),
             PublicRoutes::GetDiffExecutablesOperatingSystemVersion => {
-                "/executables/diff/{from_executable_id}/{to_executable_id}".to_string()
+                "/executables/diff/{from_operating_system_version_id}/{to_operating_system_version_id}".to_string()
             }
             PublicRoutes::GetDiffEntitlementsExecutables => {
                 "/entitlements/diff/{from_executable_id}/{to_executable_id}".to_string()
