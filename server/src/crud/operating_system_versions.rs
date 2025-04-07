@@ -1,8 +1,12 @@
-use appledb_common::db_models::OperatingSystemVersion;
+use appledb_common::{
+    api_models::ExtendedOperatingSystemVersions,
+    db_models::{Executable, OperatingSystemVersion},
+};
 
 use anyhow::{Result, anyhow};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter,
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, PaginatorTrait,
+    QueryFilter, QuerySelect, RelationTrait,
 };
 
 use crate::db_controller::DBController;
@@ -104,5 +108,47 @@ impl DBController {
             .await?;
 
         Ok(res.id)
+    }
+
+    pub async fn crud_get_operating_system_version_executables(
+        &self,
+        operating_system_version_id: i32,
+    ) -> Result<Vec<Executable>, DbErr> {
+        Ok(entity::prelude::Executable::find()
+            .join(
+                JoinType::LeftJoin,
+                entity::executable::Relation::ExecutableOperatingSystemVersion.def(),
+            )
+            .join(
+                JoinType::LeftJoin,
+                entity::executable_operating_system_version::Relation::OperatingSystemVersion.def(),
+            )
+            .filter(entity::operating_system_version::Column::Id.eq(operating_system_version_id))
+            .all(self.get_connection())
+            .await?
+            .into_iter()
+            .map(Executable::from)
+            .collect())
+    }
+
+    pub async fn crud_get_extended_operating_system_versions(
+        &self,
+    ) -> Result<Vec<ExtendedOperatingSystemVersions>, DbErr> {
+        let os_versions_with_os = entity::prelude::OperatingSystemVersion::find()
+            .find_also_related(entity::prelude::Device)
+            .all(self.get_connection())
+            .await?;
+
+        Ok(os_versions_with_os
+            .into_iter()
+            .filter_map(|(os_version, device_opt)| {
+                let device = match device_opt {
+                    Some(device) => device,
+                    None => return None,
+                };
+
+                Some(ExtendedOperatingSystemVersions::from((os_version, device)))
+            })
+            .collect())
     }
 }

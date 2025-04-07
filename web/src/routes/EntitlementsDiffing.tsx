@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
-import { Autocomplete, List, ListItem, ListItemText, TextField } from "@mui/material";
-import CustomSelect from "../components/Select";
+import { Autocomplete, Table, TableBody, TableContainer, TextField } from "@mui/material";
+import CustomSelect from "../components/CustomSelect";
 import React from "react";
+import { ExpandableTableRow } from "../components/CustomDataTable";
 
 const DiffResults = (props) => {
     const { diff } = props;
@@ -11,40 +12,22 @@ const DiffResults = (props) => {
         <div style={{ display: "flex" }}>
             {
                 diff && (
-                    <>
-                        <DiffResult header="Unchanged" color="orange" result={diff.unchanged} />
-                        <DiffResult header="Added" color="green" result={diff.added} />
-                        <DiffResult header="Removed" color="red" result={diff.removed} />
-                    </>
+                    <TableContainer>
+                        <Table size="small" sx={{ tableLayout: "fixed" }}>
+                            <TableBody>
+                                <ExpandableTableRow label="Added" items={diff.added} />
+                                <ExpandableTableRow label="Removed" items={diff.removed} />
+                                <ExpandableTableRow label="Unchanged" items={diff.unchanged} />
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 )
             }
         </div>
     )
 }
 
-const DiffResult = (props) => {
-    const { header, result, color } = props;
-    return (
-        <div style={{ display: "flex", flex: 1, color: "white", flexDirection: "column" }}>
-            <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.5rem", marginBottom: "2rem", color: color }}>
-                {header}
-            </div>
-            <List>
-                {result.map((result) => {
-                    return (
-                        <ListItem key={result.id}>
-                            <ListItemText sx={{ display: "flex", flex: 1, textAlign: "center" }}>{result.key}</ListItemText>
-                            <ListItemText sx={{ display: "flex", flex: 1, textAlign: "center", justifyContent: "center" }}>{result.value}</ListItemText>
-                        </ListItem>
-                    )
-                })}
-
-            </List>
-        </div>
-    )
-}
-
-const Diffing = () => {
+const EntitlementsDiffing = () => {
     const [executables, setExecutables] = useState([]);
 
     const [executable, setExecutable] = useState(null);
@@ -139,4 +122,4 @@ const Diffing = () => {
     )
 }
 
-export default Diffing;
+export default EntitlementsDiffing;

@@ -1,6 +1,6 @@
 use std::{collections::HashSet, sync::Arc, vec};
 
-use appledb_common::{api_models::EntitlementsDiff, db_models::Entitlement, routes::PublicRoutes};
+use appledb_common::{api_models::Diff, db_models::Entitlement, routes::PublicRoutes};
 use axum::{
     Json,
     extract::{Path, State},
@@ -15,12 +15,12 @@ use crate::{models::AppState, utils::AppResult};
         ("from_executable_id" = i32, description = "Initial executable identifier"),
         ("to_executable_id" = i32, description = "Final executable identifier"),
     ),
-    responses((status = OK, body = EntitlementsDiff))
+    responses((status = OK, body = Diff<Entitlement>))
 )]
 pub async fn diff_entitlements_for_executables(
     State(state): State<Arc<AppState>>,
     Path((from_executable_id, to_executable_id)): Path<(i32, i32)>,
-) -> AppResult<Json<EntitlementsDiff>> {
+) -> AppResult<Json<Diff<Entitlement>>> {
     let entitlements_from: HashSet<Entitlement> = state
         .db_controller
         .crud_get_entitlements_for_executable(from_executable_id)
@@ -53,7 +53,7 @@ pub async fn diff_entitlements_for_executables(
         }
     }
 
-    Ok(Json(EntitlementsDiff {
+    Ok(Json(Diff {
         added,
         removed,
         unchanged,

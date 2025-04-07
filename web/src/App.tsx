@@ -5,12 +5,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import HomeRoute from "./routes/HomeRoute"
 import Stats from "./routes/Stats"
-import Diffing from "./routes/Diffing"
+import EntitlementsDiffing from "./routes/EntitlementsDiffing"
 import ModelPage from "./routes/ModelPage"
 import EntitlementsRoute from "./routes/EntitlementsRoute"
 import CustomAppBar from './components/CustomAppBar';
-import { DIFF_ROUTE, DRAWER_WIDTH, ENTITLEMENTS_VERSION, MAIN_ROUTE, MODELS, STATS_ROUTE } from './Constants';
+import { DRAWER_WIDTH, ENTITLEMENTS_DIFF_ROUTE, ENTITLEMENTS_VERSION, EXECUTABLES_DIFF_ROUTE, MAIN_ROUTE, MODELS, STATS_ROUTE } from './Constants';
 import CustomDrawer from './components/CustomDrawer';
+import ExecutablesDiffing from './routes/ExecutablesDffing';
 
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -64,11 +65,12 @@ export default function App() {
 
                 <Main open={open} sx={{ position: "relative", top: "64px", height: "calc(100vh - 64px)", overflowY: "scroll" }}>
                     <Routes>
-                        <Route exact path={MAIN_ROUTE} element={<HomeRoute />} />
-                        <Route exact path={STATS_ROUTE} element={<Stats />} />
-                        <Route exact path={DIFF_ROUTE} element={<Diffing />} />
-                        <Route exact path={MODELS} element={<ModelPage />} />
-                        <Route exact path={ENTITLEMENTS_VERSION} element={<EntitlementsRoute />} />
+                        <Route path={MAIN_ROUTE} element={<HomeRoute />} />
+                        <Route path={STATS_ROUTE} element={<Stats />} />
+                        <Route path={ENTITLEMENTS_DIFF_ROUTE} element={<EntitlementsDiffing />} />
+                        <Route path={MODELS} element={<ModelPage />} />
+                        <Route path={ENTITLEMENTS_VERSION} element={<EntitlementsRoute />} />
+                        <Route path={EXECUTABLES_DIFF_ROUTE} element={<ExecutablesDiffing />} />
                         <Route path="*" element={<div>NOT FOUND :)</div>} />
                     </Routes>
                 </Main>

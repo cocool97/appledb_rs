@@ -1,5 +1,5 @@
 import React from "react";
-import { DIFF_ROUTE, DRAWER_WIDTH, MAIN_ROUTE, STATS_ROUTE } from "../Constants";
+import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, MAIN_ROUTE, STATS_ROUTE, EXECUTABLES_DIFF_ROUTE } from "../Constants";
 import { useNavigate } from "react-router-dom";
 import { Divider, Drawer, IconButton, List, styled, useTheme } from "@mui/material";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -107,13 +107,13 @@ const CustomDrawer = (props) => {
                 <DrawerListItems
                     categoryName="Entitlements"
                     categoryIcon={<KeyIcon style={{ color: "white" }} />}
-                    items={[{ text: "Diffing", to: DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }, { text: "Per Versions", to: MAIN_ROUTE, icon: <FormatListNumberedIcon style={{ color: "white" }} /> }]}
+                    items={[{ text: "Diffing", to: ENTITLEMENTS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }, { text: "Per Versions", to: MAIN_ROUTE, icon: <FormatListNumberedIcon style={{ color: "white" }} /> }]}
                 />
 
                 <DrawerListItems
                     categoryName="Executables"
                     categoryIcon={<LanguageIcon style={{ color: "white" }} />}
-                    items={[]}
+                    items={[{ text: "Diffing", to: EXECUTABLES_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }]}
                 />
 
                 <DrawerListItem

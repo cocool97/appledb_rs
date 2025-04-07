@@ -1,7 +1,10 @@
-use std::{collections::BTreeMap, sync::Arc};
+use std::{
+    collections::{BTreeMap, HashSet},
+    sync::Arc,
+};
 
 use appledb_common::{
-    api_models::ExecutableInfos,
+    api_models::{Diff, ExecutableInfos},
     db_models::{Entitlement, Executable},
     routes::PublicRoutes,
 };
@@ -83,4 +86,56 @@ pub async fn get_all_executables_entitlements(
             .crud_get_all_executables_entitlements(operating_system_version_id)
             .await?,
     ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetDiffExecutablesOperatingSystemVersion,
+    params(
+        ("from_operating_system_version_id" = i32, description = "Initial operating_system_version identifier"),
+        ("to_operating_system_version_id" = i32, description = "Final operating_system_version identifier"),
+    ),
+    responses((status = OK, body = Diff<Executable>))
+)]
+pub async fn diff_executables_for_versions(
+    State(state): State<Arc<AppState>>,
+    Path((from_executable_id, to_executable_id)): Path<(i32, i32)>,
+) -> AppResult<Json<Diff<Executable>>> {
+    let executables_from: HashSet<Executable> = state
+        .db_controller
+        .crud_get_operating_system_version_executables(from_executable_id)
+        .await?
+        .into_iter()
+        .collect();
+
+    let entitlements_to: HashSet<Executable> = state
+        .db_controller
+        .crud_get_operating_system_version_executables(to_executable_id)
+        .await?
+        .into_iter()
+        .collect();
+
+    let mut added = vec![];
+    let mut removed = vec![];
+    let mut unchanged = vec![];
+
+    for executable in entitlements_to.iter() {
+        if executables_from.contains(executable) {
+            unchanged.push(executable.clone());
+        } else {
+            added.push(executable.clone());
+        }
+    }
+
+    for entitlement in executables_from.iter() {
+        if !entitlements_to.contains(entitlement) {
+            removed.push(entitlement.clone());
+        }
+    }
+
+    Ok(Json(Diff {
+        added,
+        removed,
+        unchanged,
+    }))
 }

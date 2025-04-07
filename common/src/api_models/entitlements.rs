@@ -4,10 +4,10 @@ use utoipa::ToSchema;
 use crate::db_models::Entitlement;
 
 #[derive(Serialize, ToSchema)]
-pub struct EntitlementsDiff {
-    pub added: Vec<Entitlement>,
-    pub removed: Vec<Entitlement>,
-    pub unchanged: Vec<Entitlement>,
+pub struct Diff<T: Serialize> {
+    pub added: Vec<T>,
+    pub removed: Vec<T>,
+    pub unchanged: Vec<T>,
 }
 
 #[derive(Serialize, ToSchema)]

@@ -1,6 +1,9 @@
 use std::sync::Arc;
 
-use appledb_common::{db_models::OperatingSystemVersion, routes::PublicRoutes};
+use appledb_common::{
+    api_models::ExtendedOperatingSystemVersions, db_models::OperatingSystemVersion,
+    routes::PublicRoutes,
+};
 use axum::{
     Json,
     extract::{Path, State},
@@ -40,6 +43,22 @@ pub async fn get_operating_system_versions_by_id(
         state
             .db_controller
             .crud_get_operating_system_version_by_id(id)
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetOperatingSystemVersionsExtended,
+    responses((status = OK, body = Vec<ExtendedOperatingSystemVersions>))
+)]
+pub async fn get_extended_operating_system_versions(
+    State(state): State<Arc<AppState>>,
+) -> AppResult<Json<Vec<ExtendedOperatingSystemVersions>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_extended_operating_system_versions()
             .await?,
     ))
 }
