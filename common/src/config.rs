@@ -49,7 +49,7 @@ impl FromStr for ListenMode {
         match url.scheme() {
             "http" => {
                 let host = url.host_str().ok_or_else(|| anyhow!("No host"))?;
-                let port = url.port().ok_or_else(|| anyhow!("No port"))?;
+                let port = url.port_or_known_default().ok_or_else(|| anyhow!("No port"))?;
                 Ok(Self::SocketAddr(SocketAddr::new(host.parse()?, port)))
             }
             "unix" => {
