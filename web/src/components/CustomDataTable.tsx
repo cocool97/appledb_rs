@@ -35,19 +35,17 @@ export const ExpandableTableRow = (
                             <Table size="small" sx={{ width: "100%" }}>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell sx={{ border: 0 }} width={"64px"}></TableCell>
-                                        <TableCell sx={{ border: 0 }} width={"33%"}></TableCell>
-                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabel}</Typography></TableCell>
-                                        <TableCell width={"33%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabel}</Typography></TableCell>
+                                        <TableCell sx={{ border: 0, minWidth: "64px" }} width={"64px"}></TableCell>
+                                        <TableCell width={"50%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabel}</Typography></TableCell>
+                                        <TableCell width={"50%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabel}</Typography></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {items.map((item) => (
                                         <TableRow key={item.id} className="table-cell-entitlement">
-                                            <TableCell sx={{ border: 0 }} width={"64px"}></TableCell>
-                                            <TableCell sx={{ border: 0 }} width={"33%"}></TableCell>
-                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabelGetter(item)}</TableCell>
-                                            <TableCell width={"33%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabelGetter(item)}</TableCell>
+                                            <TableCell sx={{ border: 0, minWidth: "64px" }} width={"64px"}></TableCell>
+                                            <TableCell width={"50%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabelGetter(item)}</TableCell>
+                                            <TableCell width={"50%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabelGetter(item)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -72,7 +70,16 @@ export const CustomDataTable = (props) => {
                 </TableHead>
                 <TableBody>
                     {Object.entries(props.data).map(([executable_fullpath, { name, entitlements }]) => (
-                        <ExpandableTableRow key={executable_fullpath} label={name} secondary={executable_fullpath} items={entitlements} />
+                        <ExpandableTableRow
+                            key={executable_fullpath}
+                            label={name}
+                            mainCellLabel="Entitlement key"
+                            mainCellLabelGetter={(item) => item.key}
+                            secondaryCellLabel="Entitlement value"
+                            secondaryCellLabelGetter={(item) => item.value}
+                            secondary={executable_fullpath}
+                            items={entitlements}
+                        />
                     ))}
                 </TableBody>
             </Table>
