@@ -34,6 +34,8 @@ pub struct ServerConfig {
     pub web_sources_path: PathBuf,
     /// Max concurrent tasks that can run concurrently
     pub max_concurrent_tasks: usize,
+    /// Serve openapi documentation ?
+    pub serve_openapi: bool,
 }
 
 #[derive(Deserialize)]

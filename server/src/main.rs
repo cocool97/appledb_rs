@@ -88,7 +88,10 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .nest(ADMIN_ROUTES, handlers::get_admin_router())
-        .nest(PublicRoutes::route_prefix(), handlers::get_public_router())
+        .nest(
+            PublicRoutes::route_prefix(),
+            handlers::get_public_router(configuration.serve_openapi),
+        )
         .fallback(handle_webapp)
         .layer(ServiceBuilder::new().layer(axum::middleware::from_fn(log_requests)))
         .layer(DefaultBodyLimit::max(configuration.http_max_body_size))

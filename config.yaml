@@ -8,3 +8,5 @@ database_url: sqlite://appledb.sqlite
 web_sources_path: web/dist
 
 max_concurrent_tasks: 10
+
+serve_openapi: false
