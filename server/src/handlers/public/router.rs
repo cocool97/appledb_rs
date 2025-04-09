@@ -34,7 +34,8 @@ use super::{
     operating_systems::{get_operating_system_by_id, get_operating_systems},
 };
 
-pub fn get_public_router() -> Router<Arc<AppState>> {
+pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<AppState>> {
+    log::info!("Serve openapi documentation");
     #[derive(OpenApi)]
     #[openapi(paths(
         get_stats,
@@ -75,14 +76,23 @@ pub fn get_public_router() -> Router<Arc<AppState>> {
         "all public handlers aren't documented..."
     );
 
-    Router::new()
-        .merge(
-            SwaggerUi::new("/swagger")
-                .config(Config::from(
-                    PublicRoutes::route_prefix().to_owned() + "/openapi.json",
-                ))
-                .url("/openapi.json", openapi),
-        )
+    router.merge(
+        SwaggerUi::new("/swagger")
+            .config(Config::from(
+                PublicRoutes::route_prefix().to_owned() + "/openapi.json",
+            ))
+            .url("/openapi.json", openapi),
+    )
+}
+
+pub fn get_public_router(with_openapi: bool) -> Router<Arc<AppState>> {
+    let mut router = Router::new();
+
+    if with_openapi {
+        router = setup_public_openapi_router(router);
+    }
+
+    router
         // ##################
         // Stats
         // ##################

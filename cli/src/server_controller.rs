@@ -1,13 +1,11 @@
 use anyhow::{Result, bail};
 use appledb_common::IPSWEntitlements;
-use appledb_common::api_models::{EntitlementsInsertionStatus, ServerErrorResponse};
-use appledb_common::config::ListenMode;
+use appledb_common::api_models::ServerErrorResponse;
 use appledb_common::db_models::OperatingSystem;
 use appledb_common::routes::{ADMIN_ROUTES, POST_EXECUTABLE_ENTITLEMENTS_ROUTE, PublicRoutes};
 use reqwest::{Client, ClientBuilder, StatusCode};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
-use std::net::SocketAddr;
 
 macro_rules! response_to_result {
     ($response:expr) => {{
@@ -23,23 +21,18 @@ macro_rules! response_to_result {
 
 pub struct ServerController {
     client: Client,
-    address: SocketAddr,
+    server_url: String,
 }
 
 impl ServerController {
-    pub fn new(listen_mode: ListenMode) -> Result<Self> {
-        let address = match listen_mode {
-            ListenMode::SocketAddr(socket_addr) => socket_addr,
-            ListenMode::UnixSocket(_) => bail!("unix socket not supported yet"),
-        };
-
+    pub fn new(server_url: String) -> Result<Self> {
         let client = ClientBuilder::new().gzip(true).build()?;
 
-        Ok(Self { client, address })
+        Ok(Self { client, server_url })
     }
 
     fn gen_url<S: AsRef<str>>(&self, path: S) -> String {
-        format!("http://{}{}", self.address, path.as_ref())
+        format!("{}{}", self.server_url, path.as_ref())
     }
 
     fn gen_admin_url<S: AsRef<str>>(&self, path: S) -> String {
@@ -66,7 +59,7 @@ impl ServerController {
     pub async fn post_executable_entitlements(
         &self,
         entitlements: IPSWEntitlements,
-    ) -> Result<EntitlementsInsertionStatus> {
+    ) -> Result<String> {
         return self
             .post(
                 self.gen_admin_url(POST_EXECUTABLE_ENTITLEMENTS_ROUTE),

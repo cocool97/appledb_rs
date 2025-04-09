@@ -1,6 +1,6 @@
 use anyhow::{Result, bail};
 use apple_codesign::{MachOBinary, path_is_macho};
-use appledb_common::{IPSWEntitlements, config::ServerConfig};
+use appledb_common::IPSWEntitlements;
 use std::{
     io::Cursor,
     path::{Path, PathBuf},
@@ -12,7 +12,7 @@ use walkdir::WalkDir;
 use crate::{models::EntSubCommands, server_controller::ServerController};
 
 pub async fn parse_entitlements_command(
-    configuration: ServerConfig,
+    server_url: String,
     subcommand: EntSubCommands,
 ) -> Result<()> {
     match subcommand {
@@ -28,11 +28,11 @@ pub async fn parse_entitlements_command(
             let mut ipsw_entitlements = IPSWEntitlements::new(platform.into(), model_code, version);
             parse_entitlements(mount_point, &mut ipsw_entitlements).await?;
             log::info!("Sending entitlements to server...");
-            let server_controller = ServerController::new(configuration.listen_mode)?;
+            let server_controller = ServerController::new(server_url)?;
             let response = server_controller
                 .post_executable_entitlements(ipsw_entitlements)
                 .await?;
-            log::info!("Received response: {}", serde_json::to_string(&response)?);
+            log::info!("Received task UUID: {}", response);
             Ok(())
         }
         EntSubCommands::DumpEnt { executable_path } => {

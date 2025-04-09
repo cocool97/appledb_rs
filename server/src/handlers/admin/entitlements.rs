@@ -1,14 +1,39 @@
-use std::{collections::HashSet, sync::Arc};
+use std::{collections::HashSet, fmt::Display, sync::Arc, time::Duration};
 
 use anyhow::{Result, anyhow};
-use appledb_common::{
-    IPSWEntitlements, IPSWExecutableEntitlements, api_models::EntitlementsInsertionStatus,
-};
+use appledb_common::{IPSWEntitlements, IPSWExecutableEntitlements};
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
 use serde_json::Value;
+use uuid::Uuid;
 
-use crate::{crud::DBStatus, models::AppState, utils::AppResult};
+use crate::{
+    crud::DBStatus,
+    db_controller::DBController,
+    models::AppState,
+    utils::{AppError, AppResult},
+};
+
+#[derive(Default, Debug)]
+struct EntitlementsInsertionStatus {
+    pub inserted_executables: u32,
+    pub existing_executables: u32,
+    pub inserted_entitlements: u32,
+    pub existing_entitlements: u32,
+}
+
+impl Display for EntitlementsInsertionStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "inserted_executables={},existing_executables={},inserted_entitlements={},existing_entitlements={}",
+            self.inserted_executables,
+            self.existing_executables,
+            self.inserted_entitlements,
+            self.existing_entitlements
+        )
+    }
+}
 
 fn format_entitlements(value: &Value) -> Result<HashSet<IPSWExecutableEntitlements>> {
     let mut entitlements = HashSet::new();
@@ -69,13 +94,56 @@ fn format_entitlements(value: &Value) -> Result<HashSet<IPSWExecutableEntitlemen
     Ok(entitlements)
 }
 
-// #[axum_macros::debug_handler]
+const TOKIO_TASK_SPAWN_DELAY: u64 = 5;
+
 pub async fn post_executable_entitlements(
     State(state): State<Arc<AppState>>,
     Json(entitlements): Json<IPSWEntitlements>,
-) -> AppResult<Json<EntitlementsInsertionStatus>> {
-    let operating_system_version = state
-        .db_controller
+) -> AppResult<Json<String>> {
+    // Check if we can run this task
+    {
+        let running_entitlements_tasks = state.running_entitlements_tasks.read().await;
+        if running_entitlements_tasks.len() > state.max_concurrent_tasks {
+            log::error!("Too many tasks running. Aborting this one");
+            return AppResult::Err(AppError::from(anyhow!(
+                "Too many tasks running. Aborting this one"
+            )));
+        }
+    }
+
+    let task_uuid = Uuid::new_v4();
+    log::debug!("New task will spawn with uuid={task_uuid}...");
+
+    let db_controller = state.db_controller.clone();
+    let running_tasks = state.running_entitlements_tasks.clone();
+    let task = tokio::spawn(async move {
+        tokio::time::sleep(Duration::from_secs(TOKIO_TASK_SPAWN_DELAY)).await;
+        match post_executable_entitlements_inner(db_controller, entitlements).await {
+            Ok(res) => log::info!("Insertion OK: {}", res),
+            Err(e) => log::error!("got error while inserting: {e}"),
+        }
+
+        // Remove this task from running tasks
+        {
+            let mut running_entitlements_tasks = running_tasks.write().await;
+            running_entitlements_tasks.remove(&task_uuid);
+        }
+    });
+
+    // Add this task in database
+    {
+        let mut running_entitlements_tasks = state.running_entitlements_tasks.write().await;
+        running_entitlements_tasks.insert(task_uuid, task);
+    }
+
+    Ok(Json(task_uuid.to_string()))
+}
+
+async fn post_executable_entitlements_inner(
+    db_controller: Arc<DBController>,
+    entitlements: IPSWEntitlements,
+) -> Result<EntitlementsInsertionStatus> {
+    let operating_system_version = db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
             entitlements.platform.name().to_string(),
             entitlements.model_code,
@@ -86,8 +154,7 @@ pub async fn post_executable_entitlements(
     let mut entitlements_insertion = EntitlementsInsertionStatus::default();
 
     for (executable, entitlements) in entitlements.executable_entitlements {
-        let executable_status = state
-            .db_controller
+        let executable_status = db_controller
             .crud_get_or_create_executable(operating_system_version.id, &executable)
             .await?;
 
@@ -104,8 +171,7 @@ pub async fn post_executable_entitlements(
 
         let entitlements = format_entitlements(&entitlements)?;
         for entitlement in &entitlements {
-            let entitlement_id = match state
-                .db_controller
+            let entitlement_id = match db_controller
                 .crud_get_or_create_entitlement(&entitlement.key, &entitlement.value)
                 .await?
             {
@@ -119,8 +185,7 @@ pub async fn post_executable_entitlements(
                 }
             };
 
-            if let Err(e) = state
-                .db_controller
+            if let Err(e) = db_controller
                 .crud_create_executable_entitlement(
                     executable_status.db_identifier(),
                     entitlement_id,
@@ -137,10 +202,10 @@ pub async fn post_executable_entitlements(
                             );
                             continue;
                         }
-                        e => return Err(anyhow!("Unexpected database error: {:?}", e).into()),
+                        e => return Err(anyhow!("Unexpected database error: {:?}", e)),
                     }
                 }
-                return Err(anyhow!("Unexpected database error: {:?}", e).into());
+                return Err(anyhow!("Unexpected database error: {:?}", e));
             }
         }
 
@@ -151,5 +216,5 @@ pub async fn post_executable_entitlements(
         );
     }
 
-    Ok(Json(entitlements_insertion))
+    Ok(entitlements_insertion)
 }

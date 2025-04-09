@@ -9,6 +9,10 @@ pub const ADMIN_ROUTES: &str = "/api/admin";
 // Admin-specific routes (authentication required)
 // ##################
 
+pub const GET_RUNNING_TASKS: &str = "/tasks/running";
+
+pub const STOP_RUNNING_TASK: &str = "/tasks/{task_id}/stop";
+
 // Operating system versions
 pub const POST_OPERATING_SYSTEM_VERSION: &str = "/operating_system_version";
 

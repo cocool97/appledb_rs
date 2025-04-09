@@ -4,7 +4,6 @@ mod server_controller;
 mod utils;
 
 use anyhow::Result;
-use appledb_common::config::read_configuration;
 use clap::Parser;
 use commands::{parse_entitlements_command, parse_os_subcommand};
 use models::{Opts, OptsSubCommands};
@@ -15,14 +14,12 @@ async fn main() -> Result<()> {
 
     utils::set_logger(opts.debug)?;
 
-    let configuration = read_configuration(opts.config_path).await?;
-
     let res = match opts.command {
         OptsSubCommands::Ent(ent_sub_commands) => {
-            parse_entitlements_command(configuration, ent_sub_commands).await
+            parse_entitlements_command(opts.server_url, ent_sub_commands).await
         }
         OptsSubCommands::OperatingSystem(operating_systems_subcommands) => {
-            parse_os_subcommand(configuration, operating_systems_subcommands).await
+            parse_os_subcommand(opts.server_url, operating_systems_subcommands).await
         }
     };
 
