@@ -5,8 +5,8 @@ use std::{fmt::Display, path::PathBuf};
 #[derive(Parser)]
 pub struct Opts {
     /// Path to configuration file
-    #[clap(short = 'c', long = "config", default_value = "./config.yaml")]
-    pub config_path: PathBuf,
+    #[clap(short = 's', long = "server-url")]
+    pub server_url: String,
     #[clap(long = "debug")]
     pub debug: bool,
     #[clap(subcommand)]

@@ -6,10 +6,7 @@ mod models;
 mod utils;
 
 use anyhow::{Context, Result};
-use appledb_common::{
-    config::{ListenMode, read_configuration},
-    routes::{ADMIN_ROUTES, PublicRoutes},
-};
+use appledb_common::routes::{ADMIN_ROUTES, PublicRoutes};
 use axum::{
     Router,
     body::Body,
@@ -20,7 +17,7 @@ use axum::{
 use clap::Parser;
 use db_controller::DBController;
 use middlewares::log_requests;
-use models::{AppState, Opts};
+use models::{AppState, ListenMode, Opts, read_configuration};
 use std::sync::LazyLock;
 use std::{collections::HashMap, sync::Arc};
 use tokio::{
