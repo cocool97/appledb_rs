@@ -7,7 +7,7 @@
     <p align="center">
         <!-- <a href="https://crates.io/crates/appledb_rs">
             <img alt="crates.io" src="https://img.shields.io/crates/v/appledb_rs.svg"/>
-        </a>
+        </a> --->
         <a href="https://github.com/cocool97/appledb_rs/actions">
             <img alt="ci status" src="https://github.com/cocool97/appledb_rs/actions/workflows/rust-build.yml/badge.svg"/>
         </a>
@@ -16,70 +16,42 @@
         </a>
         <a href="https://opensource.org/licenses/MIT">
             <img alt="dependency status" src="https://img.shields.io/badge/License-MIT-yellow.svg"/>
-        </a> -->
+        </a>
     </p>
 </p>
 
-Database storing various information about Apple internals on a per platform/version basis.
+Server storing various information about Apple internals on a per platform/version basis.
 
 Currently stored:
 
-- Entitlements storage (list, diff, dump...)
+- Entitlements
+- Executables
 
 Main features:
 
 - Full access via API calls, CLI or WebUI
 - Designed to be easily extensible
-- Full offline !
-- [**TODO**] Private headers database
+- Works in full offline environments !
 
-## Quickstart
+## Installation
 
-```bash
-# Start server
-RUST_LOG=info cargo run --bin appledb_server -- --config config.yaml
+Improved documentation available [here](./documentation/installation.md).
 
-# Start CLI
-cargo run --bin appledb_cli -- help
-```
+## Server configuration
+
+Improved documentation available [here](./documentation/configuration.md).
 
 ## API documentation
 
-A swagger documentation is available at path `/api/v1/swagger/#/`
+A swagger documentation is available at HTTP path `/api/v1/swagger/#/` when running the server.
 
-## Useful commands
+## Useful tips
 
-### Mount local IPSW file
+Improved documentation available [here](./documentation/tips.md).
 
-```bash
-# 1st method: Manually
-## Download AEA fcs-keys
-ipsw extract --fcs-key IPSW_FILE
-## Extract IPSW filesystem
-ipsw fw aea --pem EXTRACTED_AEA_PEM_FILE EXTRACTED_AEA_FILE
-## Mount it
-apfs-fuse IMG_FILE MOUNT_POINT
+## Missing features
 
-# 2nd method: All-in-one
-ipsw mount fs IPSW_FILE
-```
-
-### Add entitlements from an IPSW
-
-With a mounted IPSW on local filesystem, a `POST` request can be made on `/api/admin/executable/entitlements` endpoint with given JSON data
-
-```json
-{
-    "platform": "ios",
-    "model_code": "iPhone17,4",
-    "version": "18.3.1",
-    "executable_entitlements": {
-        "EXECUTABLE_FULL_PATH": {
-            "entitlement#1": {...},
-            ...
-        }
-    },
-}
-```
+- Generate and store public / private headers
+- Store information about frameworks
 
 Some features may still be missing, all pull requests are welcome !
