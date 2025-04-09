@@ -23,7 +23,10 @@ use middlewares::log_requests;
 use models::{AppState, Opts};
 use std::sync::LazyLock;
 use std::{collections::HashMap, sync::Arc};
-use tokio::net::{TcpListener, UnixListener};
+use tokio::{
+    net::{TcpListener, UnixListener},
+    sync::RwLock,
+};
 use tower::ServiceBuilder;
 use tower_http::{
     cors::{Any, CorsLayer},
@@ -73,8 +76,10 @@ async fn main() -> Result<()> {
 
     let db_controller = DBController::new(configuration.database_url).await?;
     let state = Arc::new(AppState {
-        db_controller,
+        db_controller: Arc::new(db_controller),
         web_sources_path: configuration.web_sources_path,
+        max_concurrent_tasks: configuration.max_concurrent_tasks,
+        running_entitlements_tasks: Arc::new(RwLock::new(HashMap::new())),
     });
 
     let cors = CorsLayer::new()

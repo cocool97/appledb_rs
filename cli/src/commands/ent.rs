@@ -32,7 +32,7 @@ pub async fn parse_entitlements_command(
             let response = server_controller
                 .post_executable_entitlements(ipsw_entitlements)
                 .await?;
-            log::info!("Received response: {}", serde_json::to_string(&response)?);
+            log::info!("Received task UUID: {}", response);
             Ok(())
         }
         EntSubCommands::DumpEnt { executable_path } => {
