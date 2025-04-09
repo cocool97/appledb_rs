@@ -63,7 +63,7 @@ const ExecutablesDiffing = () => {
 
     useEffect(() => {
         if (deviceFrom && deviceTo) {
-            fetch(`${API_URL}/api/v1/executables/diff/${deviceFrom.id}/${deviceTo.id}`)
+            fetch(`${API_URL}/executables/diff/${deviceFrom.id}/${deviceTo.id}`)
                 .then((response) => response.json())
                 .then((data) => setDiff(data))
                 .catch((error) => console.log(error));

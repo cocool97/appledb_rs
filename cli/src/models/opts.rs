@@ -21,6 +21,9 @@ pub enum OptsSubCommands {
     /// Operating system related subcommands
     #[clap(subcommand)]
     OperatingSystem(OperatingSystemsSubcommands),
+    /// Get running tasks information
+    #[clap(subcommand)]
+    Tasks(TasksSubcommands),
 }
 
 #[derive(Subcommand)]
@@ -93,4 +96,14 @@ impl From<Platform> for OptsPlatform {
 pub enum OperatingSystemsSubcommands {
     /// List known operating systems
     List {},
+}
+
+#[derive(Subcommand)]
+pub enum TasksSubcommands {
+    /// Follow running tasks
+    Follow {
+        /// Polling interval
+        #[clap(long = "interval", default_value_t = 5)]
+        interval: u64,
+    },
 }

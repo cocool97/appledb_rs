@@ -1,10 +1,11 @@
 use std::{collections::HashSet, fmt::Display, sync::Arc, time::Duration};
 
 use anyhow::{Result, anyhow};
-use appledb_common::{IPSWEntitlements, IPSWExecutableEntitlements};
+use appledb_common::{IPSWEntitlements, IPSWExecutableEntitlements, api_models::TaskProgress};
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
 use serde_json::Value;
+use tokio::sync::RwLock;
 use uuid::Uuid;
 
 use crate::{
@@ -114,11 +115,17 @@ pub async fn post_executable_entitlements(
     let task_uuid = Uuid::new_v4();
     log::debug!("New task will spawn with uuid={task_uuid}...");
 
+    let progress = Arc::new(RwLock::new(TaskProgress::new(
+        entitlements.executable_entitlements.len(),
+    )));
+
     let db_controller = state.db_controller.clone();
     let running_tasks = state.running_entitlements_tasks.clone();
+    let task_progress = progress.clone();
+
     let task = tokio::spawn(async move {
         tokio::time::sleep(Duration::from_secs(TOKIO_TASK_SPAWN_DELAY)).await;
-        match post_executable_entitlements_inner(db_controller, entitlements).await {
+        match post_executable_entitlements_inner(db_controller, task_progress, entitlements).await {
             Ok(res) => log::info!("Insertion OK: {}", res),
             Err(e) => log::error!("got error while inserting: {e}"),
         }
@@ -133,7 +140,7 @@ pub async fn post_executable_entitlements(
     // Add this task in database
     {
         let mut running_entitlements_tasks = state.running_entitlements_tasks.write().await;
-        running_entitlements_tasks.insert(task_uuid, task);
+        running_entitlements_tasks.insert(task_uuid, (progress, task));
     }
 
     Ok(Json(task_uuid.to_string()))
@@ -141,6 +148,7 @@ pub async fn post_executable_entitlements(
 
 async fn post_executable_entitlements_inner(
     db_controller: Arc<DBController>,
+    progress: Arc<RwLock<TaskProgress>>,
     entitlements: IPSWEntitlements,
 ) -> Result<EntitlementsInsertionStatus> {
     let operating_system_version = db_controller
@@ -162,6 +170,10 @@ async fn post_executable_entitlements_inner(
             DBStatus::AlreadyExists(executable_id) => {
                 log::warn!("Executable {} already exists, skipping...", executable_id);
                 entitlements_insertion.existing_executables += 1;
+                {
+                    let mut progress = progress.write().await;
+                    progress.done += 1;
+                }
                 continue;
             }
             DBStatus::Created(_) => {
@@ -207,6 +219,11 @@ async fn post_executable_entitlements_inner(
                 }
                 return Err(anyhow!("Unexpected database error: {:?}", e));
             }
+        }
+
+        {
+            let mut progress = progress.write().await;
+            progress.done += 1;
         }
 
         log::info!(

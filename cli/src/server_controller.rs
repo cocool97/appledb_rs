@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use anyhow::{Result, bail};
 use appledb_common::IPSWEntitlements;
-use appledb_common::api_models::ServerErrorResponse;
+use appledb_common::api_models::{ServerErrorResponse, TaskProgress};
 use appledb_common::db_models::OperatingSystem;
 use appledb_common::routes::{ADMIN_ROUTES, POST_EXECUTABLE_ENTITLEMENTS_ROUTE, PublicRoutes};
 use reqwest::{Client, ClientBuilder, StatusCode};
@@ -65,6 +67,12 @@ impl ServerController {
                 self.gen_admin_url(POST_EXECUTABLE_ENTITLEMENTS_ROUTE),
                 entitlements,
             )
+            .await;
+    }
+
+    pub async fn get_running_tasks(&self) -> Result<HashMap<String, TaskProgress>> {
+        return self
+            .get(self.gen_public_url(PublicRoutes::GetRunningTasks.to_string()))
             .await;
     }
 }

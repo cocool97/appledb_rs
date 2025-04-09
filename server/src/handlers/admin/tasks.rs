@@ -1,25 +1,13 @@
 use std::{str::FromStr, sync::Arc};
 
 use anyhow::anyhow;
-use axum::{
-    Json,
-    extract::{Path, State},
-};
+use axum::extract::{Path, State};
 use uuid::Uuid;
 
 use crate::{
     models::AppState,
     utils::{AppError, AppResult},
 };
-
-pub async fn get_running_tasks(State(state): State<Arc<AppState>>) -> AppResult<Json<Vec<String>>> {
-    let running_tasks = {
-        let tasks = state.running_entitlements_tasks.read().await;
-        tasks.keys().map(|v| v.to_string()).collect()
-    };
-
-    Ok(Json(running_tasks))
-}
 
 pub async fn stop_running_task(
     State(state): State<Arc<AppState>>,
@@ -33,7 +21,7 @@ pub async fn stop_running_task(
     };
 
     match task {
-        Some(handle) => {
+        Some((_, handle)) => {
             handle.abort();
             log::info!("successfully aborted task {uuid}");
             Ok(())

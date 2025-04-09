@@ -8,7 +8,7 @@ const Stats = () => {
     const [stats, setStats] = useState({});
 
     useEffect(() => {
-        fetch(`${API_URL}/api/v1/stats`)
+        fetch(`${API_URL}/stats`)
             .then((response) => response.json())
             .then((data) => setStats(data))
             .catch((error) => console.log(error));

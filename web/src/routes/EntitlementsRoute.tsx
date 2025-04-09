@@ -18,7 +18,7 @@ const EntitlementsRoute = () => {
     const [entitlementValueInput, setEntitlementValueInput] = useState('');
 
     useEffect(() => {
-        fetch(`${API_URL}/api/v1/operating_systems/${versionId}/executable_entitlements`)
+        fetch(`${API_URL}/operating_systems/${versionId}/executable_entitlements`)
             .then((response) => response.json())
             .then((data) => setResults(data))
             .then(() => setLoading(false))

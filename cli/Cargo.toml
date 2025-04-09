@@ -14,6 +14,7 @@ anyhow = "1.0.95"
 apple-codesign = { version = "0.29.0", default-features = false }
 appledb_common = { path = "../common" }
 base64 = "0.22.1"
+chrono = "0.4.40"
 clap = { version = "4.5.29", features = ["derive"] }
 env_logger = "0.11.6"
 log = "0.4.25"

@@ -5,7 +5,7 @@ mod utils;
 
 use anyhow::Result;
 use clap::Parser;
-use commands::{parse_entitlements_command, parse_os_subcommand};
+use commands::{parse_entitlements_command, parse_os_subcommand, parse_tasks_command};
 use models::{Opts, OptsSubCommands};
 
 #[tokio::main]
@@ -20,6 +20,9 @@ async fn main() -> Result<()> {
         }
         OptsSubCommands::OperatingSystem(operating_systems_subcommands) => {
             parse_os_subcommand(opts.server_url, operating_systems_subcommands).await
+        }
+        OptsSubCommands::Tasks(tasks_subcommands) => {
+            parse_tasks_command(opts.server_url, tasks_subcommands).await
         }
     };
 
