@@ -69,7 +69,7 @@ const EntitlementsDiffing = () => {
 
     useEffect(() => {
         if (executable && executable !== prevExecutable.current) {
-            fetch(`${API_URL}/api/v1/executables/${executable.id}/versions`)
+            fetch(`${API_URL}/executables/${executable.id}/versions`)
                 .then((response) => response.json())
                 .then((data) => setExecutableVersions(data))
                 .catch((error) => console.log(error));
@@ -78,7 +78,7 @@ const EntitlementsDiffing = () => {
 
     useEffect(() => {
         if (from && to) {
-            fetch(`${API_URL}/api/v1/entitlements/diff/${from}/${to}`)
+            fetch(`${API_URL}/entitlements/diff/${from}/${to}`)
                 .then((response) => response.json())
                 .then((data) => setDiff(data))
                 .catch((error) => console.log(error));

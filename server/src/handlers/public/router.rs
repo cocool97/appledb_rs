@@ -32,6 +32,7 @@ use super::{
         get_operating_system_versions, get_operating_system_versions_by_id,
     },
     operating_systems::{get_operating_system_by_id, get_operating_systems},
+    tasks::{__path_get_running_tasks, get_running_tasks},
 };
 
 pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<AppState>> {
@@ -51,7 +52,8 @@ pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<
         get_all_executables_entitlements,
         get_executable_entitlements,
         diff_executables_for_versions,
-        diff_entitlements_for_executables
+        diff_entitlements_for_executables,
+        get_running_tasks
     ))]
     struct ApiDoc;
 
@@ -160,5 +162,12 @@ pub fn get_public_router(with_openapi: bool) -> Router<Arc<AppState>> {
         .route(
             &PublicRoutes::GetDiffEntitlementsExecutables.to_string(),
             get(diff_entitlements_for_executables),
+        )
+        // ##################
+        // Tasks
+        // ##################
+        .route(
+            &PublicRoutes::GetRunningTasks.to_string(),
+            get(get_running_tasks),
         )
 }

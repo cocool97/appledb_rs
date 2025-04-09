@@ -9,8 +9,6 @@ pub const ADMIN_ROUTES: &str = "/api/admin";
 // Admin-specific routes (authentication required)
 // ##################
 
-pub const GET_RUNNING_TASKS: &str = "/tasks/running";
-
 pub const STOP_RUNNING_TASK: &str = "/tasks/{task_id}/stop";
 
 // Operating system versions
@@ -54,6 +52,9 @@ pub enum PublicRoutes {
 
     // Entitlements
     GetDiffEntitlementsExecutables,
+
+    // Tasks
+    GetRunningTasks,
 }
 
 impl PublicRoutes {
@@ -75,30 +76,31 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetOperatingSystems => "/operating_systems/all".to_string(),
             PublicRoutes::GetOperatingSystemById => "/operating_systems/{id}".to_string(),
             PublicRoutes::GetAllExecutablesEntitlements => {
-                "/operating_systems/{id}/executable_entitlements".to_string()
-            }
+                        "/operating_systems/{id}/executable_entitlements".to_string()
+                    }
             PublicRoutes::GetAllExecutables => "/executables/all".to_string(),
             PublicRoutes::GetDevices => "/devices/all".to_string(),
             PublicRoutes::GetDeviceVersions => {
-                "/devices/{id}/operating_system_versions".to_string()
-            }
+                        "/devices/{id}/operating_system_versions".to_string()
+                    }
             PublicRoutes::GetOperatingSystemVersions => {
-                "/operating_system_versions/all".to_string()
-            }
+                        "/operating_system_versions/all".to_string()
+                    }
             PublicRoutes::GetOperatingSystemVersionsById => {
-                "/operating_system_versions/{id}".to_string()
-            }
+                        "/operating_system_versions/{id}".to_string()
+                    }
             PublicRoutes::GetOperatingSystemVersionsExtended => {
-                "/operating_system_versions/extended".to_string()
-            }
+                        "/operating_system_versions/extended".to_string()
+                    }
             PublicRoutes::GetExecutableVersions => "/executables/{id}/versions".to_string(),
             PublicRoutes::GetExecutableEntitlements => "/executable/{id}/entitlements".to_string(),
             PublicRoutes::GetDiffExecutablesOperatingSystemVersion => {
-                "/executables/diff/{from_operating_system_version_id}/{to_operating_system_version_id}".to_string()
-            }
+                        "/executables/diff/{from_operating_system_version_id}/{to_operating_system_version_id}".to_string()
+                    }
             PublicRoutes::GetDiffEntitlementsExecutables => {
-                "/entitlements/diff/{from_executable_id}/{to_executable_id}".to_string()
-            }
+                        "/entitlements/diff/{from_executable_id}/{to_executable_id}".to_string()
+                    }
+            PublicRoutes::GetRunningTasks => "/tasks/running".to_string(),
         }
     }
 }

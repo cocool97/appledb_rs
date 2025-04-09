@@ -10,7 +10,7 @@ const ModelPage = () => {
     const [versions, setVersions] = useState([]);
 
     useEffect(() => {
-        fetch(`${API_URL}/api/v1/devices/${modelId}/operating_system_versions`)
+        fetch(`${API_URL}/devices/${modelId}/operating_system_versions`)
             .then((response) => response.json())
             .then((data) => setVersions(data))
             .catch((error) => console.log(error));
