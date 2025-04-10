@@ -168,7 +168,7 @@ async fn post_executable_entitlements_inner(
 
         match executable_status {
             DBStatus::AlreadyExists(executable_id) => {
-                log::warn!("Executable {} already exists, skipping...", executable_id);
+                log::debug!("Executable {} already exists, skipping...", executable_id);
                 entitlements_insertion.existing_executables += 1;
                 {
                     let mut progress = progress.write().await;
@@ -226,7 +226,7 @@ async fn post_executable_entitlements_inner(
             progress.done += 1;
         }
 
-        log::info!(
+        log::debug!(
             "Added {} entitlements to executable {}",
             entitlements.len(),
             executable_status.db_identifier(),

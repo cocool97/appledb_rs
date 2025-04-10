@@ -23,7 +23,7 @@ serve_openapi: false
 |Field|Meaning|Type|
 |:---|:-----|:--:|
 |listen_mode| Server listen mode URL (starting either with `http://` or `unix://`) |`string`|
-|http_max_body_size| Maximum http body size allowed (Useful only without reverse-proxy) |`integer`|
+|http_max_body_size| Maximum http body size allowed for HTTP requests |`integer`|
 |database_url| URL describing database type & parameters (must start with *sqlite://* or *postgres://*) |`string`|
 |web_sources_path| Path to static website files|`string`|
 |max_concurrent_tasks| Maximum concurrent insertion tasks | `integer`|
