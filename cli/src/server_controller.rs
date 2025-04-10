@@ -11,10 +11,11 @@ use serde::de::DeserializeOwned;
 
 macro_rules! response_to_result {
     ($response:expr) => {{
-        match $response.status() {
-            StatusCode::OK => Ok($response.json::<T>().await?),
+        let response = $response;
+        match response.status() {
+            StatusCode::OK => Ok(response.json::<T>().await?),
             _ => {
-                let error_response: ServerErrorResponse = $response.json().await?;
+                let error_response: ServerErrorResponse = response.json().await?;
                 bail!(format!("Server error: {}", error_response.reason))
             }
         }
