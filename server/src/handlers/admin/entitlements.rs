@@ -1,7 +1,10 @@
 use std::{collections::HashSet, fmt::Display, sync::Arc, time::Duration};
 
 use anyhow::{Result, anyhow};
-use appledb_common::{IPSWEntitlements, IPSWExecutableEntitlements, api_models::TaskProgress};
+use appledb_common::{
+    IPSWEntitlements, IPSWExecutableEntitlements,
+    api_models::{TaskProgress, TaskType},
+};
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
 use serde_json::Value;
@@ -116,6 +119,7 @@ pub async fn post_executable_entitlements(
     log::debug!("New task will spawn with uuid={task_uuid}...");
 
     let progress = Arc::new(RwLock::new(TaskProgress::new(
+        TaskType::PostEntitlements,
         entitlements.executable_entitlements.len(),
     )));
 
