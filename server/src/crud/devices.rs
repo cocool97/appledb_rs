@@ -65,6 +65,7 @@ impl DBController {
     ) -> Result<Vec<OperatingSystemVersion>, DbErr> {
         Ok(entity::prelude::OperatingSystemVersion::find()
             .filter(entity::operating_system_version::Column::DeviceId.eq(device_id))
+            .order_by_desc(entity::operating_system_version::Column::Version)
             .all(self.get_connection())
             .await?
             .into_iter()
