@@ -90,26 +90,6 @@ impl DBController {
         Ok(operating_system_version.into())
     }
 
-    pub async fn crud_create_operating_system_version(
-        &self,
-        operating_system_id: i32,
-        device_id: i32,
-        version: String,
-    ) -> Result<i32, DbErr> {
-        let operating_system_version = entity::operating_system_version::ActiveModel {
-            id: ActiveValue::NotSet,
-            device_id: ActiveValue::Set(device_id),
-            operating_system_id: ActiveValue::set(operating_system_id),
-            version: ActiveValue::Set(version),
-        };
-
-        let res = operating_system_version
-            .insert(self.get_connection())
-            .await?;
-
-        Ok(res.id)
-    }
-
     pub async fn crud_get_operating_system_version_executables(
         &self,
         operating_system_version_id: i32,

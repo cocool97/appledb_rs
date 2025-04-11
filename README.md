@@ -43,7 +43,10 @@ Improved documentation available [here](./documentation/configuration.md).
 
 ## API documentation
 
-A swagger documentation is available at HTTP path `/api/v1/swagger/#/` when running the server.
+Swagger documentations are available when running the server for both public and admin routes:
+
+- Public routes path: `/api/v1/swagger/`
+- Admin routes path: `/api/admin/swagger/`
 
 ## Useful tips
 

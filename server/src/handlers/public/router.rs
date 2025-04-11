@@ -36,7 +36,7 @@ use super::{
 };
 
 pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<AppState>> {
-    log::info!("Serve openapi documentation");
+    log::info!("Serve public openapi documentation");
     #[derive(OpenApi)]
     #[openapi(paths(
         get_stats,
@@ -59,6 +59,7 @@ pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<
 
     // Update each path to add PUBLIC_ROUTES prefix
     let mut openapi = ApiDoc::openapi();
+    openapi.info.title = format!("{} - public API documentation", env!("CARGO_PKG_NAME"));
     openapi.paths.paths = openapi
         .paths
         .paths

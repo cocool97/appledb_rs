@@ -4,6 +4,7 @@ use anyhow::{Result, anyhow};
 use appledb_common::{
     IPSWEntitlements, IPSWExecutableEntitlements,
     api_models::{TaskProgress, TaskType},
+    routes::AdminRoutes,
 };
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
@@ -100,6 +101,11 @@ fn format_entitlements(value: &Value) -> Result<HashSet<IPSWExecutableEntitlemen
 
 const TOKIO_TASK_SPAWN_DELAY: u64 = 5;
 
+#[utoipa::path(
+    post,
+    path = &AdminRoutes::PostExecutableEntitlements,
+    responses((status = OK, body = String))
+)]
 pub async fn post_executable_entitlements(
     State(state): State<Arc<AppState>>,
     Json(entitlements): Json<IPSWEntitlements>,

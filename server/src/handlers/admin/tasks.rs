@@ -1,6 +1,7 @@
 use std::{str::FromStr, sync::Arc};
 
 use anyhow::anyhow;
+use appledb_common::routes::AdminRoutes;
 use axum::extract::{Path, State};
 use uuid::Uuid;
 
@@ -9,6 +10,11 @@ use crate::{
     utils::{AppError, AppResult},
 };
 
+#[utoipa::path(
+    put,
+    path = &AdminRoutes::StopRunningTask,
+    responses((status = OK, body = ()))
+)]
 pub async fn stop_running_task(
     State(state): State<Arc<AppState>>,
     Path(task_id): Path<String>,
