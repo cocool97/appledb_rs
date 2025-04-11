@@ -4,7 +4,7 @@ use anyhow::{Result, bail};
 use appledb_common::IPSWEntitlements;
 use appledb_common::api_models::{ServerErrorResponse, TaskProgress};
 use appledb_common::db_models::OperatingSystem;
-use appledb_common::routes::{ADMIN_ROUTES, POST_EXECUTABLE_ENTITLEMENTS_ROUTE, PublicRoutes};
+use appledb_common::routes::{AdminRoutes, PublicRoutes};
 use reqwest::{Client, ClientBuilder, StatusCode};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -16,7 +16,7 @@ macro_rules! response_to_result {
             StatusCode::OK => Ok(response.json::<T>().await?),
             _ => {
                 let error_response: ServerErrorResponse = response.json().await?;
-                bail!(format!("Server error: {}", error_response.reason))
+                bail!("Server error: {}", error_response.reason)
             }
         }
     }};
@@ -39,7 +39,7 @@ impl ServerController {
     }
 
     fn gen_admin_url<S: AsRef<str>>(&self, path: S) -> String {
-        self.gen_url(format!("{ADMIN_ROUTES}{}", path.as_ref()))
+        self.gen_url(format!("{}{}", AdminRoutes::route_prefix(), path.as_ref()))
     }
 
     fn gen_public_url<S: AsRef<str>>(&self, path: S) -> String {
@@ -65,7 +65,7 @@ impl ServerController {
     ) -> Result<String> {
         return self
             .post(
-                self.gen_admin_url(POST_EXECUTABLE_ENTITLEMENTS_ROUTE),
+                self.gen_admin_url(AdminRoutes::PostExecutableEntitlements.to_string()),
                 entitlements,
             )
             .await;

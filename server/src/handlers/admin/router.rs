@@ -1,32 +1,71 @@
 use std::sync::Arc;
 
-use appledb_common::routes::{
-    POST_EXECUTABLE, POST_EXECUTABLE_ENTITLEMENTS_ROUTE, POST_OPERATING_SYSTEM_VERSION,
-    STOP_RUNNING_TASK,
-};
+use appledb_common::routes::AdminRoutes;
 use axum::{
     Router,
-    routing::{get, post},
+    routing::{post, put},
 };
+use strum::EnumCount;
+use utoipa::OpenApi;
 
+use utoipa_swagger_ui::{Config, SwaggerUi};
+
+use super::{post_executable_entitlements, tasks::stop_running_task};
+use crate::handlers::admin::entitlements::__path_post_executable_entitlements;
+use crate::handlers::admin::tasks::__path_stop_running_task;
 use crate::models::AppState;
 
-use super::{
-    post_executable, post_executable_entitlements, post_operating_system_version,
-    tasks::stop_running_task,
-};
+pub fn setup_admin_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<AppState>> {
+    log::info!("Serve admin openapi documentation");
+    #[derive(OpenApi)]
+    #[openapi(paths(post_executable_entitlements, stop_running_task))]
+    struct ApiDoc;
 
-pub fn get_admin_router() -> Router<Arc<AppState>> {
-    // TODO: apply JWT check layer here
-    Router::new()
+    // Update each path to add ADMIN_ROUTES prefix
+    let mut openapi = ApiDoc::openapi();
+    openapi.info.title = format!("{} - admin API documentation", env!("CARGO_PKG_NAME"));
+    openapi.paths.paths = openapi
+        .paths
+        .paths
+        .iter_mut()
+        .map(|(path, item)| {
+            (
+                format!("{}{}", AdminRoutes::route_prefix(), path),
+                item.to_owned(),
+            )
+        })
+        .collect();
+
+    // Check that every registered endpoint is documented (only in debug builds)
+    debug_assert_eq!(
+        openapi.paths.paths.len(),
+        AdminRoutes::COUNT,
+        "all admin handlers aren't documented..."
+    );
+
+    router.merge(
+        SwaggerUi::new("/swagger")
+            .config(Config::from(
+                AdminRoutes::route_prefix().to_owned() + "/openapi.json",
+            ))
+            .url("/openapi.json", openapi),
+    )
+}
+
+pub fn get_admin_router(with_openapi: bool) -> Router<Arc<AppState>> {
+    let mut router = Router::new();
+
+    if with_openapi {
+        router = setup_admin_openapi_router(router);
+    }
+
+    router
         .route(
-            POST_EXECUTABLE_ENTITLEMENTS_ROUTE,
+            &AdminRoutes::PostExecutableEntitlements.to_string(),
             post(post_executable_entitlements),
         )
-        .route(POST_EXECUTABLE, post(post_executable))
         .route(
-            POST_OPERATING_SYSTEM_VERSION,
-            post(post_operating_system_version),
+            &AdminRoutes::StopRunningTask.to_string(),
+            put(stop_running_task),
         )
-        .route(STOP_RUNNING_TASK, get(stop_running_task))
 }

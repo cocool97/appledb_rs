@@ -2,29 +2,45 @@ use std::fmt::Display;
 
 use strum_macros::EnumCount;
 
-// Network "base" routes
-pub const ADMIN_ROUTES: &str = "/api/admin";
-
 // ##################
 // Admin-specific routes (authentication required)
 // ##################
+#[derive(EnumCount)]
+pub enum AdminRoutes {
+    StopRunningTask,
+    PostExecutableEntitlements,
+}
 
-pub const STOP_RUNNING_TASK: &str = "/tasks/{task_id}/stop";
+impl AdminRoutes {
+    pub fn route_prefix() -> &'static str {
+        "/api/admin"
+    }
+}
 
-// Operating system versions
-pub const POST_OPERATING_SYSTEM_VERSION: &str = "/operating_system_version";
+impl From<AdminRoutes> for String {
+    fn from(value: AdminRoutes) -> Self {
+        String::from(&value)
+    }
+}
 
-// Executables
-pub const POST_EXECUTABLE: &str = "/executable";
+impl From<&AdminRoutes> for String {
+    fn from(value: &AdminRoutes) -> Self {
+        match value {
+            AdminRoutes::StopRunningTask => "/tasks/{task_id}/stop".to_string(),
+            AdminRoutes::PostExecutableEntitlements => "/executable/entitlements".to_string(),
+        }
+    }
+}
 
-// Entitlements
-pub const POST_EXECUTABLE_ENTITLEMENTS_ROUTE: &str = "/executable/entitlements";
+impl Display for AdminRoutes {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", String::from(self))
+    }
+}
 
 // ##################
 // Public routes
 // ##################
-
-// Operating systems
 #[derive(EnumCount)]
 pub enum PublicRoutes {
     // Get stats about server

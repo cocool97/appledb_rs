@@ -1,10 +1,11 @@
 use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 use crate::Platform;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct IPSWEntitlements {
     /// Platform this IPSW originates from
     pub platform: Platform,
