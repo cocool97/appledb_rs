@@ -1,12 +1,12 @@
 use std::{path::PathBuf, str::FromStr};
 
 use crate::parsers::{FrameworksParser, IPSWParser};
+use crate::utils::parse_macho;
 use crate::{
     ipsw_executables::IPSWExecutablesIterator, models::FullSubcommand, parsers::EntitlementsParser,
     server_controller::ServerController,
 };
 use anyhow::Result;
-use apple_codesign::MachOBinary;
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 
@@ -42,22 +42,33 @@ pub async fn parse_full_subcommand(
                 let mut macho_bin_data = Vec::new();
                 macho_file.read_to_end(&mut macho_bin_data).await?;
 
-                let macho = match MachOBinary::parse(&macho_bin_data) {
-                    Ok(macho) => macho,
-                    Err(e) => return Err(e.into()),
-                };
+                match parse_macho(&macho_bin_data) {
+                    Ok(Some(macho)) => {
+                        if let Err(e) = entitlements_parser
+                            .parse_file(&full_absolute_path, &macho)
+                            .await
+                        {
+                            log::error!(
+                                "got error while parsing file {}: {e}",
+                                full_absolute_path.display()
+                            );
+                        }
 
-                if !macho.is_executable() {
-                    continue;
+                        if let Err(e) = frameworks_parser
+                            .parse_file(&full_absolute_path, &macho)
+                            .await
+                        {
+                            log::error!(
+                                "got error while parsing file {}: {e}",
+                                full_absolute_path.display()
+                            );
+                        }
+                    }
+                    Ok(None) => {
+                        continue;
+                    }
+                    Err(e) => log::error!("error while parsing macho {}: {e}", entry.display()),
                 }
-
-                entitlements_parser
-                    .parse_file(&full_absolute_path, &macho)
-                    .await?;
-
-                frameworks_parser
-                    .parse_file(&full_absolute_path, &macho)
-                    .await?;
             }
 
             let server_controller = ServerController::new(server_url)?;
