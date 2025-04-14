@@ -112,7 +112,7 @@ pub async fn post_executable_entitlements(
 ) -> AppResult<Json<String>> {
     // Check if we can run this task
     {
-        let running_entitlements_tasks = state.running_entitlements_tasks.read().await;
+        let running_entitlements_tasks = state.running_tasks.read().await;
         if running_entitlements_tasks.len() > state.max_concurrent_tasks {
             log::error!("Too many tasks running. Aborting this one");
             return AppResult::Err(AppError::from(anyhow!(
@@ -130,7 +130,7 @@ pub async fn post_executable_entitlements(
     )));
 
     let db_controller = state.db_controller.clone();
-    let running_tasks = state.running_entitlements_tasks.clone();
+    let running_tasks = state.running_tasks.clone();
     let task_progress = progress.clone();
 
     let task = tokio::spawn(async move {
@@ -149,7 +149,7 @@ pub async fn post_executable_entitlements(
 
     // Add this task in database
     {
-        let mut running_entitlements_tasks = state.running_entitlements_tasks.write().await;
+        let mut running_entitlements_tasks = state.running_tasks.write().await;
         running_entitlements_tasks.insert(task_uuid, (progress, task));
     }
 

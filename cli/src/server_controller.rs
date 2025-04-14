@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use anyhow::{Result, bail};
-use appledb_common::IPSWEntitlements;
 use appledb_common::api_models::{ServerErrorResponse, TaskProgress};
 use appledb_common::db_models::OperatingSystem;
 use appledb_common::routes::{AdminRoutes, PublicRoutes};
+use appledb_common::{IPSWEntitlements, IPSWFrameworks};
 use reqwest::{Client, ClientBuilder, StatusCode};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -67,6 +67,15 @@ impl ServerController {
             .post(
                 self.gen_admin_url(AdminRoutes::PostExecutableEntitlements.to_string()),
                 entitlements,
+            )
+            .await;
+    }
+
+    pub async fn post_executable_frameworks(&self, frameworks: IPSWFrameworks) -> Result<String> {
+        return self
+            .post(
+                self.gen_admin_url(AdminRoutes::PostExecutableFrameworks.to_string()),
+                frameworks,
             )
             .await;
     }

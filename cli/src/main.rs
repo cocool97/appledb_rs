@@ -1,11 +1,16 @@
 mod commands;
+mod ipsw_executables;
 mod models;
+mod parsers;
 mod server_controller;
 mod utils;
 
 use anyhow::Result;
 use clap::Parser;
-use commands::{parse_entitlements_command, parse_os_subcommand, parse_tasks_command};
+use commands::{
+    parse_entitlements_command, parse_framework_subcommand, parse_full_subcommand,
+    parse_os_subcommand, parse_tasks_command,
+};
 use models::{Opts, OptsSubCommands};
 
 #[tokio::main]
@@ -23,6 +28,12 @@ async fn main() -> Result<()> {
         }
         OptsSubCommands::Tasks(tasks_subcommands) => {
             parse_tasks_command(opts.server_url, tasks_subcommands).await
+        }
+        OptsSubCommands::Frameworks(frameworks_subcommands) => {
+            parse_framework_subcommand(opts.server_url, frameworks_subcommands).await
+        }
+        OptsSubCommands::Full(full_subcommand) => {
+            parse_full_subcommand(opts.server_url, full_subcommand).await
         }
     };
 

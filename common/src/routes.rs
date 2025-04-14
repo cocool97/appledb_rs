@@ -9,6 +9,7 @@ use strum_macros::EnumCount;
 pub enum AdminRoutes {
     StopRunningTask,
     PostExecutableEntitlements,
+    PostExecutableFrameworks,
 }
 
 impl AdminRoutes {
@@ -28,6 +29,7 @@ impl From<&AdminRoutes> for String {
         match value {
             AdminRoutes::StopRunningTask => "/tasks/{task_id}/stop".to_string(),
             AdminRoutes::PostExecutableEntitlements => "/executable/entitlements".to_string(),
+            AdminRoutes::PostExecutableFrameworks => "/executable/frameworks".to_string(),
         }
     }
 }

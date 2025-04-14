@@ -18,11 +18,11 @@ pub struct IPSWEntitlements {
 }
 
 impl IPSWEntitlements {
-    pub fn new(platform: Platform, model_code: String, version: String) -> Self {
+    pub fn new(platform: Platform, model_code: &str, version: &str) -> Self {
         Self {
             platform,
-            version,
-            model_code,
+            version: version.to_string(),
+            model_code: model_code.to_string(),
             executable_entitlements: BTreeMap::new(),
         }
     }

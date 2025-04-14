@@ -14,7 +14,7 @@ pub async fn get_running_tasks(
     State(state): State<Arc<AppState>>,
 ) -> AppResult<Json<HashMap<String, TaskProgress>>> {
     let running_tasks = {
-        let tasks = state.running_entitlements_tasks.read().await;
+        let tasks = state.running_tasks.read().await;
         let mut running_tasks = HashMap::new();
         for (task_uuid, (progress, _)) in tasks.iter() {
             let task = progress.read().await;

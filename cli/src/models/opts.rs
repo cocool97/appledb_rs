@@ -24,6 +24,12 @@ pub enum OptsSubCommands {
     /// Get running tasks information
     #[clap(subcommand)]
     Tasks(TasksSubcommands),
+    /// Parse executables linked frameworks
+    #[clap(subcommand)]
+    Frameworks(FrameworksSubcommands),
+    /// Parse everything !
+    #[clap(subcommand)]
+    Full(FullSubcommand),
 }
 
 #[derive(Subcommand)]
@@ -42,12 +48,6 @@ pub enum EntSubCommands {
         /// Device model (under iPhone17,5 - iPad15,5)...
         #[clap(short = 'm', long = "model_code")]
         model_code: String,
-    },
-    /// Dump entitlements from a Mach-o executable
-    DumpEnt {
-        /// Mach-O executable path
-        #[clap(short = 'b', long = "bin")]
-        executable_path: PathBuf,
     },
 }
 
@@ -105,5 +105,43 @@ pub enum TasksSubcommands {
         /// Polling interval
         #[clap(long = "interval", default_value_t = 5)]
         interval: u64,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum FrameworksSubcommands {
+    /// Parse frameworks
+    Parse {
+        /// Path to local mount point where ipsw is already mounted
+        #[clap(short = 'd', long = "mount-point")]
+        mount_point: PathBuf,
+        /// Platform from which this IPSW mount is originated
+        #[clap(short = 'p', long = "platform")]
+        platform: OptsPlatform,
+        /// Version from which this IPSW is originated
+        #[clap(short = 'v', long = "version")]
+        version: String,
+        /// Device model (under iPhone17,5 - iPad15,5)...
+        #[clap(short = 'm', long = "model_code")]
+        model_code: String,
+    },
+}
+
+#[derive(Subcommand)]
+pub enum FullSubcommand {
+    /// Parse and send everything related to given IPSW.
+    Parse {
+        /// Path to local mount point where ipsw is already mounted
+        #[clap(short = 'd', long = "mount-point")]
+        mount_point: PathBuf,
+        /// Platform from which this IPSW mount is originated
+        #[clap(short = 'p', long = "platform")]
+        platform: OptsPlatform,
+        /// Version from which this IPSW is originated
+        #[clap(short = 'v', long = "version")]
+        version: String,
+        /// Device model (under iPhone17,5 - iPad15,5)...
+        #[clap(short = 'm', long = "model_code")]
+        model_code: String,
     },
 }

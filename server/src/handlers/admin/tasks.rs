@@ -22,7 +22,7 @@ pub async fn stop_running_task(
     let uuid =
         Uuid::from_str(&task_id).map_err(|_| anyhow!("provided task_id not not an uuidv4"))?;
     let task = {
-        let mut tasks = state.running_entitlements_tasks.write().await;
+        let mut tasks = state.running_tasks.write().await;
         tasks.remove(&uuid)
     };
 

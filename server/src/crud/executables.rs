@@ -90,7 +90,7 @@ impl DBController {
             executable.insert(self.get_connection()).await?
         };
 
-        // Create executable <-> operating_
+        // Create executable <-> operating_system_version
         Ok(self
             .crud_get_or_create_executable_operating_system_version(
                 executable.id,

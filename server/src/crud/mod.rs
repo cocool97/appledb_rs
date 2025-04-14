@@ -3,8 +3,10 @@ use serde::Serialize;
 mod devices;
 mod entitlements;
 mod executable_entitlement;
+mod executable_framework;
 mod executable_operating_system_version;
 mod executables;
+mod frameworks;
 mod operating_system_versions;
 mod operating_systems;
 

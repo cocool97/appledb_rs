@@ -12,5 +12,5 @@ pub struct AppState {
     pub db_controller: Arc<DBController>,
     pub web_sources_path: PathBuf,
     pub max_concurrent_tasks: usize,
-    pub running_entitlements_tasks: RunningTasks,
+    pub running_tasks: RunningTasks,
 }
