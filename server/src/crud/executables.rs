@@ -1,4 +1,4 @@
-use std::{path::PathBuf, str::FromStr};
+use std::path::Path;
 
 use anyhow::{Result, anyhow};
 use appledb_common::db_models::Executable;
@@ -59,38 +59,38 @@ impl DBController {
             .await
     }
 
-    pub async fn crud_get_or_create_executable<S: ToString>(
+    pub async fn crud_get_or_create_executable<P: AsRef<Path>>(
         &self,
         operating_system_version_id: i32,
-        full_path: S,
+        full_path: P,
     ) -> Result<DBStatus> {
-        let executable_name = full_path.to_string();
-        let executable_name = PathBuf::from_str(executable_name.as_str())?;
+        let full_path = full_path.as_ref();
 
-        let executable_name = executable_name.file_name().ok_or(anyhow!(
-            "cannot get file name from path {}",
-            full_path.to_string()
-        ))?;
+        let executable_name = full_path
+            .file_name()
+            .ok_or_else(|| anyhow!("cannot get file name from path {}", full_path.display()))?
+            .to_string_lossy()
+            .to_string();
 
-        // Create executable
-        let executable = if let Some(executable) = entity::prelude::Executable::find()
-            .filter(entity::executable::Column::Name.eq(executable_name.to_string_lossy()))
-            .filter(entity::executable::Column::FullPath.eq(full_path.to_string()))
-            .one(self.get_connection())
-            .await?
-        {
-            executable
-        } else {
-            let executable = entity::executable::ActiveModel {
-                id: ActiveValue::NotSet,
-                full_path: ActiveValue::Set(full_path.to_string()),
-                name: ActiveValue::Set(executable_name.to_string_lossy().to_string()),
-            };
-
-            executable.insert(self.get_connection()).await?
+        let new_executable = entity::executable::ActiveModel {
+            id: ActiveValue::NotSet,
+            full_path: ActiveValue::Set(full_path.display().to_string()),
+            name: ActiveValue::Set(executable_name.clone()),
         };
 
-        // Create executable <-> operating_system_version
+        let executable = match new_executable.insert(self.get_connection()).await {
+            Ok(inserted) => inserted,
+            Err(DbErr::Exec(_)) => entity::prelude::Executable::find()
+                .filter(entity::executable::Column::Name.eq(executable_name))
+                .filter(entity::executable::Column::FullPath.eq(full_path.to_string_lossy()))
+                .one(self.get_connection())
+                .await?
+                .ok_or_else(|| {
+                    anyhow!("Failed to retrieve executable after unique constraint violation")
+                })?,
+            Err(e) => return Err(e.into()),
+        };
+
         Ok(self
             .crud_get_or_create_executable_operating_system_version(
                 executable.id,
