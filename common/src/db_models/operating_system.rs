@@ -11,10 +11,12 @@ pub struct OperatingSystem {
 pub enum OperatingSystemName {
     #[serde(rename = "ios")]
     Ios,
+    #[serde(rename = "ipados")]
+    Ipados,
     #[serde(rename = "macos")]
     MacOS,
-    #[serde(rename = "watchos")]
-    WatchOS,
+    #[serde(rename = "visionos")]
+    VisionOS,
     #[serde(rename = "tvos")]
     TvOS,
 }
@@ -36,9 +38,10 @@ impl TryFrom<&str> for OperatingSystemName {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
             "ios" => Ok(Self::Ios),
+            "ipados" => Ok(Self::Ipados),
             "macos" => Ok(Self::MacOS),
+            "visionos" => Ok(Self::VisionOS),
             "tvos" => Ok(Self::TvOS),
-            "watchos" => Ok(Self::WatchOS),
             v => bail!("unknown operating system value {v}..."),
         }
     }
