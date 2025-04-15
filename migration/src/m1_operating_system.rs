@@ -44,11 +44,15 @@ impl MigrationTrait for Migration {
             },
             entity::operating_system::ActiveModel {
                 id: ActiveValue::not_set(),
+                name: ActiveValue::Set("ipados".to_string()),
+            },
+            entity::operating_system::ActiveModel {
+                id: ActiveValue::not_set(),
                 name: ActiveValue::Set("macos".to_string()),
             },
             entity::operating_system::ActiveModel {
                 id: ActiveValue::not_set(),
-                name: ActiveValue::Set("watchos".to_string()),
+                name: ActiveValue::Set("visionos".to_string()),
             },
             entity::operating_system::ActiveModel {
                 id: ActiveValue::not_set(),
