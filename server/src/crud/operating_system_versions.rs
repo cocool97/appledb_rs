@@ -6,7 +6,7 @@ use appledb_common::{
 use anyhow::{Result, anyhow};
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, PaginatorTrait,
-    QueryFilter, QuerySelect, RelationTrait,
+    QueryFilter, QuerySelect, RelationTrait, SqlErr,
 };
 
 use crate::db_controller::DBController;
@@ -35,46 +35,48 @@ impl DBController {
         model_code: String,
         version: String,
     ) -> Result<OperatingSystemVersion> {
-        let operating_system_version = match entity::prelude::OperatingSystemVersion::find()
-            .filter(entity::operating_system_version::Column::Version.eq(&version))
-            .find_also_related(entity::prelude::OperatingSystem)
-            .find_also_related(entity::prelude::Device)
+        let operating_system = entity::prelude::OperatingSystem::find()
             .filter(entity::operating_system::Column::Name.eq(&platform_name))
-            .filter(entity::device::Column::ModelCode.eq(&model_code))
             .one(self.get_connection())
             .await?
-        {
-            Some((operating_system_version, _, _)) => operating_system_version,
-            None => {
-                let operating_system = entity::prelude::OperatingSystem::find()
-                    .filter(entity::operating_system::Column::Name.eq(&platform_name))
-                    .one(self.get_connection())
-                    .await?
-                    .ok_or(anyhow!("Operating system not found"))?;
+            .ok_or(anyhow!("Operating system not found"))?;
 
-                let device_id = self
-                    .crud_get_or_create_device(model_code)
-                    .await?
-                    .db_identifier();
+        let device_id = self
+            .crud_get_or_create_device(model_code.clone())
+            .await?
+            .db_identifier();
 
-                let operating_system_version = entity::operating_system_version::ActiveModel {
-                    id: ActiveValue::NotSet,
-                    device_id: ActiveValue::Set(device_id),
-                    operating_system_id: ActiveValue::Set(operating_system.id),
-                    version: ActiveValue::Set(version.clone()),
-                };
-
-                let res = operating_system_version
-                    .insert(self.get_connection())
-                    .await?;
-
-                log::info!("Created new operating system version {version} for {platform_name}");
-
-                res
-            }
+        let new_os_version = entity::operating_system_version::ActiveModel {
+            id: ActiveValue::NotSet,
+            device_id: ActiveValue::Set(device_id),
+            operating_system_id: ActiveValue::Set(operating_system.id),
+            version: ActiveValue::Set(version.clone()),
         };
 
-        Ok(operating_system_version.into())
+        match new_os_version.insert(self.get_connection()).await {
+            Ok(inserted) => {
+                log::info!("Created new OS version {version} for {platform_name}/{model_code}");
+                Ok(inserted.into())
+            }
+            Err(db_err) => {
+                if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
+                    let existing = entity::prelude::OperatingSystemVersion::find()
+                        .filter(entity::operating_system_version::Column::Version.eq(&version))
+                        .filter(entity::operating_system_version::Column::OperatingSystemId.eq(operating_system.id))
+                        .filter(entity::operating_system_version::Column::DeviceId.eq(device_id))
+                        .one(self.get_connection())
+                        .await?
+                        .ok_or_else(|| {
+                            anyhow!(
+                                "OS version exists but can't be found after unique constraint violation"
+                            )
+                        })?;
+
+                    return Ok(existing.into());
+                }
+                Err(db_err.into())
+            }
+        }
     }
 
     pub async fn crud_get_operating_system_version_by_id(
