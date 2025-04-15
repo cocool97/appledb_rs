@@ -7,6 +7,8 @@ mod m4_executable;
 mod m5_entitlement;
 mod m6_executable_operating_system_version;
 mod m7_executable_entitlement;
+mod m8_frameworks;
+mod m9_executable_framework;
 
 pub struct Migrator;
 
@@ -21,6 +23,8 @@ impl MigratorTrait for Migrator {
             Box::new(m5_entitlement::Migration),
             Box::new(m6_executable_operating_system_version::Migration),
             Box::new(m7_executable_entitlement::Migration),
+            Box::new(m8_frameworks::Migration),
+            Box::new(m9_executable_framework::Migration),
         ]
     }
 }

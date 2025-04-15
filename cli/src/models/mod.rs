@@ -1,5 +1,6 @@
 mod opts;
 
 pub use opts::{
-    EntSubCommands, OperatingSystemsSubcommands, Opts, OptsSubCommands, TasksSubcommands,
+    EntSubCommands, FrameworksSubcommands, FullSubcommand, OperatingSystemsSubcommands, Opts,
+    OptsSubCommands, TasksSubcommands,
 };

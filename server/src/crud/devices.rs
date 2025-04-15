@@ -32,31 +32,35 @@ impl DBController {
         model: S,
     ) -> Result<DBStatus, DbErr> {
         let model_code = model.to_string();
-        if let Some(device) = entity::prelude::Device::find()
-            .filter(entity::device::Column::ModelCode.eq(&model_code))
-            .one(self.get_connection())
-            .await?
-        {
-            // Already exists in DB
-            return Ok(DBStatus::AlreadyExists(device.id));
-        }
 
-        let display_name = if let Some(display_name) = APPLE_MODELS.get(&model_code) {
-            log::info!("Found display name for device {model_code} -> {display_name}");
-            Some(display_name.clone())
-        } else {
-            None
-        };
+        let display_name = APPLE_MODELS
+            .get(&model_code)
+            .cloned()
+            .inspect(|name| log::info!("Found display name for device {model_code} -> {name}"));
 
-        let device = entity::device::ActiveModel {
+        let new_device = entity::device::ActiveModel {
             id: ActiveValue::NotSet,
-            model_code: ActiveValue::Set(model_code),
+            model_code: ActiveValue::Set(model_code.clone()),
             display_name: ActiveValue::Set(display_name),
         };
 
-        let res = device.insert(self.get_connection()).await?;
+        match new_device.insert(self.get_connection()).await {
+            Ok(inserted) => Ok(DBStatus::Created(inserted.id)),
+            Err(DbErr::Exec(_)) => {
+                let existing = entity::prelude::Device::find()
+                    .filter(entity::device::Column::ModelCode.eq(model_code))
+                    .one(self.get_connection())
+                    .await?
+                    .ok_or_else(|| {
+                        DbErr::Custom(
+                            "Failed to retrieve device after unique constraint violation".into(),
+                        )
+                    })?;
 
-        Ok(DBStatus::Created(res.id))
+                Ok(DBStatus::AlreadyExists(existing.id))
+            }
+            Err(e) => Err(e),
+        }
     }
 
     pub async fn crud_get_device_operating_system_versions(

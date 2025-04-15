@@ -10,15 +10,23 @@ use utoipa::OpenApi;
 
 use utoipa_swagger_ui::{Config, SwaggerUi};
 
-use super::{post_executable_entitlements, tasks::stop_running_task};
+use super::{
+    entitlements::post_executable_entitlements, frameworks::post_executable_frameworks,
+    tasks::stop_running_task,
+};
 use crate::handlers::admin::entitlements::__path_post_executable_entitlements;
+use crate::handlers::admin::frameworks::__path_post_executable_frameworks;
 use crate::handlers::admin::tasks::__path_stop_running_task;
 use crate::models::AppState;
 
 pub fn setup_admin_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<AppState>> {
     log::info!("Serve admin openapi documentation");
     #[derive(OpenApi)]
-    #[openapi(paths(post_executable_entitlements, stop_running_task))]
+    #[openapi(paths(
+        post_executable_entitlements,
+        stop_running_task,
+        post_executable_frameworks
+    ))]
     struct ApiDoc;
 
     // Update each path to add ADMIN_ROUTES prefix
@@ -67,5 +75,9 @@ pub fn get_admin_router(with_openapi: bool) -> Router<Arc<AppState>> {
         .route(
             &AdminRoutes::StopRunningTask.to_string(),
             put(stop_running_task),
+        )
+        .route(
+            &AdminRoutes::PostExecutableFrameworks.to_string(),
+            post(post_executable_frameworks),
         )
 }

@@ -6,6 +6,7 @@ use utoipa::ToSchema;
 #[derive(Clone, Deserialize, Serialize, ToSchema)]
 pub enum TaskType {
     PostEntitlements,
+    PostFrameworks,
 }
 
 #[derive(Clone, Deserialize, Serialize, ToSchema)]

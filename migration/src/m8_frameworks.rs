@@ -1,4 +1,3 @@
-use sea_orm::sea_query::Index;
 use sea_orm_migration::{
     DbErr, MigrationTrait, SchemaManager, async_trait,
     prelude::{ColumnDef, Table},
@@ -14,40 +13,37 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Device::Table)
+                    .table(Framework::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Device::Id)
-                            .integer()
+                        ColumnDef::new(Framework::Id)
                             .not_null()
-                            .auto_increment()
+                            .integer()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Device::ModelCode).not_null().string())
-                    .col(ColumnDef::new(Device::DisplayName).string())
-                    .index(
-                        Index::create()
-                            .table(Device::Table)
-                            .col(Device::ModelCode)
-                            .col(Device::DisplayName)
-                            .unique(),
+                    .col(
+                        ColumnDef::new(Framework::FullPath)
+                            .not_null()
+                            .string()
+                            .unique_key(),
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Device::Table).to_owned())
+            .drop_table(Table::drop().table(Framework::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum Device {
+pub enum Framework {
     Table,
     Id,
-    ModelCode,
-    DisplayName,
+    FullPath,
 }
