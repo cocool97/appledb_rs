@@ -22,10 +22,13 @@
 
 Server storing various information about Apple internals on a per platform/version basis.
 
-Currently stored:
+Stored artifacts:
 
-- Entitlements
-- Executables
+- **Executables**
+    - Entitlements
+    - Frameworks
+- **Devices**
+    - Versions
 
 Main features:
 
@@ -55,6 +58,5 @@ Improved documentation available [here](./documentation/tips.md).
 ## Missing features
 
 - Generate and store public / private headers
-- Store information about frameworks
 
 Some features may still be missing, all pull requests are welcome !
