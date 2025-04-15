@@ -2,7 +2,7 @@ use anyhow::anyhow;
 use appledb_common::db_models::{Device, OperatingSystemVersion};
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter,
-    QueryOrder,
+    QueryOrder, SqlErr,
 };
 
 use crate::db_controller::DBController;
@@ -46,20 +46,21 @@ impl DBController {
 
         match new_device.insert(self.get_connection()).await {
             Ok(inserted) => Ok(DBStatus::Created(inserted.id)),
-            Err(DbErr::Exec(_)) => {
-                let existing = entity::prelude::Device::find()
-                    .filter(entity::device::Column::ModelCode.eq(model_code))
-                    .one(self.get_connection())
-                    .await?
-                    .ok_or_else(|| {
-                        DbErr::Custom(
-                            "Failed to retrieve device after unique constraint violation".into(),
-                        )
-                    })?;
+            Err(db_err) => {
+                if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
+                    let existing = entity::prelude::Device::find()
+                        .filter(entity::device::Column::ModelCode.eq(model_code))
+                        .one(self.get_connection())
+                        .await?
+                        .ok_or_else(|| {
+                            DbErr::Custom("Device exists but can't be found after unique constraint violation".into())
+                        })?;
 
-                Ok(DBStatus::AlreadyExists(existing.id))
+                    return Ok(DBStatus::AlreadyExists(existing.id));
+                }
+
+                Err(db_err)
             }
-            Err(e) => Err(e),
         }
     }
 

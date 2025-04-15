@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::BTreeMap, sync::Arc};
 
 use appledb_common::{api_models::TaskProgress, routes::PublicRoutes};
 use axum::{Json, extract::State};
@@ -12,10 +12,10 @@ use crate::{models::AppState, utils::AppResult};
 )]
 pub async fn get_running_tasks(
     State(state): State<Arc<AppState>>,
-) -> AppResult<Json<HashMap<String, TaskProgress>>> {
+) -> AppResult<Json<BTreeMap<String, TaskProgress>>> {
     let running_tasks = {
         let tasks = state.running_tasks.read().await;
-        let mut running_tasks = HashMap::new();
+        let mut running_tasks = BTreeMap::new();
         for (task_uuid, (progress, _)) in tasks.iter() {
             let task = progress.read().await;
 

@@ -1,4 +1,6 @@
-use sea_orm::{ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, QueryFilter};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, QueryFilter, SqlErr,
+};
 
 use crate::db_controller::DBController;
 
@@ -18,17 +20,24 @@ impl DBController {
 
         match executable_os.insert(self.get_connection()).await {
             Ok(inserted) => Ok(DBStatus::Created(inserted.id)),
-            Err(DbErr::Exec(_)) => {
-                let existing = entity::prelude::ExecutableOperatingSystemVersion::find()
-                    .filter(entity::executable_operating_system_version::Column::ExecutableId.eq(executable_id))
-                    .filter(entity::executable_operating_system_version::Column::OperatingSystemVersionId.eq(operating_system_version_id))
-                    .one(self.get_connection())
-                    .await?
-                    .ok_or_else(|| DbErr::Custom("Failed to retrieve after unique constraint violation".into()))?;
+            Err(db_err) => {
+                if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
+                    let existing = entity::prelude::ExecutableOperatingSystemVersion::find()
+                        .filter(entity::executable_operating_system_version::Column::ExecutableId.eq(executable_id))
+                        .filter(entity::executable_operating_system_version::Column::OperatingSystemVersionId.eq(operating_system_version_id))
+                        .one(self.get_connection())
+                        .await?
+                        .ok_or_else(|| {
+                            DbErr::Custom(
+                                "Entry exists but cannot be retrieved after unique constraint violation".into(),
+                            )
+                        })?;
 
-                Ok(DBStatus::AlreadyExists(existing.id))
+                    Ok(DBStatus::AlreadyExists(existing.id))
+                } else {
+                    Err(db_err)
+                }
             }
-            Err(e) => Err(e),
         }
     }
 }

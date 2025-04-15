@@ -4,7 +4,7 @@ use anyhow::{Result, anyhow};
 use appledb_common::db_models::Executable;
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, FromQueryResult, JoinType,
-    QueryFilter, QuerySelect, RelationTrait, SelectColumns,
+    QueryFilter, QuerySelect, RelationTrait, SelectColumns, SqlErr,
 };
 use serde::Serialize;
 use utoipa::ToSchema;
@@ -68,7 +68,12 @@ impl DBController {
 
         let executable_name = full_path
             .file_name()
-            .ok_or_else(|| anyhow!("cannot get file name from path {}", full_path.display()))?
+            .ok_or_else(|| {
+                anyhow!(
+                    "Cannot extract file name from path: {}",
+                    full_path.display()
+                )
+            })?
             .to_string_lossy()
             .to_string();
 
@@ -80,15 +85,20 @@ impl DBController {
 
         let executable = match new_executable.insert(self.get_connection()).await {
             Ok(inserted) => inserted,
-            Err(DbErr::Exec(_)) => entity::prelude::Executable::find()
-                .filter(entity::executable::Column::Name.eq(executable_name))
-                .filter(entity::executable::Column::FullPath.eq(full_path.to_string_lossy()))
-                .one(self.get_connection())
-                .await?
-                .ok_or_else(|| {
-                    anyhow!("Failed to retrieve executable after unique constraint violation")
-                })?,
-            Err(e) => return Err(e.into()),
+            Err(db_err) => {
+                if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
+                    entity::prelude::Executable::find()
+                        .filter(entity::executable::Column::Name.eq(&executable_name))
+                        .filter(entity::executable::Column::FullPath.eq(full_path.to_string_lossy()))
+                        .one(self.get_connection())
+                        .await?
+                        .ok_or_else(|| {
+                            anyhow!("Executable exists but can't be retrieved after unique constraint violation")
+                        })?
+                } else {
+                    return Err(db_err.into());
+                }
+            }
         };
 
         Ok(self

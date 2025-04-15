@@ -177,14 +177,8 @@ async fn post_executable_entitlements_inner(
             .await?;
 
         match executable_status {
-            DBStatus::AlreadyExists(executable_id) => {
-                log::debug!("Executable {} already exists, skipping...", executable_id);
+            DBStatus::AlreadyExists(_) => {
                 entitlements_insertion.existing_executables += 1;
-                {
-                    let mut progress = progress.write().await;
-                    progress.done += 1;
-                }
-                continue;
             }
             DBStatus::Created(_) => {
                 entitlements_insertion.inserted_executables += 1;
@@ -217,12 +211,11 @@ async fn post_executable_entitlements_inner(
                 if let Some(db_error) = e.sql_err() {
                     match db_error {
                         SqlErr::UniqueConstraintViolation(_) => {
-                            log::warn!(
-                                "Entitlement {} already exists for executable {}. Likely a twin...",
+                            log::debug!(
+                                "Entitlement {} already exists for executable {}.",
                                 entitlement_id,
                                 executable_status.db_identifier()
                             );
-                            continue;
                         }
                         e => return Err(anyhow!("Unexpected database error: {:?}", e)),
                     }
