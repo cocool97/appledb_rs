@@ -18,6 +18,8 @@ pub async fn get_stats(State(state): State<Arc<AppState>>) -> AppResult<Json<Ser
             .crud_get_operating_system_version_count()
             .await?,
         known_entitlements: state.db_controller.crud_get_entitlements_count().await?,
+        known_executables: state.db_controller.crud_get_executables_count().await?,
+        known_frameworks: state.db_controller.crud_get_frameworks_count().await?,
     };
 
     Ok(Json(stats))
