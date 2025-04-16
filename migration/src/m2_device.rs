@@ -1,4 +1,3 @@
-use sea_orm::sea_query::Index;
 use sea_orm_migration::{
     DbErr, MigrationTrait, SchemaManager, async_trait,
     prelude::{ColumnDef, Table},
@@ -23,15 +22,13 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Device::ModelCode).not_null().string())
-                    .col(ColumnDef::new(Device::DisplayName).string())
-                    .index(
-                        Index::create()
-                            .table(Device::Table)
-                            .col(Device::ModelCode)
-                            .col(Device::DisplayName)
-                            .unique(),
+                    .col(
+                        ColumnDef::new(Device::ModelCode)
+                            .not_null()
+                            .string()
+                            .unique_key(),
                     )
+                    .col(ColumnDef::new(Device::DisplayName).string())
                     .to_owned(),
             )
             .await

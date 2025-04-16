@@ -4,7 +4,7 @@ use anyhow::{Result, anyhow};
 use appledb_common::{api_models::ExecutableInfos, db_models::Entitlement};
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, ModelTrait,
-    QueryFilter, QueryOrder, QuerySelect, RelationTrait,
+    QueryFilter, QueryOrder, QuerySelect, RelationTrait, SqlErr,
 };
 
 use crate::db_controller::DBController;
@@ -22,9 +22,21 @@ impl DBController {
             entitlement_id: ActiveValue::Set(entitlement_id),
         };
 
-        executable_entitlement.insert(self.get_connection()).await?;
-
-        Ok(())
+        match executable_entitlement.insert(self.get_connection()).await {
+            Ok(_) => Ok(()),
+            Err(db_err) => {
+                if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
+                    log::debug!(
+                        "executable / entitlement association already exists {} / {}",
+                        executable_operating_system_version_id,
+                        entitlement_id
+                    );
+                    Ok(())
+                } else {
+                    Err(db_err)
+                }
+            }
+        }
     }
 
     pub async fn crud_get_all_executables_entitlements(
