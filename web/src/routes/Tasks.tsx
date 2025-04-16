@@ -84,12 +84,12 @@ const Tasks = () => {
         const fetchTasks = () => {
             fetch(`${GET_RUNNING_TASKS}`)
                 .then((response) => response.json())
-                .then((data) => {
+                .then((data: Record<string, TaskProgress>) => {
                     const sortedTasks = Object.entries(data)
-                        .sort(([, taskA], [, taskB]) => {
+                        .sort(([, taskA,], [, taskB]) => {
                             return taskA.start_time - taskB.start_time;
                         })
-                        .reduce((acc, [uuid, task]) => {
+                        .reduce<Record<string, TaskProgress>>((acc, [uuid, task]) => {
                             acc[uuid] = task;
                             return acc;
                         }, {});
@@ -113,5 +113,6 @@ const Tasks = () => {
         </Box>
     );
 };
+
 
 export default Tasks;

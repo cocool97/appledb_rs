@@ -9,6 +9,13 @@ use crate::db_controller::DBController;
 use super::DBStatus;
 
 impl DBController {
+    pub async fn crud_get_frameworks_count(&self) -> Result<usize, DbErr> {
+        Ok(entity::prelude::Framework::find()
+            .all(self.get_connection())
+            .await?
+            .len())
+    }
+
     pub async fn crud_get_or_create_framework<P: AsRef<Path>>(
         &self,
         framework_full_path: P,

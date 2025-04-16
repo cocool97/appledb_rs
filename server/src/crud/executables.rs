@@ -22,13 +22,17 @@ pub struct ExecutableVersion {
 }
 
 impl DBController {
-    pub async fn crud_get_all_executables(&self) -> Result<Vec<Executable>> {
+    pub async fn crud_get_all_executables(&self) -> Result<Vec<Executable>, DbErr> {
         Ok(entity::prelude::Executable::find()
             .all(self.get_connection())
             .await?
             .into_iter()
             .map(Executable::from)
             .collect())
+    }
+
+    pub async fn crud_get_executables_count(&self) -> Result<usize, DbErr> {
+        Ok(self.crud_get_all_executables().await?.len())
     }
 
     pub async fn crud_get_executable_versions(
