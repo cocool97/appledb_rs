@@ -1,7 +1,9 @@
 use std::path::Path;
 
+use appledb_common::db_models::Framework;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, QueryFilter, SqlErr,
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, QueryFilter,
+    QuerySelect, RelationTrait, SqlErr,
 };
 
 use crate::db_controller::DBController;
@@ -46,5 +48,31 @@ impl DBController {
                 Err(db_err)
             }
         }
+    }
+
+    pub async fn crud_get_frameworks_for_executable(
+        &self,
+        executable_operating_system_id: i64,
+    ) -> Result<Vec<Framework>, DbErr> {
+        let frameworks = entity::prelude::Framework::find()
+            .join(
+                JoinType::LeftJoin,
+                entity::framework::Relation::ExecutableFramework.def(),
+            )
+            .join(
+                JoinType::LeftJoin,
+                entity::executable_framework::Relation::ExecutableOperatingSystemVersion.def(),
+            )
+            .filter(
+                entity::executable_operating_system_version::Column::Id
+                    .eq(executable_operating_system_id),
+            )
+            .all(self.get_connection())
+            .await?
+            .into_iter()
+            .map(Framework::from)
+            .collect();
+
+        Ok(frameworks)
     }
 }

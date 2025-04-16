@@ -1,0 +1,17 @@
+name: Web - Quality
+
+on: [push, pull_request]
+
+jobs:
+  quality-web:
+    name: "quality-web"
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install yarn
+      run: sudo apt install yarnpkg
+    - name: Install web-dependencies
+      run: cd web; yarnpkg install --no-progress
+    - name: Build web application
+      run: cd web; yarnpkg lint

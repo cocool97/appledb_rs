@@ -57,7 +57,7 @@ const Stats = () => {
 
     return (
         <TableContainer sx={{ display: "flex", justifyContent: "center" }}>
-            <Table sx={{ width: "50%", height: "fit-content" }} >
+            <Table sx={{ height: "fit-content", width: "50%" }} >
                 <TableBody>
                     {Object.entries(stats).map(([key, value]) => (
                         <TableRow

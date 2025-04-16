@@ -71,6 +71,9 @@ pub enum PublicRoutes {
     // Entitlements
     GetDiffEntitlementsExecutables,
 
+    // Frameworks
+    GetDiffFrameworksExecutables,
+
     // Tasks
     GetRunningTasks,
 }
@@ -118,6 +121,7 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetDiffEntitlementsExecutables => {
                         "/entitlements/diff/{from_executable_id}/{to_executable_id}".to_string()
                     }
+                PublicRoutes::GetDiffFrameworksExecutables => {"/frameworks/diff/{from_executable_id}/{to_executable_id}".to_string()}
             PublicRoutes::GetRunningTasks => "/tasks/running".to_string(),
         }
     }

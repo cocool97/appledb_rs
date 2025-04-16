@@ -1,24 +1,28 @@
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React from "react";
 
-const CustomSelect = (props) => {
-
-    const { onChange, choices, label, labelDisplayFunc, idGetter } = props;
-
-    return <FormControl fullWidth>
+const CustomSelect = ({ onChange, choices, label, labelDisplayFunc, idGetter }) => (
+    <FormControl fullWidth>
         <InputLabel sx={{ color: "white" }}>{label}</InputLabel>
         <Select
+            defaultValue=""
             label={label}
-            onChange={(event, newValue) => {
-                onChange(newValue.props.value || null);
+            onChange={(event) => {
+                onChange(event.target.value || null);
             }}
             sx={{ color: "white" }}
         >
-            {choices.map((item) => {
-                return <MenuItem sx={{ input: { backgroundColor: "transparent", color: "white" }, color: "black" }} key={item} value={idGetter(item)}>{labelDisplayFunc(item)}</MenuItem>
-            })}
+            {choices.map((item) => (
+                <MenuItem
+                    key={idGetter(item)}
+                    value={idGetter(item)}
+                    sx={{ color: "black" }}
+                >
+                    {labelDisplayFunc(item)}
+                </MenuItem>
+            ))}
         </Select>
     </FormControl>
-}
+);
 
 export default CustomSelect;

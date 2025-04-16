@@ -13,12 +13,13 @@ use crate::handlers::public::{
         __path_get_executable_versions, diff_executables_for_versions, get_all_executables,
         get_all_executables_entitlements, get_executable_entitlements, get_executable_versions,
     },
+    frameworks::__path_diff_frameworks_for_executables,
     operating_system_versions::{
         __path_get_extended_operating_system_versions, __path_get_operating_system_versions,
         __path_get_operating_system_versions_by_id, get_extended_operating_system_versions,
     },
     operating_systems::{__path_get_operating_system_by_id, __path_get_operating_systems},
-    stats::{__path_get_stats, get_stats},
+    stats::__path_get_stats,
 };
 use appledb_common::routes::PublicRoutes;
 use axum::{Router, routing::get};
@@ -28,10 +29,12 @@ use utoipa_swagger_ui::{Config, SwaggerUi};
 use crate::models::AppState;
 
 use super::{
+    frameworks::diff_frameworks_for_executables,
     operating_system_versions::{
         get_operating_system_versions, get_operating_system_versions_by_id,
     },
     operating_systems::{get_operating_system_by_id, get_operating_systems},
+    stats::get_stats,
     tasks::{__path_get_running_tasks, get_running_tasks},
 };
 
@@ -53,6 +56,7 @@ pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<
         get_executable_entitlements,
         diff_executables_for_versions,
         diff_entitlements_for_executables,
+        diff_frameworks_for_executables,
         get_running_tasks
     ))]
     struct ApiDoc;
@@ -163,6 +167,13 @@ pub fn get_public_router(with_openapi: bool) -> Router<Arc<AppState>> {
         .route(
             &PublicRoutes::GetDiffEntitlementsExecutables.to_string(),
             get(diff_entitlements_for_executables),
+        )
+        // ##################
+        // Frameworks
+        // ##################
+        .route(
+            &PublicRoutes::GetDiffFrameworksExecutables.to_string(),
+            get(diff_frameworks_for_executables),
         )
         // ##################
         // Tasks

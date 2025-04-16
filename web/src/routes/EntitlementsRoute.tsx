@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { BarLoader } from "react-spinners";
+import { API_URL } from "../Constants";
 import { CustomDataTable } from '../components/CustomDataTable';
 import StyledInput from '../components/StyledInput';
-import { API_URL } from "../Constants";
-import { BarLoader } from "react-spinners";
 
 import "./EntitlementRoute.css";
 
@@ -36,7 +36,7 @@ const EntitlementsRoute = () => {
             );
 
             if (filteredArray.length > 0) {
-                result[key] = { name: value.name, entitlements: filteredArray };
+                result[key] = { entitlements: filteredArray, name: value.name };
             }
         }
         return result;

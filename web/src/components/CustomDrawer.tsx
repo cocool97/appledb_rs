@@ -1,5 +1,5 @@
 import React from "react";
-import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, MAIN_ROUTE, STATS_ROUTE, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE } from "../Constants";
+import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, MAIN_ROUTE, STATS_ROUTE, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE, FRAMEWORKS_DIFF_ROUTE } from "../Constants";
 import { useNavigate } from "react-router-dom";
 import { Divider, Drawer, IconButton, List, styled, useTheme } from "@mui/material";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -18,16 +18,33 @@ import WorkIcon from '@mui/icons-material/Work';
 import DifferenceIcon from '@mui/icons-material/Difference';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import LanguageIcon from '@mui/icons-material/Language';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
     alignItems: 'center',
+    backgroundColor: "#555555",
+    display: 'flex',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
-    backgroundColor: "#555555"
 }));
+
+
+const DrawerListItem = (props) => {
+    const { to, icon, text } = props;
+    const navigate = useNavigate();
+
+    return (
+        <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate(to)}>
+                <ListItemIcon>
+                    {icon}
+                </ListItemIcon>
+                <ListItemText primary={text} sx={{ color: "white", }} />
+            </ListItemButton>
+        </ListItem>
+    )
+}
 
 const DrawerListItems = (props) => {
     const { items, categoryName, categoryIcon } = props;
@@ -47,7 +64,6 @@ const DrawerListItems = (props) => {
             </ListItemButton>
             <Collapse in={listOpen} sx={{ padding: "0 1rem" }} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-
                     {items.map((item, index) => (
                         <DrawerListItem
                             key={index}
@@ -63,25 +79,9 @@ const DrawerListItems = (props) => {
     )
 }
 
-const DrawerListItem = (props) => {
-    const { key, to, icon, text } = props;
-    const navigate = useNavigate();
-
-    return (
-        <ListItem key={key} disablePadding>
-            <ListItemButton onClick={() => navigate(to)}>
-                <ListItemIcon>
-                    {icon}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ color: "white", }} />
-            </ListItemButton>
-        </ListItem>
-    )
-}
-
 const CustomDrawer = (props) => {
     const theme = useTheme();
-    const { handleDrawerClose, open } = props;
+    const { setDrawerOpen, drawerOpen } = props;
 
     return (
         <Drawer
@@ -96,10 +96,10 @@ const CustomDrawer = (props) => {
             }}
             variant="persistent"
             anchor="left"
-            open={open}
+            open={drawerOpen}
         >
             <DrawerHeader>
-                <IconButton onClick={handleDrawerClose}>
+                <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
                     {theme.direction === 'ltr' ? <ChevronLeftIcon style={{ color: "white" }} /> : <ChevronRightIcon style={{ color: "white" }} />}
                 </IconButton>
             </DrawerHeader>
@@ -117,7 +117,13 @@ const CustomDrawer = (props) => {
                     items={[{ text: "Diffing", to: EXECUTABLES_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }]}
                 />
 
-                <DrawerListItem 
+                <DrawerListItems
+                    categoryName="Frameworks"
+                    categoryIcon={<LibraryBooksIcon style={{ color: "white" }} />}
+                    items={[{ text: "Diffing", to: FRAMEWORKS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }]}
+                />
+
+                <DrawerListItem
                     to={TASKS_ROUTE}
                     icon={<WorkIcon style={{ color: "white" }} />}
                     text="Tasks"

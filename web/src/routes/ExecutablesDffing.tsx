@@ -70,9 +70,7 @@ const ExecutablesDiffing = () => {
         }
     }, [deviceFrom, deviceTo]);
 
-    const displayVersionChoice = (version) => {
-        return (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
-    }
+    const displayVersionChoice = (version) => (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -95,7 +93,7 @@ const ExecutablesDiffing = () => {
                         color: "black"
                     },
                 }}
-                options={devices.map((device) => { return { id: device.id, label: displayVersionChoice(device) } })}
+                options={devices.map((device) => ({ id: device.id, label: displayVersionChoice(device) }))}
                 renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.id} {...params} label="From version" />}
                 onChange={(event, newValue) => {
                     const selectedDevice = devices.find(device => device.id === newValue.id);
@@ -106,7 +104,7 @@ const ExecutablesDiffing = () => {
             <Autocomplete
                 fullWidth
                 disablePortal
-                sx={{   // magic...
+                sx={{
                     "& + .MuiAutocomplete-popper .MuiAutocomplete-option": {
                         backgroundColor: "transparent",
                         color: "black"
@@ -122,7 +120,7 @@ const ExecutablesDiffing = () => {
                         color: "black"
                     },
                 }}
-                options={devices.map((device) => { return { id: device.id, label: displayVersionChoice(device) } })}
+                options={devices.map((device) => ({ id: device.id, label: displayVersionChoice(device) }))}
                 renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.id} {...params} label="To version" />}
                 onChange={(event, newValue) => {
                     const selectedDevice = devices.find(device => device.id === newValue.id);

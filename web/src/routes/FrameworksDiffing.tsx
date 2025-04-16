@@ -1,53 +1,49 @@
-import React, { useEffect, useRef, useState } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
 import { Autocomplete, Table, TableBody, TableContainer, TextField } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react"
 import CustomSelect from "../components/CustomSelect";
 import { ExpandableTableRow } from "../components/CustomDataTable";
 
-const DiffResults = (props) => {
-    const { diff } = props;
-
-    return (
-        <div style={{ display: "flex" }}>
-            {
-                diff && (
-                    <TableContainer>
-                        <Table size="small" sx={{ tableLayout: "fixed" }}>
-                            <TableBody>
-                                <ExpandableTableRow
-                                    label="Added"
-                                    mainCellLabel="Entitlement name"
-                                    mainCellLabelGetter={(item) => item.key}
-                                    secondaryCellLabel="Entitlement value"
-                                    secondaryCellLabelGetter={(item) => item.value}
-                                    items={diff.added}
-                                />
-                                <ExpandableTableRow
-                                    label="Removed"
-                                    mainCellLabel="Entitlement name"
-                                    mainCellLabelGetter={(item) => item.key}
-                                    secondaryCellLabel="Entitlement value"
-                                    secondaryCellLabelGetter={(item) => item.value}
-                                    items={diff.removed}
-                                />
-                                <ExpandableTableRow
-                                    label="Unchanged"
-                                    mainCellLabel="Entitlement name"
-                                    mainCellLabelGetter={(item) => item.key}
-                                    secondaryCellLabel="Entitlement value"
-                                    secondaryCellLabelGetter={(item) => item.value}
-                                    items={diff.unchanged}
-                                />
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                )
-            }
-        </div>
-    )
+export interface Diff {
+    added: [Record<string, any>];
+    removed: [Record<string, any>];
+    unchanged: [Record<string, any>];
 }
 
-const EntitlementsDiffing = () => {
+const DiffResults = ({ diff }: { diff: Diff }) => (
+    <div style={{ display: "flex" }}>
+        {
+            diff && (
+                <TableContainer>
+                    <Table size="small" sx={{ tableLayout: "fixed" }}>
+                        <TableBody>
+                            <ExpandableTableRow
+                                label="Added"
+                                mainCellLabel="Framework name"
+                                mainCellLabelGetter={(item) => item.full_path}
+                                items={diff.added}
+                            />
+                            <ExpandableTableRow
+                                label="Removed"
+                                mainCellLabel="Framework name"
+                                mainCellLabelGetter={(item) => item.full_path}
+                                items={diff.removed}
+                            />
+                            <ExpandableTableRow
+                                label="Unchanged"
+                                mainCellLabel="Framework name"
+                                mainCellLabelGetter={(item) => item.full_path}
+                                items={diff.unchanged}
+                            />
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )
+        }
+    </div>
+)
+
+const FrameworksDiffing = () => {
     const [executables, setExecutables] = useState([]);
 
     const [executable, setExecutable] = useState(null);
@@ -57,7 +53,7 @@ const EntitlementsDiffing = () => {
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
 
-    const [diff, setDiff] = useState(null);
+    const [diff, setDiff] = useState<Diff | null>(null);
 
     useEffect(() => {
         fetch(GET_ALL_EXECUTABLES_ENDPOINT)
@@ -77,7 +73,7 @@ const EntitlementsDiffing = () => {
 
     useEffect(() => {
         if (from && to) {
-            fetch(`${API_URL}/entitlements/diff/${from}/${to}`)
+            fetch(`${API_URL}/frameworks/diff/${from}/${to}`)
                 .then((response) => response.json())
                 .then((data) => setDiff(data))
                 .catch((error) => console.log(error));
@@ -133,9 +129,9 @@ const EntitlementsDiffing = () => {
                 idGetter={versionIDGetter}
             />
 
-            <DiffResults diff={diff} />
+            {diff && <DiffResults diff={diff} />}
         </div>
     )
 }
 
-export default EntitlementsDiffing;
+export default FrameworksDiffing;
