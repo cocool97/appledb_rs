@@ -134,7 +134,7 @@ async fn post_executable_frameworks_inner(
                 if let Some(db_error) = e.sql_err() {
                     match db_error {
                         SqlErr::UniqueConstraintViolation(_) => {
-                            log::warn!(
+                            log::debug!(
                                 "Framework {} already exists for executable {}. Likely a twin...",
                                 framework_id,
                                 executable_status.db_identifier()

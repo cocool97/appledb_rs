@@ -1,5 +1,5 @@
 use entity::executable_framework::ActiveModel;
-use sea_orm::{ActiveModelTrait, DbErr};
+use sea_orm::{ActiveModelTrait, DbErr, SqlErr};
 
 use crate::db_controller::DBController;
 
@@ -16,8 +16,20 @@ impl DBController {
             framework_id: sea_orm::ActiveValue::Set(framework_id),
         };
 
-        executable_framework.insert(self.get_connection()).await?;
-
-        Ok(())
+        match executable_framework.insert(self.get_connection()).await {
+            Ok(_) => Ok(()),
+            Err(db_err) => {
+                if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
+                    log::debug!(
+                        "executable / framework association already exists {} / {}",
+                        executable_operating_system_version_id,
+                        framework_id
+                    );
+                    Ok(())
+                } else {
+                    Err(db_err)
+                }
+            }
+        }
     }
 }
