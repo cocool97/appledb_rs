@@ -21,14 +21,30 @@ import LanguageIcon from '@mui/icons-material/Language';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
     alignItems: 'center',
+    backgroundColor: "#555555",
+    display: 'flex',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
-    backgroundColor: "#555555"
 }));
+
+
+const DrawerListItem = (props) => {
+    const { to, icon, text } = props;
+    const navigate = useNavigate();
+
+    return (
+        <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate(to)}>
+                <ListItemIcon>
+                    {icon}
+                </ListItemIcon>
+                <ListItemText primary={text} sx={{ color: "white", }} />
+            </ListItemButton>
+        </ListItem>
+    )
+}
 
 const DrawerListItems = (props) => {
     const { items, categoryName, categoryIcon } = props;
@@ -48,7 +64,6 @@ const DrawerListItems = (props) => {
             </ListItemButton>
             <Collapse in={listOpen} sx={{ padding: "0 1rem" }} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-
                     {items.map((item, index) => (
                         <DrawerListItem
                             key={index}
@@ -64,25 +79,9 @@ const DrawerListItems = (props) => {
     )
 }
 
-const DrawerListItem = (props) => {
-    const { key, to, icon, text } = props;
-    const navigate = useNavigate();
-
-    return (
-        <ListItem key={key} disablePadding>
-            <ListItemButton onClick={() => navigate(to)}>
-                <ListItemIcon>
-                    {icon}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ color: "white", }} />
-            </ListItemButton>
-        </ListItem>
-    )
-}
-
 const CustomDrawer = (props) => {
     const theme = useTheme();
-    const { handleDrawerClose, open } = props;
+    const { setDrawerOpen, drawerOpen } = props;
 
     return (
         <Drawer
@@ -97,10 +96,10 @@ const CustomDrawer = (props) => {
             }}
             variant="persistent"
             anchor="left"
-            open={open}
+            open={drawerOpen}
         >
             <DrawerHeader>
-                <IconButton onClick={handleDrawerClose}>
+                <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
                     {theme.direction === 'ltr' ? <ChevronLeftIcon style={{ color: "white" }} /> : <ChevronRightIcon style={{ color: "white" }} />}
                 </IconButton>
             </DrawerHeader>

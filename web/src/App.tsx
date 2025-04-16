@@ -14,17 +14,17 @@ import CustomDrawer from './components/CustomDrawer';
 import ExecutablesDiffing from './routes/ExecutablesDffing';
 import Tasks from './routes/Tasks';
 import FrameworksDiffing from './routes/FrameworksDiffing';
-
+import { TitledComponent } from './components/TitledComponent';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme }) => ({
         flexGrow: 1,
+        marginLeft: `-${DRAWER_WIDTH}px`,
         padding: theme.spacing(3),
         transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
+            easing: theme.transitions.easing.sharp,
         }),
-        marginLeft: `-${DRAWER_WIDTH}px`,
         variants: [
             {
                 props: ({ open }) => open,
@@ -41,41 +41,62 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
 );
 
 export default function App() {
-    const [open, setOpen] = React.useState(false);
-
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
 
     return (
         <Box sx={{ display: 'flex', height: "inherit" }}>
             <CssBaseline />
             <Router>
                 <CustomAppBar
-                    open={open}
-                    handleDrawerOpen={handleDrawerOpen}
+                    drawerOpen={drawerOpen}
+                    handleDrawerOpen={() => setDrawerOpen(true)}
                 />
 
                 <CustomDrawer
-                    open={open}
-                    handleDrawerClose={handleDrawerClose}
+                    drawerOpen={drawerOpen}
+                    setDrawerOpen={setDrawerOpen}
                 />
 
-                <Main open={open} sx={{ position: "relative", top: "64px", height: "calc(100vh - 64px)", overflowY: "scroll" }}>
+                <Main open={drawerOpen} sx={{ height: "calc(100vh - 64px)", overflowY: "scroll", position: "relative", top: "64px", }}>
                     <Routes>
-                        <Route path={MAIN_ROUTE} element={<HomeRoute />} />
-                        <Route path={STATS_ROUTE} element={<Stats />} />
-                        <Route path={ENTITLEMENTS_DIFF_ROUTE} element={<EntitlementsDiffing />} />
-                        <Route path={MODELS} element={<ModelPage />} />
-                        <Route path={ENTITLEMENTS_VERSION} element={<EntitlementsRoute />} />
-                        <Route path={EXECUTABLES_DIFF_ROUTE} element={<ExecutablesDiffing />} />
-                        <Route path={FRAMEWORKS_DIFF_ROUTE} element={<FrameworksDiffing />} />
-                        <Route path={TASKS_ROUTE} element={<Tasks />} />
-                        <Route path="*" element={<div>NOT FOUND :)</div>} />
+                        <Route
+                            path={MAIN_ROUTE}
+                            element={<TitledComponent title="Entitlements per versions" component={<HomeRoute />} />}
+                        />
+                        <Route
+                            path={MODELS}
+                            element={<TitledComponent title="Entitlements per versions" component={<ModelPage />} />}
+                        />
+                        <Route
+                            path={ENTITLEMENTS_VERSION}
+                            element={<TitledComponent title="Entitlements per versions" component={<EntitlementsRoute />} />}
+                        />
+
+                        <Route
+                            path={STATS_ROUTE}
+                            element={<TitledComponent title="Statistics" component={<Stats />} />}
+                        />
+                        <Route
+                            path={ENTITLEMENTS_DIFF_ROUTE}
+                            element={<TitledComponent title="Entitlements diffing" component={<EntitlementsDiffing />} />}
+                        />
+
+                        <Route
+                            path={EXECUTABLES_DIFF_ROUTE}
+                            element={<TitledComponent title="Executables diffing" component={<ExecutablesDiffing />} />}
+                        />
+                        <Route
+                            path={FRAMEWORKS_DIFF_ROUTE}
+                            element={<TitledComponent title="Frameworks diffing" component={<FrameworksDiffing />} />}
+                        />
+                        <Route
+                            path={TASKS_ROUTE}
+                            element={<TitledComponent title="Running tasks" component={<Tasks />} />}
+                        />
+                        <Route
+                            path="*"
+                            element={<div>NOT FOUND :)</div>}
+                        />
                     </Routes>
                 </Main>
             </Router>

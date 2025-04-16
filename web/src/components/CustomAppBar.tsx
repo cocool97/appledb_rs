@@ -32,11 +32,11 @@ const AppBar = styled(MuiAppBar, {
 
 
 const CustomAppBar = (props) => {
-    const { handleDrawerOpen, open } = props;
+    const { drawerOpen, handleDrawerOpen } = props;
     const navigate = useNavigate();
 
     return (
-        <AppBar position="fixed" open={open} sx={{ backgroundColor: "#555555" }}>
+        <AppBar position="fixed" open={drawerOpen} sx={{ backgroundColor: "#555555" }}>
             <Toolbar>
                 <IconButton
                     color="inherit"
@@ -47,7 +47,7 @@ const CustomAppBar = (props) => {
                         {
                             mr: 2,
                         },
-                        open && { display: 'none' },
+                        drawerOpen && { display: 'none' },
                     ]}
                 >
                     <MenuIcon />

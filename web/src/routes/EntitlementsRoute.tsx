@@ -36,7 +36,7 @@ const EntitlementsRoute = () => {
             );
 
             if (filteredArray.length > 0) {
-                result[key] = { name: value.name, entitlements: filteredArray };
+                result[key] = { entitlements: filteredArray, name: value.name };
             }
         }
         return result;

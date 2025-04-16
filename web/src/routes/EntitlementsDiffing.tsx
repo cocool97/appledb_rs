@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
 import { Autocomplete, Table, TableBody, TableContainer, TextField } from "@mui/material";
 import CustomSelect from "../components/CustomSelect";
-import React from "react";
 import { ExpandableTableRow } from "../components/CustomDataTable";
 
 const DiffResults = (props) => {
@@ -85,13 +84,9 @@ const EntitlementsDiffing = () => {
         }
     }, [from, to]);
 
-    const displayVersionChoice = (version) => {
-        return (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
-    }
+    const displayVersionChoice = (version) => (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
 
-    const versionIDGetter = (version) => {
-        return version.id
-    }
+    const versionIDGetter = (version) => version.id
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -114,7 +109,7 @@ const EntitlementsDiffing = () => {
                         color: "black"
                     },
                 }}
-                options={executables.map((executable) => { return executable.full_path })}
+                options={executables.map((executable) => executable.full_path)}
                 renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.full_path} {...params} label="Executable" />}
                 onChange={(event, newValue) => {
                     const selectedExecutable = executables.find(exec => exec.full_path === newValue);

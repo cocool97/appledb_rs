@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { GoVersions } from "react-icons/go";
 import "./HomePage.css"
-import Card from '../components/Card';
+import React, { useEffect, useState } from 'react';
 import { API_URL } from '../Constants';
+import Card from '../components/Card';
+import { GoVersions } from "react-icons/go";
+import { useParams } from 'react-router-dom';
+
+interface Version {
+    id: number
+    version: string
+}
 
 const ModelPage = () => {
     const { modelId } = useParams();
-    const [versions, setVersions] = useState([]);
+    const [versions, setVersions] = useState<[Version]>([]);
 
     useEffect(() => {
         fetch(`${API_URL}/devices/${modelId}/operating_system_versions`)

@@ -58,31 +58,29 @@ export const ExpandableTableRow = (
     );
 };
 
-export const CustomDataTable = (props) => {
-    return (
-        <TableContainer>
-            <Table size="small" sx={{ tableLayout: "fixed" }}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell sx={{ width: "64px" }}></TableCell>
-                        <TableCell sx={{ width: "100%" }}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Executables ({Object.keys(props.data).length})</Typography></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {Object.entries(props.data).map(([executable_fullpath, { name, entitlements }]) => (
-                        <ExpandableTableRow
-                            key={executable_fullpath}
-                            label={name}
-                            mainCellLabel="Entitlement key"
-                            mainCellLabelGetter={(item) => item.key}
-                            secondaryCellLabel="Entitlement value"
-                            secondaryCellLabelGetter={(item) => item.value}
-                            secondary={executable_fullpath}
-                            items={entitlements}
-                        />
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
-};
+export const CustomDataTable = (props) => (
+    <TableContainer>
+        <Table size="small" sx={{ tableLayout: "fixed" }}>
+            <TableHead>
+                <TableRow>
+                    <TableCell sx={{ width: "64px" }}></TableCell>
+                    <TableCell sx={{ width: "100%" }}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>Executables ({Object.keys(props.data).length})</Typography></TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {Object.entries(props.data).map(([executable_fullpath, { name, entitlements }]) => (
+                    <ExpandableTableRow
+                        key={executable_fullpath}
+                        label={name}
+                        mainCellLabel="Entitlement key"
+                        mainCellLabelGetter={(item) => item.key}
+                        secondaryCellLabel="Entitlement value"
+                        secondaryCellLabelGetter={(item) => item.value}
+                        secondary={executable_fullpath}
+                        items={entitlements}
+                    />
+                ))}
+            </TableBody>
+        </Table>
+    </TableContainer>
+);

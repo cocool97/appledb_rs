@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
 import { Autocomplete, Table, TableBody, TableContainer, TextField } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react"
 import CustomSelect from "../components/CustomSelect";
-import React from "react";
 import { ExpandableTableRow } from "../components/CustomDataTable";
 
 export interface Diff {
@@ -11,41 +10,38 @@ export interface Diff {
     unchanged: [Record<string, any>];
 }
 
-const DiffResults = ({ diff }: { diff: Diff }) => {
-
-    return (
-        <div style={{ display: "flex" }}>
-            {
-                diff && (
-                    <TableContainer>
-                        <Table size="small" sx={{ tableLayout: "fixed" }}>
-                            <TableBody>
-                                <ExpandableTableRow
-                                    label="Added"
-                                    mainCellLabel="Framework name"
-                                    mainCellLabelGetter={(item) => item.full_path}
-                                    items={diff.added}
-                                />
-                                <ExpandableTableRow
-                                    label="Removed"
-                                    mainCellLabel="Framework name"
-                                    mainCellLabelGetter={(item) => item.full_path}
-                                    items={diff.removed}
-                                />
-                                <ExpandableTableRow
-                                    label="Unchanged"
-                                    mainCellLabel="Framework name"
-                                    mainCellLabelGetter={(item) => item.full_path}
-                                    items={diff.unchanged}
-                                />
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                )
-            }
-        </div>
-    )
-}
+const DiffResults = ({ diff }: { diff: Diff }) => (
+    <div style={{ display: "flex" }}>
+        {
+            diff && (
+                <TableContainer>
+                    <Table size="small" sx={{ tableLayout: "fixed" }}>
+                        <TableBody>
+                            <ExpandableTableRow
+                                label="Added"
+                                mainCellLabel="Framework name"
+                                mainCellLabelGetter={(item) => item.full_path}
+                                items={diff.added}
+                            />
+                            <ExpandableTableRow
+                                label="Removed"
+                                mainCellLabel="Framework name"
+                                mainCellLabelGetter={(item) => item.full_path}
+                                items={diff.removed}
+                            />
+                            <ExpandableTableRow
+                                label="Unchanged"
+                                mainCellLabel="Framework name"
+                                mainCellLabelGetter={(item) => item.full_path}
+                                items={diff.unchanged}
+                            />
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )
+        }
+    </div>
+)
 
 const FrameworksDiffing = () => {
     const [executables, setExecutables] = useState([]);
@@ -84,13 +80,9 @@ const FrameworksDiffing = () => {
         }
     }, [from, to]);
 
-    const displayVersionChoice = (version) => {
-        return (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
-    }
+    const displayVersionChoice = (version) => (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
 
-    const versionIDGetter = (version) => {
-        return version.id
-    }
+    const versionIDGetter = (version) => version.id
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -113,7 +105,7 @@ const FrameworksDiffing = () => {
                         color: "black"
                     },
                 }}
-                options={executables.map((executable) => { return executable.full_path })}
+                options={executables.map((executable) => executable.full_path)}
                 renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.full_path} {...params} label="Executable" />}
                 onChange={(event, newValue) => {
                     const selectedExecutable = executables.find(exec => exec.full_path === newValue);
@@ -137,7 +129,7 @@ const FrameworksDiffing = () => {
                 idGetter={versionIDGetter}
             />
 
-            <DiffResults diff={diff} />
+            {diff && <DiffResults diff={diff} />}
         </div>
     )
 }
