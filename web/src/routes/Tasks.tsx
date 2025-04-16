@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { GET_RUNNING_TASKS } from '../Constants';
 
-export interface TaskProgress {
+interface TaskProgress {
     task_type: string;
     start_time: number;
     done: number;

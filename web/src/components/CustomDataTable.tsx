@@ -7,7 +7,7 @@ import "./CustomDataTable.css"
 
 export const ExpandableTableRow = (
     { label, secondary, mainCellLabel, mainCellLabelGetter, secondaryCellLabel, secondaryCellLabelGetter, items }:
-        { label: string, secondary?: string, mainCellLabel: string, mainCellLabelGetter: (item) => string, secondaryCellLabelGetter: (item) => string, secondaryCellLabel: string, items: [] }
+        { label: string, secondary?: string, mainCellLabel: string, mainCellLabelGetter: (item) => string, secondaryCellLabelGetter?: (item) => string, secondaryCellLabel?: string, items: [Record<string, any>] }
 ) => {
     const [open, setOpen] = useState(false);
 
@@ -36,16 +36,16 @@ export const ExpandableTableRow = (
                                 <TableHead>
                                     <TableRow>
                                         <TableCell sx={{ border: 0, minWidth: "64px" }} width={"64px"}></TableCell>
-                                        <TableCell width={"50%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabel}</Typography></TableCell>
-                                        <TableCell width={"50%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabel}</Typography></TableCell>
+                                        <TableCell width={secondaryCellLabel ? "50%" : "100%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabel}</Typography></TableCell>
+                                        {secondaryCellLabel && <TableCell width={"50%"}><Typography variant="h5" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabel}</Typography></TableCell>}
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {items.map((item) => (
                                         <TableRow key={item.id} className="table-cell-entitlement">
                                             <TableCell sx={{ border: 0, minWidth: "64px" }} width={"64px"}></TableCell>
-                                            <TableCell width={"50%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabelGetter(item)}</TableCell>
-                                            <TableCell width={"50%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabelGetter(item)}</TableCell>
+                                            <TableCell width={secondaryCellLabel ? "50%" : "100%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{mainCellLabelGetter(item)}</TableCell>
+                                            {secondaryCellLabel && <TableCell width={"50%"} align="left" sx={{ fontWeight: "bold", color: "white" }}>{secondaryCellLabelGetter(item)}</TableCell>}
                                         </TableRow>
                                     ))}
                                 </TableBody>

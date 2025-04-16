@@ -1,5 +1,5 @@
 import React from "react";
-import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, MAIN_ROUTE, STATS_ROUTE, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE } from "../Constants";
+import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, MAIN_ROUTE, STATS_ROUTE, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE, FRAMEWORKS_DIFF_ROUTE } from "../Constants";
 import { useNavigate } from "react-router-dom";
 import { Divider, Drawer, IconButton, List, styled, useTheme } from "@mui/material";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -18,6 +18,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import DifferenceIcon from '@mui/icons-material/Difference';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import LanguageIcon from '@mui/icons-material/Language';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -117,7 +118,13 @@ const CustomDrawer = (props) => {
                     items={[{ text: "Diffing", to: EXECUTABLES_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }]}
                 />
 
-                <DrawerListItem 
+                <DrawerListItems
+                    categoryName="Frameworks"
+                    categoryIcon={<LibraryBooksIcon style={{ color: "white" }} />}
+                    items={[{ text: "Diffing", to: FRAMEWORKS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }]}
+                />
+
+                <DrawerListItem
                     to={TASKS_ROUTE}
                     icon={<WorkIcon style={{ color: "white" }} />}
                     text="Tasks"
