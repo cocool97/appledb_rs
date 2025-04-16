@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Framework::Id)
                             .not_null()
-                            .integer()
+                            .big_integer()
                             .auto_increment()
                             .primary_key(),
                     )

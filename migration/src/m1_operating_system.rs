@@ -19,10 +19,10 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(OperatingSystem::Id)
-                            .integer()
+                            .big_integer()
+                            .primary_key()
                             .not_null()
-                            .auto_increment()
-                            .primary_key(),
+                            .auto_increment(),
                     )
                     .col(
                         ColumnDef::new(OperatingSystem::Name)

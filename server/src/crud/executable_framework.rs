@@ -6,8 +6,8 @@ use crate::db_controller::DBController;
 impl DBController {
     pub async fn crud_create_executable_framework(
         &self,
-        executable_operating_system_version_id: i32,
-        framework_id: i32,
+        executable_operating_system_version_id: i64,
+        framework_id: i64,
     ) -> Result<(), DbErr> {
         let executable_framework = ActiveModel {
             executable_operating_system_version_id: sea_orm::ActiveValue::Set(

@@ -19,7 +19,7 @@ impl DBController {
 
     pub async fn crud_get_entitlements_for_executable(
         &self,
-        executable_operating_system_id: i32,
+        executable_operating_system_id: i64,
     ) -> Result<Vec<Entitlement>, DbErr> {
         let entitlements = entity::prelude::Entitlement::find()
             .join(

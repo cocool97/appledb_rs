@@ -19,13 +19,13 @@ use crate::{crud::ExecutableVersion, models::AppState, utils::AppResult};
     get,
     path = PublicRoutes::GetExecutableEntitlements,
     params(
-        ("id" = i32, description = "Executable identifier"),
+        ("id" = i64, description = "Executable identifier"),
     ),
     responses((status = OK, body = Vec<Entitlement>))
 )]
 pub async fn get_executable_entitlements(
     State(state): State<Arc<AppState>>,
-    Path(executable_id): Path<i32>,
+    Path(executable_id): Path<i64>,
 ) -> AppResult<Json<Vec<Entitlement>>> {
     Ok(Json(
         state
@@ -39,13 +39,13 @@ pub async fn get_executable_entitlements(
     get,
     path = PublicRoutes::GetExecutableVersions,
     params(
-        ("id" = i32, description = "Executable identifier"),
+        ("id" = i64, description = "Executable identifier"),
     ),
     responses((status = OK, body = Vec<ExecutableVersion>))
 )]
 pub async fn get_executable_versions(
     State(state): State<Arc<AppState>>,
-    Path(executable_id): Path<i32>,
+    Path(executable_id): Path<i64>,
 ) -> AppResult<Json<Vec<ExecutableVersion>>> {
     Ok(Json(
         state
@@ -72,13 +72,13 @@ pub async fn get_all_executables(
     get,
     path = PublicRoutes::GetAllExecutablesEntitlements,
     params(
-        ("operating_system_version_id" = i32, description = "Operating system version identifier"),
+        ("operating_system_version_id" = i64, description = "Operating system version identifier"),
     ),
     responses((status = OK, body = BTreeMap<String, Vec<Entitlement>>))
 )]
 pub async fn get_all_executables_entitlements(
     State(state): State<Arc<AppState>>,
-    Path(operating_system_version_id): Path<i32>,
+    Path(operating_system_version_id): Path<i64>,
 ) -> AppResult<Json<BTreeMap<String, ExecutableInfos>>> {
     Ok(Json(
         state
@@ -92,14 +92,14 @@ pub async fn get_all_executables_entitlements(
     get,
     path = PublicRoutes::GetDiffExecutablesOperatingSystemVersion,
     params(
-        ("from_operating_system_version_id" = i32, description = "Initial operating_system_version identifier"),
-        ("to_operating_system_version_id" = i32, description = "Final operating_system_version identifier"),
+        ("from_operating_system_version_id" = i64, description = "Initial operating_system_version identifier"),
+        ("to_operating_system_version_id" = i64, description = "Final operating_system_version identifier"),
     ),
     responses((status = OK, body = Diff<Executable>))
 )]
 pub async fn diff_executables_for_versions(
     State(state): State<Arc<AppState>>,
-    Path((from_operating_system_version_id, to_operating_system_version_id)): Path<(i32, i32)>,
+    Path((from_operating_system_version_id, to_operating_system_version_id)): Path<(i64, i64)>,
 ) -> AppResult<Json<Diff<Executable>>> {
     let executables_from: HashSet<Executable> = state
         .db_controller

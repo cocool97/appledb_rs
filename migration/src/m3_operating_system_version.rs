@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(OperatingSystemVersion::Id)
-                            .integer()
+                            .big_integer()
                             .not_null()
                             .auto_increment()
                             .primary_key(),
@@ -32,12 +32,12 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(OperatingSystemVersion::OperatingSystemId)
-                            .integer()
+                            .big_integer()
                             .not_null(),
                     )
                     .col(
                         ColumnDef::new(OperatingSystemVersion::DeviceId)
-                            .integer()
+                            .big_integer()
                             .not_null(),
                     )
                     .index(

@@ -3,7 +3,7 @@ use utoipa::ToSchema;
 
 #[derive(Serialize, ToSchema, Clone, PartialEq, Eq, Hash)]
 pub struct Executable {
-    pub id: i32,
+    pub id: i64,
     pub name: String,
     pub full_path: String,
 }

@@ -3,7 +3,7 @@ use utoipa::ToSchema;
 
 #[derive(Serialize, PartialEq, Eq, Hash, Clone, ToSchema)]
 pub struct Device {
-    pub id: i32,
+    pub id: i64,
     pub model_code: String,
     pub display_name: Option<String>,
 }
