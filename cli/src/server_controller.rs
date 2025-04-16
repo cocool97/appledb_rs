@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use anyhow::{Result, bail};
 use appledb_common::api_models::{ServerErrorResponse, TaskProgress};
@@ -80,9 +80,8 @@ impl ServerController {
             .await;
     }
 
-    pub async fn get_running_tasks(&self) -> Result<HashMap<String, TaskProgress>> {
-        return self
-            .get(self.gen_public_url(PublicRoutes::GetRunningTasks.to_string()))
-            .await;
+    pub async fn get_running_tasks(&self) -> Result<BTreeMap<String, TaskProgress>> {
+        self.get(self.gen_public_url(PublicRoutes::GetRunningTasks.to_string()))
+            .await
     }
 }
