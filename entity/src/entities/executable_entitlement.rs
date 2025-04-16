@@ -6,9 +6,9 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "executable_entitlement")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub executable_operating_system_version_id: i32,
+    pub executable_operating_system_version_id: i64,
     #[sea_orm(primary_key, auto_increment = false)]
-    pub entitlement_id: i32,
+    pub entitlement_id: i64,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

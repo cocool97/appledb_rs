@@ -24,12 +24,12 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(ExecutableEntitlement::ExecutableOperatingSystemVersionId)
                             .not_null()
-                            .integer(),
+                            .big_integer(),
                     )
                     .col(
                         ColumnDef::new(ExecutableEntitlement::EntitlementId)
                             .not_null()
-                            .integer(),
+                            .big_integer(),
                     )
                     .foreign_key(
                         ForeignKey::create()

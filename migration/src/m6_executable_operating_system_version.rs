@@ -21,19 +21,19 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(ExecutableOperatingSystemVersion::Id)
                             .not_null()
-                            .integer()
+                            .big_integer()
                             .auto_increment()
                             .primary_key(),
                     )
                     .col(
                         ColumnDef::new(ExecutableOperatingSystemVersion::ExecutableId)
                             .not_null()
-                            .integer(),
+                            .big_integer(),
                     )
                     .col(
                         ColumnDef::new(ExecutableOperatingSystemVersion::OperatingSystemVersionId)
                             .not_null()
-                            .integer(),
+                            .big_integer(),
                     )
                     .foreign_key(
                         ForeignKey::create()

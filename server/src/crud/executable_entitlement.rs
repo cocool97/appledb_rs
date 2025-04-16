@@ -12,8 +12,8 @@ use crate::db_controller::DBController;
 impl DBController {
     pub async fn crud_create_executable_entitlement(
         &self,
-        executable_operating_system_version_id: i32,
-        entitlement_id: i32,
+        executable_operating_system_version_id: i64,
+        entitlement_id: i64,
     ) -> Result<(), DbErr> {
         let executable_entitlement = entity::executable_entitlement::ActiveModel {
             executable_operating_system_version_id: ActiveValue::Set(
@@ -29,7 +29,7 @@ impl DBController {
 
     pub async fn crud_get_all_executables_entitlements(
         &self,
-        operating_system_version_id: i32,
+        operating_system_version_id: i64,
     ) -> Result<BTreeMap<String, ExecutableInfos>> {
         let executables_operating_system_version =
             entity::prelude::ExecutableOperatingSystemVersion::find()

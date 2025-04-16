@@ -12,14 +12,14 @@ use crate::{models::AppState, utils::AppResult};
     get,
     path = PublicRoutes::GetDiffEntitlementsExecutables,
     params(
-        ("from_executable_id" = i32, description = "Initial executable identifier"),
-        ("to_executable_id" = i32, description = "Final executable identifier"),
+        ("from_executable_id" = i64, description = "Initial executable identifier"),
+        ("to_executable_id" = i64, description = "Final executable identifier"),
     ),
     responses((status = OK, body = Diff<Entitlement>))
 )]
 pub async fn diff_entitlements_for_executables(
     State(state): State<Arc<AppState>>,
-    Path((from_executable_id, to_executable_id)): Path<(i32, i32)>,
+    Path((from_executable_id, to_executable_id)): Path<(i64, i64)>,
 ) -> AppResult<Json<Diff<Entitlement>>> {
     let entitlements_from: HashSet<Entitlement> = state
         .db_controller

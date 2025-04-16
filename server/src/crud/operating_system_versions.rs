@@ -94,7 +94,7 @@ impl DBController {
 
     pub async fn crud_get_operating_system_version_executables(
         &self,
-        operating_system_version_id: i32,
+        operating_system_version_id: i64,
     ) -> Result<Vec<Executable>, DbErr> {
         Ok(entity::prelude::Executable::find()
             .join(

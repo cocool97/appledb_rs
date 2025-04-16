@@ -3,7 +3,7 @@ use utoipa::ToSchema;
 
 #[derive(ToSchema, Serialize)]
 pub struct ExtendedOperatingSystemVersions {
-    pub id: i32,
+    pub id: i64,
     pub version: String,
     pub model_code: String,
     pub display_name: Option<String>,

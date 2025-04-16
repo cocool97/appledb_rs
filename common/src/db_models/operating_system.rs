@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct OperatingSystem {
-    pub id: i32,
+    pub id: i64,
     pub name: OperatingSystemName,
 }
 

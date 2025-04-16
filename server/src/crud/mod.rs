@@ -14,12 +14,12 @@ pub use executables::ExecutableVersion;
 
 #[derive(Serialize)]
 pub enum DBStatus {
-    AlreadyExists(i32),
-    Created(i32),
+    AlreadyExists(i64),
+    Created(i64),
 }
 
 impl DBStatus {
-    pub fn db_identifier(&self) -> i32 {
+    pub fn db_identifier(&self) -> i64 {
         match self {
             DBStatus::AlreadyExists(id) => *id,
             DBStatus::Created(id) => *id,

@@ -3,7 +3,7 @@ use utoipa::ToSchema;
 
 #[derive(Serialize, PartialEq, Eq, Hash, Clone, ToSchema, Debug)]
 pub struct Entitlement {
-    pub id: i32,
+    pub id: i64,
     pub key: String,
     pub value: String,
 }

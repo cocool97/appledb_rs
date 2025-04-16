@@ -9,8 +9,8 @@ use super::DBStatus;
 impl DBController {
     pub async fn crud_get_or_create_executable_operating_system_version(
         &self,
-        executable_id: i32,
-        operating_system_version_id: i32,
+        executable_id: i64,
+        operating_system_version_id: i64,
     ) -> Result<DBStatus, DbErr> {
         let executable_os = entity::executable_operating_system_version::ActiveModel {
             id: ActiveValue::NotSet,

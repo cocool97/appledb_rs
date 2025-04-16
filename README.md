@@ -53,6 +53,12 @@ Swagger documentations are available when running the server for both public and
 
 ## Useful tips
 
+### Development
+
+Improved documentation available [here](./documentation/development.md).
+
+## Usage
+
 Improved documentation available [here](./documentation/tips.md).
 
 ## Missing features

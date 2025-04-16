@@ -15,7 +15,7 @@ use super::DBStatus;
 
 #[derive(FromQueryResult, ToSchema, Serialize)]
 pub struct ExecutableVersion {
-    pub id: i32,
+    pub id: i64,
     pub display_name: Option<String>,
     pub model_code: String,
     pub version: String,
@@ -37,7 +37,7 @@ impl DBController {
 
     pub async fn crud_get_executable_versions(
         &self,
-        executable_id: i32,
+        executable_id: i64,
     ) -> Result<Vec<ExecutableVersion>, DbErr> {
         entity::prelude::Device::find()
             .join(
@@ -65,7 +65,7 @@ impl DBController {
 
     pub async fn crud_get_or_create_executable<P: AsRef<Path>>(
         &self,
-        operating_system_version_id: i32,
+        operating_system_version_id: i64,
         full_path: P,
     ) -> Result<DBStatus> {
         let full_path = full_path.as_ref();
