@@ -1,7 +1,9 @@
-use chrono::Local;
+use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use std::collections::{HashMap, HashSet};
 use std::time::Duration;
 
 use anyhow::Result;
+use chrono::{DateTime, Utc};
 
 use crate::{models::TasksSubcommands, server_controller::ServerController};
 
@@ -13,26 +15,55 @@ pub async fn parse_tasks_command(server_url: String, subcommand: TasksSubcommand
 
 async fn follow_tasks(server_url: String, interval: u64) -> Result<()> {
     let server_controller = ServerController::new(server_url)?;
+    let multi_progress = MultiProgress::new();
+
+    let mut bars: HashMap<String, ProgressBar> = HashMap::new();
+    let mut start_times: HashMap<String, DateTime<Utc>> = HashMap::new();
+
+    let pb_style = ProgressStyle::with_template("{msg} [{wide_bar}] {pos}/{len} ({percent}%)")
+        .unwrap()
+        .progress_chars("##-");
 
     loop {
         let running_tasks = server_controller.get_running_tasks().await?;
 
-        let now = Local::now();
-        println!("### ~ {} ~ ###", now.to_rfc2822());
-        if running_tasks.is_empty() {
-            println!("\tNo task running...")
-        } else {
-            for (task_uuid, progress) in running_tasks {
-                println!(
-                    "\tUUID: {} - Progress: {}/{} ({}%)",
-                    task_uuid,
-                    progress.done,
-                    progress.total,
-                    (progress.done as f32) / (progress.total as f32) * 100.0 // dividing by 0 does not panic with f32
-                )
+        let current_ids: HashSet<_> = running_tasks.keys().cloned().collect();
+
+        let known_ids: Vec<String> = bars.keys().cloned().collect();
+        for task_id in known_ids {
+            if !current_ids.contains(&task_id) {
+                if let Some(pb) = bars.remove(&task_id) {
+                    pb.finish_and_clear();
+                }
+                start_times.remove(&task_id);
             }
+        }
+
+        for (task_uuid, progress) in &running_tasks {
+            let pb = bars.entry(task_uuid.clone()).or_insert_with(|| {
+                let pb = multi_progress.add(ProgressBar::new(progress.total as u64));
+                pb.set_style(pb_style.clone());
+                pb
+            });
+
+            start_times
+                .entry(task_uuid.clone())
+                .or_insert_with(Utc::now);
+            let elapsed = format_duration(*start_times.get(task_uuid).unwrap());
+            let msg = format!("{task_uuid} | {elapsed}");
+
+            pb.set_message(msg);
+            pb.set_position(progress.done as u64);
         }
 
         tokio::time::sleep(Duration::from_secs(interval)).await;
     }
+}
+
+fn format_duration(start_time: DateTime<Utc>) -> String {
+    let now = Utc::now();
+    let duration = now.signed_duration_since(start_time);
+    let mins = duration.num_minutes();
+    let secs = duration.num_seconds() % 60;
+    format!("{:02}m{:02}s", mins, secs)
 }
