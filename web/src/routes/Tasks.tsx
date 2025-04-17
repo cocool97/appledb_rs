@@ -1,4 +1,4 @@
-import './HomePage.css';
+import './Stats.css';
 import React, { useEffect, useState } from 'react';
 import {
     Box,

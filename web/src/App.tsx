@@ -3,13 +3,11 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import HomeRoute from "./routes/HomeRoute"
 import Stats from "./routes/Stats"
 import EntitlementsDiffing from "./routes/EntitlementsDiffing"
-import ModelPage from "./routes/ModelPage"
-import EntitlementsRoute from "./routes/EntitlementsRoute"
+import EntitlementsSearch from "./routes/EntitlementsSearch"
 import CustomAppBar from './components/CustomAppBar';
-import { DRAWER_WIDTH, ENTITLEMENTS_DIFF_ROUTE, ENTITLEMENTS_VERSION, EXECUTABLES_DIFF_ROUTE, FRAMEWORKS_DIFF_ROUTE, MAIN_ROUTE, MODELS, STATS_ROUTE, TASKS_ROUTE } from './Constants';
+import { DRAWER_WIDTH, ENTITLEMENTS_DIFF_ROUTE, ENTITLEMENTS_SEARCH_ROUTE, EXECUTABLES_DIFF_ROUTE, FRAMEWORKS_DIFF_ROUTE, MAIN_ROUTE, TASKS_ROUTE } from './Constants';
 import CustomDrawer from './components/CustomDrawer';
 import ExecutablesDiffing from './routes/ExecutablesDffing';
 import Tasks from './routes/Tasks';
@@ -61,20 +59,11 @@ export default function App() {
                     <Routes>
                         <Route
                             path={MAIN_ROUTE}
-                            element={<TitledComponent title="Entitlements per versions" component={<HomeRoute />} />}
+                            element={<TitledComponent title="Server stats" component={<Stats />} />}
                         />
                         <Route
-                            path={MODELS}
-                            element={<TitledComponent title="Entitlements per versions" component={<ModelPage />} />}
-                        />
-                        <Route
-                            path={ENTITLEMENTS_VERSION}
-                            element={<TitledComponent title="Entitlements per versions" component={<EntitlementsRoute />} />}
-                        />
-
-                        <Route
-                            path={STATS_ROUTE}
-                            element={<TitledComponent title="Statistics" component={<Stats />} />}
+                            path={ENTITLEMENTS_SEARCH_ROUTE}
+                            element={<TitledComponent title="Entitlements per versions" component={<EntitlementsSearch />} />}
                         />
                         <Route
                             path={ENTITLEMENTS_DIFF_ROUTE}

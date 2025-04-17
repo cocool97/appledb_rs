@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import './Stats.css';
+import { Box, CircularProgress, Typography } from '@mui/material';
+import React, { JSX, useEffect, useState } from 'react';
 import { API_URL } from '../Constants';
-import {
-    Card, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableRow,
-    Box
-} from '@mui/material';
+import Card from '../components/Card';
+import { MdPhoneIphone } from "react-icons/md";
 
 interface ServerStats {
     known_devices: number;
@@ -14,17 +14,25 @@ interface ServerStats {
 }
 
 const labelMap: Record<keyof ServerStats, string> = {
-    known_devices: 'Known devices',
-    known_operating_system_versions: 'Known OS versions',
-    known_executables: 'Known executables',
-    known_entitlements: 'Known entitlements',
-    known_frameworks: 'Known frameworks',
+    known_devices: 'Devices',
+    known_operating_system_versions: 'OS versions',
+    known_executables: 'Executables',
+    known_entitlements: 'Entitlements',
+    known_frameworks: 'Frameworks',
 };
 
-const Stats = () => {
+const iconMap: Record<keyof ServerStats, JSX.Element> = {
+    known_devices: <MdPhoneIphone />,
+    known_operating_system_versions: <MdPhoneIphone />,
+    known_executables: <MdPhoneIphone />,
+    known_entitlements: <MdPhoneIphone />,
+    known_frameworks: <MdPhoneIphone />,
+};
+
+const Stats: React.FC = () => {
     const [stats, setStats] = useState<ServerStats | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         fetch(`${API_URL}/stats`)
@@ -44,7 +52,7 @@ const Stats = () => {
             <Box sx={{ textAlign: "center" }}>
                 <CircularProgress />
                 <Typography color="white" sx={{ mt: 2 }}>Loading stats...</Typography>
-            </Box >
+            </Box>
         );
     }
 
@@ -56,22 +64,39 @@ const Stats = () => {
         );
     }
 
+    const renderStats = () => {
+        if (Object.entries(stats).length === 0) {
+            return (
+                <div style={{
+                    width: "inherit",
+                    height: "inherit",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    fontSize: "2.5rem"
+                }}>
+                    No models found
+                </div>
+            );
+        }
+
+        return Object.entries(stats).map(([key, value]) => {
+            const typedKey = key as keyof ServerStats;
+
+            return (
+                <Card
+                    key={key}
+                    icon={iconMap[typedKey] || <MdPhoneIphone />}
+                    main={labelMap[typedKey] || key}
+                    secondary={value}
+                />
+            );
+        });
+    };
+
     return (
-        <TableContainer sx={{ display: "flex", justifyContent: "center" }}>
-            <Table sx={{ height: "fit-content", width: "50%" }} >
-                <TableBody>
-                    {Object.entries(stats).map(([key, value]) => (
-                        <TableRow
-                            key={key}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell sx={{ fontWeight: "bold", color: "white", width: "50%" }} align="left" component="th" scope="row">{labelMap[key as keyof ServerStats] || key}</TableCell>
-                            <TableCell sx={{ fontWeight: "bold", color: "white", width: "50%" }} align="center">{value}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <div className="grid">
+            {renderStats()}
+        </div>
     );
 };
 

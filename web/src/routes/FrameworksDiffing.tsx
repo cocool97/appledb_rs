@@ -1,47 +1,9 @@
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
-import { Autocomplete, Table, TableBody, TableContainer, TextField } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react"
-import CustomSelect from "../components/CustomSelect";
-import { ExpandableTableRow } from "../components/CustomDataTable";
+import CustomAutocomplete from "../components/CustomAutocomplete";
+import DiffResults from "../components/DiffResults";
+import { Diff } from "../types/diff";
 
-export interface Diff {
-    added: [Record<string, any>];
-    removed: [Record<string, any>];
-    unchanged: [Record<string, any>];
-}
-
-const DiffResults = ({ diff }: { diff: Diff }) => (
-    <div style={{ display: "flex" }}>
-        {
-            diff && (
-                <TableContainer>
-                    <Table size="small" sx={{ tableLayout: "fixed" }}>
-                        <TableBody>
-                            <ExpandableTableRow
-                                label="Added"
-                                mainCellLabel="Framework name"
-                                mainCellLabelGetter={(item) => item.full_path}
-                                items={diff.added}
-                            />
-                            <ExpandableTableRow
-                                label="Removed"
-                                mainCellLabel="Framework name"
-                                mainCellLabelGetter={(item) => item.full_path}
-                                items={diff.removed}
-                            />
-                            <ExpandableTableRow
-                                label="Unchanged"
-                                mainCellLabel="Framework name"
-                                mainCellLabelGetter={(item) => item.full_path}
-                                items={diff.unchanged}
-                            />
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )
-        }
-    </div>
-)
 
 const FrameworksDiffing = () => {
     const [executables, setExecutables] = useState([]);
@@ -82,54 +44,43 @@ const FrameworksDiffing = () => {
 
     const displayVersionChoice = (version) => (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
 
-    const versionIDGetter = (version) => version.id
-
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <Autocomplete
-                fullWidth
-                disablePortal
-                sx={{   // magic...
-                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option": {
-                        backgroundColor: "transparent",
-                        color: "black"
-                    },
-                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected='true']":
-                    {
-                        backgroundColor: "transparent",
-                        color: "black"
-                    },
-                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected ='true'] .Mui-focused":
-                    {
-                        backgroundColor: "transparent",
-                        color: "black"
-                    },
-                }}
+            <CustomAutocomplete
                 options={executables.map((executable) => executable.full_path)}
-                renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.full_path} {...params} label="Executable" />}
+                inputLabel="Executable"
                 onChange={(event, newValue) => {
                     const selectedExecutable = executables.find(exec => exec.full_path === newValue);
                     setExecutable(selectedExecutable || null);
                 }}
             />
 
-            <CustomSelect
-                label="From"
-                onChange={setFrom}
-                choices={executableVersions}
-                labelDisplayFunc={displayVersionChoice}
-                idGetter={versionIDGetter}
+            <CustomAutocomplete
+                disabled={executableVersions.length === 0}
+                options={executableVersions.map((executableVersion) => displayVersionChoice(executableVersion))}
+                inputLabel="From version"
+                onChange={(event, newValue) => {
+                    const selectedVersion = executableVersions.find(version => displayVersionChoice(version) === newValue);
+                    setFrom(selectedVersion.id || null);
+                }}
             />
 
-            <CustomSelect
-                label="To"
-                onChange={setTo}
-                choices={executableVersions}
-                labelDisplayFunc={displayVersionChoice}
-                idGetter={versionIDGetter}
+            <CustomAutocomplete
+                disabled={executableVersions.length === 0}
+                options={executableVersions.map((executableVersion) => displayVersionChoice(executableVersion))}
+                inputLabel="To version"
+                onChange={(event, newValue) => {
+                    const selectedVersion = executableVersions.find(version => displayVersionChoice(version) === newValue);
+                    setTo(selectedVersion.id || null);
+                }}
             />
 
-            {diff && <DiffResults diff={diff} />}
+            <DiffResults
+                diff={diff}
+                mainCellLabel="Framework name"
+                mainCellLabelGetter={(item) => item.full_path}
+            />
+
         </div>
     )
 }

@@ -1,51 +1,9 @@
 import React, { useEffect, useRef, useState } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
-import { Autocomplete, Table, TableBody, TableContainer, TextField } from "@mui/material";
-import CustomSelect from "../components/CustomSelect";
-import { ExpandableTableRow } from "../components/CustomDataTable";
+import CustomAutocomplete from "../components/CustomAutocomplete";
+import DiffResults from "../components/DiffResults";
+import { Diff } from "../types/diff";
 
-const DiffResults = (props) => {
-    const { diff } = props;
-
-    return (
-        <div style={{ display: "flex" }}>
-            {
-                diff && (
-                    <TableContainer>
-                        <Table size="small" sx={{ tableLayout: "fixed" }}>
-                            <TableBody>
-                                <ExpandableTableRow
-                                    label="Added"
-                                    mainCellLabel="Entitlement name"
-                                    mainCellLabelGetter={(item) => item.key}
-                                    secondaryCellLabel="Entitlement value"
-                                    secondaryCellLabelGetter={(item) => item.value}
-                                    items={diff.added}
-                                />
-                                <ExpandableTableRow
-                                    label="Removed"
-                                    mainCellLabel="Entitlement name"
-                                    mainCellLabelGetter={(item) => item.key}
-                                    secondaryCellLabel="Entitlement value"
-                                    secondaryCellLabelGetter={(item) => item.value}
-                                    items={diff.removed}
-                                />
-                                <ExpandableTableRow
-                                    label="Unchanged"
-                                    mainCellLabel="Entitlement name"
-                                    mainCellLabelGetter={(item) => item.key}
-                                    secondaryCellLabel="Entitlement value"
-                                    secondaryCellLabelGetter={(item) => item.value}
-                                    items={diff.unchanged}
-                                />
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                )
-            }
-        </div>
-    )
-}
 
 const EntitlementsDiffing = () => {
     const [executables, setExecutables] = useState([]);
@@ -57,7 +15,7 @@ const EntitlementsDiffing = () => {
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
 
-    const [diff, setDiff] = useState(null);
+    const [diff, setDiff] = useState<Diff | null>(null);
 
     useEffect(() => {
         fetch(GET_ALL_EXECUTABLES_ENDPOINT)
@@ -86,54 +44,44 @@ const EntitlementsDiffing = () => {
 
     const displayVersionChoice = (version) => (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version
 
-    const versionIDGetter = (version) => version.id
-
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <Autocomplete
-                fullWidth
-                disablePortal
-                sx={{   // magic...
-                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option": {
-                        backgroundColor: "transparent",
-                        color: "black"
-                    },
-                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected='true']":
-                    {
-                        backgroundColor: "transparent",
-                        color: "black"
-                    },
-                    "& + .MuiAutocomplete-popper .MuiAutocomplete-option[aria-selected ='true'] .Mui-focused":
-                    {
-                        backgroundColor: "transparent",
-                        color: "black"
-                    },
-                }}
+            <CustomAutocomplete
                 options={executables.map((executable) => executable.full_path)}
-                renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" }, "Mui-expanded": { color: "red" } }} key={params.full_path} {...params} label="Executable" />}
+                inputLabel="Executable"
                 onChange={(event, newValue) => {
                     const selectedExecutable = executables.find(exec => exec.full_path === newValue);
                     setExecutable(selectedExecutable || null);
                 }}
             />
 
-            <CustomSelect
-                label="From"
-                onChange={setFrom}
-                choices={executableVersions}
-                labelDisplayFunc={displayVersionChoice}
-                idGetter={versionIDGetter}
+            <CustomAutocomplete
+                disabled={executableVersions.length === 0}
+                options={executableVersions.map((executableVersion) => displayVersionChoice(executableVersion))}
+                inputLabel="From version"
+                onChange={(event, newValue) => {
+                    const selectedVersion = executableVersions.find(version => displayVersionChoice(version) === newValue);
+                    setFrom(selectedVersion.id || null);
+                }}
             />
 
-            <CustomSelect
-                label="To"
-                onChange={setTo}
-                choices={executableVersions}
-                labelDisplayFunc={displayVersionChoice}
-                idGetter={versionIDGetter}
+            <CustomAutocomplete
+                disabled={executableVersions.length === 0}
+                options={executableVersions.map((executableVersion) => displayVersionChoice(executableVersion))}
+                inputLabel="To version"
+                onChange={(event, newValue) => {
+                    const selectedVersion = executableVersions.find(version => displayVersionChoice(version) === newValue);
+                    setTo(selectedVersion.id || null);
+                }}
             />
 
-            <DiffResults diff={diff} />
+            <DiffResults
+                diff={diff}
+                mainCellLabel="Entitlement name"
+                secondaryCellLabel="Entitlement value"
+                mainCellLabelGetter={(item) => item.key}
+                secondaryCellLabelGetter={(item) => item.value}
+            />
         </div>
     )
 }
