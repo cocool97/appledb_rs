@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { API_URL } from '../Constants';
 import {
-    Card, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableRow
+    Card, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableRow,
+    Box
 } from '@mui/material';
 
 interface ServerStats {
@@ -40,10 +41,10 @@ const Stats = () => {
 
     if (loading) {
         return (
-            <Card sx={{ width: '100%', textAlign: 'center', p: 4 }}>
+            <Box sx={{ textAlign: "center" }}>
                 <CircularProgress />
                 <Typography color="white" sx={{ mt: 2 }}>Loading stats...</Typography>
-            </Card>
+            </Box >
         );
     }
 
