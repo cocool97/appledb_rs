@@ -7,12 +7,13 @@ import Stats from "./routes/Stats"
 import EntitlementsDiffing from "./routes/EntitlementsDiffing"
 import EntitlementsSearch from "./routes/EntitlementsSearch"
 import CustomAppBar from './components/CustomAppBar';
-import { DRAWER_WIDTH, ENTITLEMENTS_DIFF_ROUTE, ENTITLEMENTS_SEARCH_ROUTE, EXECUTABLES_DIFF_ROUTE, FRAMEWORKS_DIFF_ROUTE, MAIN_ROUTE, TASKS_ROUTE } from './Constants';
+import { DRAWER_WIDTH, ENTITLEMENTS_DIFF_ROUTE, ENTITLEMENTS_SEARCH_ROUTE, EXECUTABLES_DIFF_ROUTE, EXECUTABLES_FRAMEWORKS_ROUTE, FRAMEWORKS_DIFF_ROUTE, MAIN_ROUTE, TASKS_ROUTE } from './Constants';
 import CustomDrawer from './components/CustomDrawer';
 import ExecutablesDiffing from './routes/ExecutablesDffing';
 import Tasks from './routes/Tasks';
 import FrameworksDiffing from './routes/FrameworksDiffing';
 import { TitledComponent } from './components/TitledComponent';
+import ExecutablesFrameworks from './routes/ExecutablesFrameworks';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme }) => ({
@@ -75,13 +76,20 @@ export default function App() {
                             element={<TitledComponent title="Executables diffing" component={<ExecutablesDiffing />} />}
                         />
                         <Route
+                            path={EXECUTABLES_FRAMEWORKS_ROUTE}
+                            element={<TitledComponent title="Executables frameworks" component={<ExecutablesFrameworks />} />}
+                        />
+
+                        <Route
                             path={FRAMEWORKS_DIFF_ROUTE}
                             element={<TitledComponent title="Frameworks diffing" component={<FrameworksDiffing />} />}
                         />
+
                         <Route
                             path={TASKS_ROUTE}
                             element={<TitledComponent title="Running tasks" component={<Tasks />} />}
                         />
+
                         <Route
                             path="*"
                             element={<div>NOT FOUND :)</div>}

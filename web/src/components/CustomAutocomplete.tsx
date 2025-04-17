@@ -2,15 +2,26 @@ import { Autocomplete, TextField } from "@mui/material";
 import React from "react";
 
 const CustomAutocomplete = (props) => {
-    const { disabled, options, onChange, inputLabel } = props;
-
-    console.log(inputLabel)
+    const { disabled, options, onChange, inputLabel, value } = props;
 
     return (
         <Autocomplete
             disabled={disabled}
             fullWidth
             disablePortal
+            value={value}
+            onChange={onChange}
+            options={options}
+            renderInput={(params) => (
+                <TextField
+                    sx={{
+                        label: { color: 'white' },
+                        input: { color: "white !important" }
+                    }}
+                    {...params}
+                    label={inputLabel}
+                />
+            )}
             sx={{
                 "& .MuiOutlinedInput-root": {
                     color: "white",
@@ -55,9 +66,6 @@ const CustomAutocomplete = (props) => {
                     color: "black",
                 },
             }}
-            options={options}
-            renderInput={(params) => <TextField sx={{ label: { color: 'white' }, input: { color: "white !important" } }} {...params} label={inputLabel} />}
-            onChange={onChange}
         />
     );
 };
