@@ -43,6 +43,7 @@ const CustomAppBar = (props) => {
                     aria-label="open drawer"
                     onClick={handleDrawerOpen}
                     edge="start"
+                    style={{ backgroundColor: 'transparent' }}
                     sx={[
                         {
                             mr: 2,
@@ -53,6 +54,7 @@ const CustomAppBar = (props) => {
                     <MenuIcon />
                 </IconButton>
                 <IconButton
+                    style={{ backgroundColor: 'transparent' }}
                     sx={{ height: "64px", maxHeight: "64px" }}
                     onClick={() => navigate(MAIN_ROUTE)}
                 >

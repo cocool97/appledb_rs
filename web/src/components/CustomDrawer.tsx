@@ -1,5 +1,5 @@
 import React from "react";
-import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, MAIN_ROUTE, STATS_ROUTE, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE, FRAMEWORKS_DIFF_ROUTE } from "../Constants";
+import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE, FRAMEWORKS_DIFF_ROUTE, ENTITLEMENTS_SEARCH_ROUTE } from "../Constants";
 import { useNavigate } from "react-router-dom";
 import { Divider, Drawer, IconButton, List, styled, useTheme } from "@mui/material";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -12,13 +12,12 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Collapse } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import KeyIcon from '@mui/icons-material/Key';
 import WorkIcon from '@mui/icons-material/Work';
 import DifferenceIcon from '@mui/icons-material/Difference';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import LanguageIcon from '@mui/icons-material/Language';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import SearchIcon from '@mui/icons-material/Search';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
@@ -99,7 +98,7 @@ const CustomDrawer = (props) => {
             open={drawerOpen}
         >
             <DrawerHeader>
-                <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
+                <IconButton onClick={() => setDrawerOpen(!drawerOpen)} style={{ backgroundColor: 'transparent' }} >
                     {theme.direction === 'ltr' ? <ChevronLeftIcon style={{ color: "white" }} /> : <ChevronRightIcon style={{ color: "white" }} />}
                 </IconButton>
             </DrawerHeader>
@@ -108,7 +107,7 @@ const CustomDrawer = (props) => {
                 <DrawerListItems
                     categoryName="Entitlements"
                     categoryIcon={<KeyIcon style={{ color: "white" }} />}
-                    items={[{ text: "Diffing", to: ENTITLEMENTS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }, { text: "Per Versions", to: MAIN_ROUTE, icon: <FormatListNumberedIcon style={{ color: "white" }} /> }]}
+                    items={[{ text: "Diffing", to: ENTITLEMENTS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }, { text: "Search", to: ENTITLEMENTS_SEARCH_ROUTE, icon: <SearchIcon style={{ color: "white" }} /> }]}
                 />
 
                 <DrawerListItems
@@ -127,13 +126,6 @@ const CustomDrawer = (props) => {
                     to={TASKS_ROUTE}
                     icon={<WorkIcon style={{ color: "white" }} />}
                     text="Tasks"
-                />
-                <Divider />
-
-                <DrawerListItem
-                    to={STATS_ROUTE}
-                    icon={<QueryStatsIcon style={{ color: "white" }} />}
-                    text="Stats"
                 />
                 <Divider />
 
