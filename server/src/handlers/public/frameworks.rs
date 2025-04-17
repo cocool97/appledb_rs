@@ -10,6 +10,26 @@ use crate::{models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
+    path = PublicRoutes::GetExecutableFrameworks,
+    params(
+        ("executable_id" = i64, description = "Executable identifier"),
+    ),
+    responses((status = OK, body = Vec<Framework>))
+)]
+pub async fn get_executable_frameworks(
+    State(state): State<Arc<AppState>>,
+    Path(executable_id): Path<i64>,
+) -> AppResult<Json<Vec<Framework>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_frameworks_for_executable(executable_id)
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
     path = PublicRoutes::GetDiffFrameworksExecutables,
     params(
         ("from_executable_id" = i64, description = "Initial executable identifier"),

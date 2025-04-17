@@ -13,7 +13,7 @@ use crate::handlers::public::{
         __path_get_executable_versions, diff_executables_for_versions, get_all_executables,
         get_all_executables_entitlements, get_executable_entitlements, get_executable_versions,
     },
-    frameworks::__path_diff_frameworks_for_executables,
+    frameworks::{__path_diff_frameworks_for_executables, __path_get_executable_frameworks},
     operating_system_versions::{
         __path_get_extended_operating_system_versions, __path_get_operating_system_versions,
         __path_get_operating_system_versions_by_id, get_extended_operating_system_versions,
@@ -29,7 +29,7 @@ use utoipa_swagger_ui::{Config, SwaggerUi};
 use crate::models::AppState;
 
 use super::{
-    frameworks::diff_frameworks_for_executables,
+    frameworks::{diff_frameworks_for_executables, get_executable_frameworks},
     operating_system_versions::{
         get_operating_system_versions, get_operating_system_versions_by_id,
     },
@@ -57,6 +57,7 @@ pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<
         diff_executables_for_versions,
         diff_entitlements_for_executables,
         diff_frameworks_for_executables,
+        get_executable_frameworks,
         get_running_tasks
     ))]
     struct ApiDoc;
@@ -174,6 +175,10 @@ pub fn get_public_router(with_openapi: bool) -> Router<Arc<AppState>> {
         .route(
             &PublicRoutes::GetDiffFrameworksExecutables.to_string(),
             get(diff_frameworks_for_executables),
+        )
+        .route(
+            &PublicRoutes::GetExecutableFrameworks.to_string(),
+            get(get_executable_frameworks),
         )
         // ##################
         // Tasks
