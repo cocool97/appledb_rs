@@ -1,5 +1,5 @@
 import React from "react";
-import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE, FRAMEWORKS_DIFF_ROUTE, ENTITLEMENTS_SEARCH_ROUTE } from "../Constants";
+import { ENTITLEMENTS_DIFF_ROUTE, DRAWER_WIDTH, EXECUTABLES_DIFF_ROUTE, TASKS_ROUTE, FRAMEWORKS_DIFF_ROUTE, ENTITLEMENTS_SEARCH_ROUTE, EXECUTABLES_FRAMEWORKS_ROUTE } from "../Constants";
 import { useNavigate } from "react-router-dom";
 import { Divider, Drawer, IconButton, List, styled, useTheme } from "@mui/material";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -18,6 +18,7 @@ import DifferenceIcon from '@mui/icons-material/Difference';
 import LanguageIcon from '@mui/icons-material/Language';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import SearchIcon from '@mui/icons-material/Search';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
@@ -107,19 +108,27 @@ const CustomDrawer = (props) => {
                 <DrawerListItems
                     categoryName="Entitlements"
                     categoryIcon={<KeyIcon style={{ color: "white" }} />}
-                    items={[{ text: "Diffing", to: ENTITLEMENTS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }, { text: "Search", to: ENTITLEMENTS_SEARCH_ROUTE, icon: <SearchIcon style={{ color: "white" }} /> }]}
+                    items={[
+                        { text: "Diffing", to: ENTITLEMENTS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> },
+                        { text: "Search", to: ENTITLEMENTS_SEARCH_ROUTE, icon: <SearchIcon style={{ color: "white" }} /> }
+                    ]}
                 />
 
                 <DrawerListItems
                     categoryName="Executables"
                     categoryIcon={<LanguageIcon style={{ color: "white" }} />}
-                    items={[{ text: "Diffing", to: EXECUTABLES_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }]}
+                    items={[
+                        { text: "Diffing", to: EXECUTABLES_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> },
+                        { text: "Frameworks", to: EXECUTABLES_FRAMEWORKS_ROUTE, icon: <AutoStoriesIcon style={{ color: "white" }} /> }
+                    ]}
                 />
 
                 <DrawerListItems
                     categoryName="Frameworks"
                     categoryIcon={<LibraryBooksIcon style={{ color: "white" }} />}
-                    items={[{ text: "Diffing", to: FRAMEWORKS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }]}
+                    items={[
+                        { text: "Diffing", to: FRAMEWORKS_DIFF_ROUTE, icon: <DifferenceIcon style={{ color: "white" }} /> }
+                    ]}
                 />
 
                 <DrawerListItem

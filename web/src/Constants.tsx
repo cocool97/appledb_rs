@@ -18,7 +18,10 @@ export const GET_RUNNING_TASKS = `${API_URL}/tasks/running`
 export const MAIN_ROUTE = "/"
 export const ENTITLEMENTS_SEARCH_ROUTE = "/entitlements/search"
 export const ENTITLEMENTS_DIFF_ROUTE = "/entitlements/diff"
+
 export const EXECUTABLES_DIFF_ROUTE = "/executables/diff"
+export const EXECUTABLES_FRAMEWORKS_ROUTE = "/executables/frameworks"
+
 export const FRAMEWORKS_DIFF_ROUTE = "/frameworks/diff"
 export const TASKS_ROUTE = "/tasks"
 //////////////////////////
