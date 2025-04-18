@@ -2,11 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BarLoader } from "react-spinners";
 import { API_URL, GET_ALL_DEVICES_ENDPOINT } from "../Constants";
 import { CustomDataTable } from '../components/CustomDataTable';
-import StyledInput from '../components/StyledInput';
-
 import "./EntitlementSearch.css";
-import { Box, TextField } from '@mui/material';
+import { Box } from '@mui/material';
 import CustomAutocomplete from '../components/CustomAutocomplete';
+import { CustomSearch } from '../components/CustomSearch';
 
 const EntitlementsSearch = () => {
     const [models, setModels] = useState([]);
@@ -106,12 +105,20 @@ const EntitlementsSearch = () => {
                     />
                 </Box>
 
-                <Box display="flex" flexDirection="row" justifyContent="space-around">
-                    <StyledInput placeholder="Filter by executable name" value={executableInput} onChange={setExecutableInput} />
-                    <StyledInput placeholder="Filter by entitlement key" value={entitlementKeyInput} onChange={setEntitlementKeyInput} />
-                    <StyledInput placeholder="Filter by entitlement value" value={entitlementValueInput} onChange={setEntitlementValueInput} />
+                <Box
+                    display="flex"
+                    flexDirection="row"
+                    gap={4}
+                    justifyContent="center"
+                    sx={{ "& > *": { flex: 1 } }}
+                >
+                    <CustomSearch label="Filter by executable name" value={executableInput} onChange={(e) => setExecutableInput(e.target.value)} />
+                    <CustomSearch label="Filter by entitlement key" value={entitlementKeyInput} onChange={(e) => setEntitlementKeyInput(e.target.value)} />
+                    <CustomSearch label="Filter by entitlement value" value={entitlementValueInput} onChange={(e) => setEntitlementValueInput(e.target.value)} />
                 </Box>
+
             </Box>
+
             {renderDataTable()}
         </Box>
     );

@@ -13,7 +13,11 @@ use crate::handlers::public::{
         __path_get_executable_versions, diff_executables_for_versions, get_all_executables,
         get_all_executables_entitlements, get_executable_entitlements, get_executable_versions,
     },
-    frameworks::{__path_diff_frameworks_for_executables, __path_get_executable_frameworks},
+    frameworks::{
+        __path_diff_frameworks_for_executables, __path_get_all_frameworks,
+        __path_get_executable_frameworks, __path_get_framework_executables,
+        __path_get_framework_versions,
+    },
     operating_system_versions::{
         __path_get_extended_operating_system_versions, __path_get_operating_system_versions,
         __path_get_operating_system_versions_by_id, get_extended_operating_system_versions,
@@ -29,7 +33,10 @@ use utoipa_swagger_ui::{Config, SwaggerUi};
 use crate::models::AppState;
 
 use super::{
-    frameworks::{diff_frameworks_for_executables, get_executable_frameworks},
+    frameworks::{
+        diff_frameworks_for_executables, get_all_frameworks, get_executable_frameworks,
+        get_framework_executables, get_framework_versions,
+    },
     operating_system_versions::{
         get_operating_system_versions, get_operating_system_versions_by_id,
     },
@@ -58,6 +65,9 @@ pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<
         diff_entitlements_for_executables,
         diff_frameworks_for_executables,
         get_executable_frameworks,
+        get_all_frameworks,
+        get_framework_versions,
+        get_framework_executables,
         get_running_tasks
     ))]
     struct ApiDoc;
@@ -179,6 +189,18 @@ pub fn get_public_router(with_openapi: bool) -> Router<Arc<AppState>> {
         .route(
             &PublicRoutes::GetExecutableFrameworks.to_string(),
             get(get_executable_frameworks),
+        )
+        .route(
+            &PublicRoutes::GetAllFrameworks.to_string(),
+            get(get_all_frameworks),
+        )
+        .route(
+            &PublicRoutes::GetFrameworkVersions.to_string(),
+            get(get_framework_versions),
+        )
+        .route(
+            &PublicRoutes::GetFrameworkExecutables.to_string(),
+            get(get_framework_executables),
         )
         // ##################
         // Tasks

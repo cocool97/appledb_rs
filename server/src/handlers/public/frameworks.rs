@@ -1,12 +1,16 @@
 use std::{collections::HashSet, sync::Arc};
 
-use appledb_common::{api_models::Diff, db_models::Framework, routes::PublicRoutes};
+use appledb_common::{
+    api_models::Diff,
+    db_models::{Executable, Framework},
+    routes::PublicRoutes,
+};
 use axum::{
     Json,
     extract::{Path, State},
 };
 
-use crate::{models::AppState, utils::AppResult};
+use crate::{crud::OperatingSystemVersionExtended, models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
@@ -78,4 +82,58 @@ pub async fn diff_frameworks_for_executables(
         removed,
         unchanged,
     }))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetAllFrameworks,
+    params(
+    ),
+    responses((status = OK, body = Vec<Framework>))
+)]
+pub async fn get_all_frameworks(
+    State(state): State<Arc<AppState>>,
+) -> AppResult<Json<Vec<Framework>>> {
+    Ok(Json(state.db_controller.crud_get_all_frameworks().await?))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetFrameworkVersions,
+    params(
+        ("id" = i64, description = "Framework identifier"),
+    ),
+    responses((status = OK, body = Vec<OperatingSystemVersionExtended>))
+)]
+pub async fn get_framework_versions(
+    State(state): State<Arc<AppState>>,
+    Path(framework_id): Path<i64>,
+) -> AppResult<Json<Vec<OperatingSystemVersionExtended>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_framework_versions(framework_id)
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetFrameworkExecutables,
+    params(
+        ("framework_id" = i64, description = "Framework identifier"),
+        ("operating_system_version_id" = i64, description = "Operating system version identifier"),
+    ),
+    responses((status = OK, body = Vec<Executable>))
+)]
+pub async fn get_framework_executables(
+    State(state): State<Arc<AppState>>,
+    Path((framework_id, operating_system_version_id)): Path<(i64, i64)>,
+) -> AppResult<Json<Vec<Executable>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_framework_executables(framework_id, operating_system_version_id)
+            .await?,
+    ))
 }
