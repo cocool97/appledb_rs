@@ -1,8 +1,21 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-export const CustomSearch = ({ label, value, onChange }) => (
+interface CustomSearchProps {
+    label: string;
+    value: string;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    disabled?: boolean;
+};
+
+export const CustomSearch: React.FC<CustomSearchProps> = ({
+    disabled = false,
+    label,
+    value,
+    onChange,
+}) => (
     <TextField
+        disabled={disabled}
         label={label}
         variant="outlined"
         value={value}
@@ -42,4 +55,4 @@ export const CustomSearch = ({ label, value, onChange }) => (
             },
         }}
     />
-)
+);
