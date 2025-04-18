@@ -15,6 +15,7 @@ import FrameworksDiffing from './routes/FrameworksDiffing';
 import { TitledComponent } from './components/TitledComponent';
 import ExecutablesFrameworks from './routes/ExecutablesFrameworks';
 import FrameworksLinking from './routes/FrameworksLinking';
+import { ENTITLEMENTS_DIFF_INFOS, ENTITLEMENTS_PER_VERSION_INFOS, EXECUTABLES_DIFF_INFOS, EXECUTABLES_FRAMEWORKS_INFOS, FRAMEWORKS_DIFF_INFOS, LINKED_FRAMEWORKS_INFOS, STATS_PAGE_INFOS, TASKS_INFOS } from './PageInfos';
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme }) => ({
@@ -61,39 +62,87 @@ export default function App() {
                     <Routes>
                         <Route
                             path={MAIN_ROUTE}
-                            element={<TitledComponent title="Server stats" component={<Stats />} />}
+                            element={
+                                <TitledComponent
+                                    title="Server stats"
+                                    tooltip={STATS_PAGE_INFOS}
+                                    component={<Stats />}
+                                />
+                            }
                         />
+
                         <Route
                             path={ENTITLEMENTS_SEARCH_ROUTE}
-                            element={<TitledComponent title="Entitlements per versions" component={<EntitlementsSearch />} />}
+                            element={
+                                <TitledComponent
+                                    title="Entitlements per versions"
+                                    tooltip={ENTITLEMENTS_PER_VERSION_INFOS}
+                                    component={<EntitlementsSearch />}
+                                />
+                            }
                         />
                         <Route
                             path={ENTITLEMENTS_DIFF_ROUTE}
-                            element={<TitledComponent title="Entitlements diffing" component={<EntitlementsDiffing />} />}
+                            element={
+                                <TitledComponent
+                                    title="Entitlements diffing"
+                                    tooltip={ENTITLEMENTS_DIFF_INFOS}
+                                    component={<EntitlementsDiffing />}
+                                />
+                            }
                         />
 
                         <Route
                             path={EXECUTABLES_DIFF_ROUTE}
-                            element={<TitledComponent title="Executables diffing" component={<ExecutablesDiffing />} />}
+                            element={
+                                <TitledComponent
+                                    title="Executables diffing"
+                                    tooltip={EXECUTABLES_DIFF_INFOS}
+                                    component={<ExecutablesDiffing />}
+                                />
+                            }
                         />
                         <Route
                             path={EXECUTABLES_FRAMEWORKS_ROUTE}
-                            element={<TitledComponent title="Executables frameworks" component={<ExecutablesFrameworks />} />}
+                            element={
+                                <TitledComponent
+                                    title="Executables frameworks"
+                                    tooltip={EXECUTABLES_FRAMEWORKS_INFOS}
+                                    component={<ExecutablesFrameworks />}
+                                />
+                            }
                         />
 
                         <Route
                             path={FRAMEWORKS_DIFF_ROUTE}
-                            element={<TitledComponent title="Frameworks diffing" component={<FrameworksDiffing />} />}
+                            element={
+                                <TitledComponent
+                                    title="Frameworks diffing"
+                                    tooltip={FRAMEWORKS_DIFF_INFOS}
+                                    component={<FrameworksDiffing />}
+                                />
+                            }
                         />
 
                         <Route
                             path={FRAMEWORKS_EXECUTABLES_ROUTE}
-                            element={<TitledComponent title="Linked frameworks" component={<FrameworksLinking />} />}
+                            element={
+                                <TitledComponent
+                                    title="Linked frameworks"
+                                    tooltip={LINKED_FRAMEWORKS_INFOS}
+                                    component={<FrameworksLinking />}
+                                />}
                         />
 
                         <Route
                             path={TASKS_ROUTE}
-                            element={<TitledComponent title="Running tasks" component={<Tasks />} />}
+                            element={
+                                <TitledComponent
+                                    title="Running tasks"
+                                    tooltip={TASKS_INFOS}
+                                    component={<Tasks />}
+                                />
+                            }
                         />
 
                         <Route
