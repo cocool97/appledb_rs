@@ -53,12 +53,16 @@ const EntitlementsSearch = () => {
 
     const filterObject = useCallback((obj) => {
         const result = {};
+        const lowerExecutableInput = executableInput.toLowerCase();
+        const lowerEntitlementKey = entitlementKeyInput.toLowerCase();
+        const lowerEntitlementValue = entitlementValueInput.toLowerCase();
+
         for (const [key, value] of Object.entries(obj)) {
-            if (!value.name.toLowerCase().includes(executableInput.toLowerCase())) continue;
+            if (!value.name.toLowerCase().includes(lowerExecutableInput)) continue;
 
             const filteredArray = value.entitlements.filter(item =>
-                item.key.toLowerCase().includes(entitlementKeyInput.toLowerCase()) &&
-                item.value.toLowerCase().includes(entitlementValueInput.toLowerCase())
+                item.key.toLowerCase().includes(lowerEntitlementKey) &&
+                item.value.toLowerCase().includes(lowerEntitlementValue)
             );
 
             if (filteredArray.length > 0) {
