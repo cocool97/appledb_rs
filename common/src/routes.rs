@@ -74,6 +74,9 @@ pub enum PublicRoutes {
     // Frameworks
     GetDiffFrameworksExecutables,
     GetExecutableFrameworks,
+    GetAllFrameworks,
+    GetFrameworkVersions,
+    GetFrameworkExecutables,
 
     // Tasks
     GetRunningTasks,
@@ -109,6 +112,9 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetDiffExecutablesOperatingSystemVersion => "/executables/diff/{from_operating_system_version_id}/{to_operating_system_version_id}".to_string(),
             PublicRoutes::GetDiffEntitlementsExecutables => "/entitlements/diff/{from_executable_id}/{to_executable_id}".to_string(),
             PublicRoutes::GetDiffFrameworksExecutables => "/frameworks/diff/{from_executable_id}/{to_executable_id}".to_string(),
+            PublicRoutes::GetAllFrameworks => "/frameworks/all".to_string(),
+            PublicRoutes::GetFrameworkVersions => "/frameworks/{id}/versions".to_string(),
+            PublicRoutes::GetFrameworkExecutables => "/frameworks/{framework_id}/executables/{operating_system_version_id}".to_string(),
             PublicRoutes::GetExecutableFrameworks => "/executables/{executable_id}/frameworks".to_string(),
             PublicRoutes::GetRunningTasks => "/tasks/running".to_string(),
         }

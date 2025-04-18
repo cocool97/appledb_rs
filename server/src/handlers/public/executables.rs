@@ -13,7 +13,7 @@ use axum::{
     extract::{Path, State},
 };
 
-use crate::{crud::ExecutableVersion, models::AppState, utils::AppResult};
+use crate::{crud::OperatingSystemVersionExtended, models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
@@ -41,12 +41,12 @@ pub async fn get_executable_entitlements(
     params(
         ("id" = i64, description = "Executable identifier"),
     ),
-    responses((status = OK, body = Vec<ExecutableVersion>))
+    responses((status = OK, body = Vec<OperatingSystemVersionExtended>))
 )]
 pub async fn get_executable_versions(
     State(state): State<Arc<AppState>>,
     Path(executable_id): Path<i64>,
-) -> AppResult<Json<Vec<ExecutableVersion>>> {
+) -> AppResult<Json<Vec<OperatingSystemVersionExtended>>> {
     Ok(Json(
         state
             .db_controller

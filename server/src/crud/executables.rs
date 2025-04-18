@@ -1,25 +1,14 @@
 use std::path::Path;
 
+use crate::db_controller::DBController;
 use anyhow::{Result, anyhow};
 use appledb_common::db_models::Executable;
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, FromQueryResult, JoinType,
-    QueryFilter, QuerySelect, RelationTrait, SelectColumns, SqlErr,
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, QueryFilter,
+    QuerySelect, RelationTrait, SelectColumns, SqlErr,
 };
-use serde::Serialize;
-use utoipa::ToSchema;
 
-use crate::db_controller::DBController;
-
-use super::DBStatus;
-
-#[derive(FromQueryResult, ToSchema, Serialize)]
-pub struct ExecutableVersion {
-    pub id: i64,
-    pub display_name: Option<String>,
-    pub model_code: String,
-    pub version: String,
-}
+use super::{DBStatus, OperatingSystemVersionExtended};
 
 impl DBController {
     pub async fn crud_get_all_executables(&self) -> Result<Vec<Executable>, DbErr> {
@@ -38,7 +27,7 @@ impl DBController {
     pub async fn crud_get_executable_versions(
         &self,
         executable_id: i64,
-    ) -> Result<Vec<ExecutableVersion>, DbErr> {
+    ) -> Result<Vec<OperatingSystemVersionExtended>, DbErr> {
         entity::prelude::Device::find()
             .join(
                 JoinType::LeftJoin,
@@ -58,7 +47,7 @@ impl DBController {
             .select_column(entity::operating_system_version::Column::Version)
             .select_column(entity::executable_operating_system_version::Column::Id)
             .filter(entity::executable::Column::Id.eq(executable_id))
-            .into_model::<ExecutableVersion>()
+            .into_model::<OperatingSystemVersionExtended>()
             .all(self.get_connection())
             .await
     }

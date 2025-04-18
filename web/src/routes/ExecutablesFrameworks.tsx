@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react"
 import { API_URL, GET_ALL_EXECUTABLES_ENDPOINT } from "../Constants";
 import CustomAutocomplete from "../components/CustomAutocomplete";
-import { Typography, TextField } from "@mui/material";
+import { Typography } from "@mui/material";
 import { Executable } from "../types/executables";
 import { Version } from "../types/versions";
 import { Framework } from "../types/framework";
+import { CustomSearch } from "../components/CustomSearch";
 
 const ExecutablesFrameworks = () => {
     const [executables, setExecutables] = useState<Executable[]>([]);
@@ -81,45 +82,10 @@ const ExecutablesFrameworks = () => {
                 }}
             />
             {frameworks.length > 0 && (
-                <TextField
+                <CustomSearch
                     label="Filter frameworks"
-                    variant="outlined"
                     value={frameworkSearch}
                     onChange={(e) => setFrameworkSearch(e.target.value)}
-                    sx={{
-                        input: { color: "white" },
-                        label: { color: "white" },
-                        "& .MuiOutlinedInput-root": {
-                            color: "white",
-                            "& fieldset": {
-                                borderColor: "white",
-                            },
-                            "&:hover fieldset": {
-                                borderColor: "white",
-                            },
-                            "&.Mui-focused fieldset": {
-                                borderColor: "white",
-                            },
-                            "&.Mui-disabled fieldset": {
-                                borderColor: "black",
-                            },
-                            "& input": {
-                                color: "white",
-                            },
-                            "& .MuiSvgIcon-root": {
-                                color: "white",
-                            },
-                        },
-                        "& .MuiInputLabel-root": {
-                            color: "white",
-                            "&.Mui-focused": {
-                                color: "white",
-                            },
-                            "&.Mui-disabled": {
-                                color: "white",
-                            },
-                        },
-                    }}
                 />
             )}
             {filteredFrameworks.map((framework, index) => (

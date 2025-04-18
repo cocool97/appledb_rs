@@ -1,3 +1,4 @@
+use sea_orm::FromQueryResult;
 use serde::Serialize;
 
 mod devices;
@@ -10,12 +11,20 @@ mod frameworks;
 mod operating_system_versions;
 mod operating_systems;
 
-pub use executables::ExecutableVersion;
+use utoipa::ToSchema;
 
 #[derive(Serialize)]
 pub enum DBStatus {
     AlreadyExists(i64),
     Created(i64),
+}
+
+#[derive(FromQueryResult, ToSchema, Serialize)]
+pub struct OperatingSystemVersionExtended {
+    pub id: i64,
+    pub display_name: Option<String>,
+    pub model_code: String,
+    pub version: String,
 }
 
 impl DBStatus {
