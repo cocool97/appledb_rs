@@ -112,9 +112,24 @@ const EntitlementsSearch = () => {
                     justifyContent="center"
                     sx={{ "& > *": { flex: 1 } }}
                 >
-                    <CustomSearch label="Filter by executable name" value={executableInput} onChange={(e) => setExecutableInput(e.target.value)} />
-                    <CustomSearch label="Filter by entitlement key" value={entitlementKeyInput} onChange={(e) => setEntitlementKeyInput(e.target.value)} />
-                    <CustomSearch label="Filter by entitlement value" value={entitlementValueInput} onChange={(e) => setEntitlementValueInput(e.target.value)} />
+                    <CustomSearch
+                        disabled={Object.keys(results).length === 0}
+                        label="Filter by executable name"
+                        value={executableInput}
+                        onChange={(e) => setExecutableInput(e.target.value)}
+                    />
+                    <CustomSearch
+                        disabled={Object.keys(results).length === 0}
+                        label="Filter by entitlement key"
+                        value={entitlementKeyInput}
+                        onChange={(e) => setEntitlementKeyInput(e.target.value)}
+                    />
+                    <CustomSearch
+                        disabled={Object.keys(results).length === 0}
+                        label="Filter by entitlement value"
+                        value={entitlementValueInput}
+                        onChange={(e) => setEntitlementValueInput(e.target.value)}
+                    />
                 </Box>
 
             </Box>
