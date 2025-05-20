@@ -1,15 +1,46 @@
+use std::hash::Hash;
+
 use appledb_common::{
     api_models::ExtendedOperatingSystemVersions,
-    db_models::{Executable, OperatingSystemVersion},
+    db_models::{Framework, OperatingSystemVersion},
 };
 
 use anyhow::{Result, anyhow};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, PaginatorTrait,
-    QueryFilter, QuerySelect, RelationTrait, SqlErr,
+    ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, FromQueryResult, JoinType,
+    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, RelationTrait, SqlErr,
 };
+use serde::Serialize;
+use utoipa::ToSchema;
 
 use crate::db_controller::DBController;
+
+#[derive(Serialize, ToSchema, Clone, FromQueryResult)]
+pub struct ExecutableOperatingSystemVersion {
+    pub executable_operating_system_id: i64,
+    pub name: String,
+    pub full_path: String,
+}
+
+impl PartialEq for ExecutableOperatingSystemVersion {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.full_path == other.full_path
+    }
+}
+
+impl Eq for ExecutableOperatingSystemVersion {}
+
+impl Hash for ExecutableOperatingSystemVersion {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+        self.full_path.hash(state);
+    }
+}
+
+#[derive(Serialize, ToSchema)]
+pub struct FrameworkOperatingSystemVersionInfo {
+    linked_executables_count: usize,
+}
 
 impl DBController {
     pub async fn crud_get_operating_system_version(
@@ -95,7 +126,7 @@ impl DBController {
     pub async fn crud_get_operating_system_version_executables(
         &self,
         operating_system_version_id: i64,
-    ) -> Result<Vec<Executable>, DbErr> {
+    ) -> Result<Vec<ExecutableOperatingSystemVersion>, DbErr> {
         Ok(entity::prelude::Executable::find()
             .join(
                 JoinType::LeftJoin,
@@ -106,10 +137,17 @@ impl DBController {
                 entity::executable_operating_system_version::Relation::OperatingSystemVersion.def(),
             )
             .filter(entity::operating_system_version::Column::Id.eq(operating_system_version_id))
+            .select_only()
+            .column_as(
+                entity::executable_operating_system_version::Column::Id,
+                "executable_operating_system_id",
+            )
+            .column_as(entity::executable::Column::Name, "name")
+            .column_as(entity::executable::Column::FullPath, "full_path")
+            .into_model::<ExecutableOperatingSystemVersion>()
             .all(self.get_connection())
             .await?
             .into_iter()
-            .map(Executable::from)
             .collect())
     }
 
@@ -131,6 +169,32 @@ impl DBController {
 
                 Some(ExtendedOperatingSystemVersions::from((os_version, device)))
             })
+            .collect())
+    }
+
+    pub async fn crud_get_operating_system_version_frameworks(
+        &self,
+        operating_system_version_id: i64,
+    ) -> Result<Vec<Framework>, DbErr> {
+        Ok(entity::prelude::Framework::find()
+            .join(
+                JoinType::LeftJoin,
+                entity::framework::Relation::ExecutableFramework.def(),
+            )
+            .join(
+                JoinType::Join,
+                entity::executable_framework::Relation::ExecutableOperatingSystemVersion.def(),
+            )
+            .filter(
+                entity::executable_operating_system_version::Column::OperatingSystemVersionId
+                    .eq(operating_system_version_id),
+            )
+            .distinct()
+            .order_by_asc(entity::framework::Column::FullPath)
+            .all(self.get_connection())
+            .await?
+            .into_iter()
+            .map(Framework::from)
             .collect())
     }
 }

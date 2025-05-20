@@ -16,18 +16,18 @@ use crate::{crud::OperatingSystemVersionExtended, models::AppState, utils::AppRe
     get,
     path = PublicRoutes::GetExecutableFrameworks,
     params(
-        ("executable_id" = i64, description = "Executable identifier"),
+        ("executable_operating_system_id" = i64, description = "Executable identifier"),
     ),
     responses((status = OK, body = Vec<Framework>))
 )]
 pub async fn get_executable_frameworks(
     State(state): State<Arc<AppState>>,
-    Path(executable_id): Path<i64>,
+    Path(executable_operating_system_id): Path<i64>,
 ) -> AppResult<Json<Vec<Framework>>> {
     Ok(Json(
         state
             .db_controller
-            .crud_get_frameworks_for_executable(executable_id)
+            .crud_get_frameworks_for_executable(executable_operating_system_id)
             .await?,
     ))
 }

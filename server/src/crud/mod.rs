@@ -11,6 +11,8 @@ mod frameworks;
 mod operating_system_versions;
 mod operating_systems;
 
+pub use operating_system_versions::ExecutableOperatingSystemVersion;
+
 use utoipa::ToSchema;
 
 #[derive(Serialize)]

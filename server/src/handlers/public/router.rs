@@ -19,7 +19,9 @@ use crate::handlers::public::{
         __path_get_framework_versions,
     },
     operating_system_versions::{
-        __path_get_extended_operating_system_versions, __path_get_operating_system_versions,
+        __path_get_extended_operating_system_versions,
+        __path_get_operating_system_version_executables,
+        __path_get_operating_system_version_frameworks, __path_get_operating_system_versions,
         __path_get_operating_system_versions_by_id, get_extended_operating_system_versions,
     },
     operating_systems::{__path_get_operating_system_by_id, __path_get_operating_systems},
@@ -38,6 +40,7 @@ use super::{
         get_framework_executables, get_framework_versions,
     },
     operating_system_versions::{
+        get_operating_system_version_executables, get_operating_system_version_frameworks,
         get_operating_system_versions, get_operating_system_versions_by_id,
     },
     operating_systems::{get_operating_system_by_id, get_operating_systems},
@@ -57,6 +60,8 @@ pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<
         get_operating_system_versions,
         get_operating_system_versions_by_id,
         get_extended_operating_system_versions,
+        get_operating_system_version_executables,
+        get_operating_system_version_frameworks,
         get_executable_versions,
         get_all_executables,
         get_all_executables_entitlements,
@@ -148,6 +153,14 @@ pub fn get_public_router(with_openapi: bool) -> Router<Arc<AppState>> {
         .route(
             &PublicRoutes::GetOperatingSystemVersionsExtended.to_string(),
             get(get_extended_operating_system_versions),
+        )
+        .route(
+            &PublicRoutes::GetOperatingSystemVersionsExecutables.to_string(),
+            get(get_operating_system_version_executables),
+        )
+        .route(
+            &PublicRoutes::GetOperatingSystemVersionsFrameworks.to_string(),
+            get(get_operating_system_version_frameworks),
         )
         // ##################
         // Executables

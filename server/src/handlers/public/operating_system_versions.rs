@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
 use appledb_common::{
-    api_models::ExtendedOperatingSystemVersions, db_models::OperatingSystemVersion,
+    api_models::ExtendedOperatingSystemVersions,
+    db_models::{Framework, OperatingSystemVersion},
     routes::PublicRoutes,
 };
 use axum::{
@@ -59,6 +60,46 @@ pub async fn get_extended_operating_system_versions(
         state
             .db_controller
             .crud_get_extended_operating_system_versions()
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetOperatingSystemVersionsExecutables,
+    params(
+        ("operating_system_version_id" = i32, description = "Operating system version identifier to get executables from"),
+    ),
+    responses((status = OK, body = Vec<crate::crud::ExecutableOperatingSystemVersion>))
+)]
+pub async fn get_operating_system_version_executables(
+    State(state): State<Arc<AppState>>,
+    Path(operating_system_version_id): Path<i64>,
+) -> AppResult<Json<Vec<crate::crud::ExecutableOperatingSystemVersion>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_operating_system_version_executables(operating_system_version_id)
+            .await?,
+    ))
+}
+
+#[utoipa::path(
+    get,
+    path = PublicRoutes::GetOperatingSystemVersionsFrameworks,
+    params(
+        ("operating_system_version_id" = i32, description = "Operating system version identifier to get executables from"),
+    ),
+    responses((status = OK, body = Vec<Framework>))
+)]
+pub async fn get_operating_system_version_frameworks(
+    State(state): State<Arc<AppState>>,
+    Path(operating_system_version_id): Path<i64>,
+) -> AppResult<Json<Vec<Framework>>> {
+    Ok(Json(
+        state
+            .db_controller
+            .crud_get_operating_system_version_frameworks(operating_system_version_id)
             .await?,
     ))
 }
