@@ -60,6 +60,8 @@ pub enum PublicRoutes {
     GetOperatingSystemVersions,
     GetOperatingSystemVersionsById,
     GetOperatingSystemVersionsExtended,
+    GetOperatingSystemVersionsExecutables,
+    GetOperatingSystemVersionsFrameworks,
 
     // Executables
     GetExecutableVersions,
@@ -106,7 +108,9 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetDeviceVersions => "/devices/{id}/operating_system_versions".to_string(),
             PublicRoutes::GetOperatingSystemVersions => "/operating_system_versions/all".to_string(),
             PublicRoutes::GetOperatingSystemVersionsById => "/operating_system_versions/{id}".to_string(),
-            PublicRoutes::GetOperatingSystemVersionsExtended => "/operating_system_versions/extended".to_string(),    
+            PublicRoutes::GetOperatingSystemVersionsExtended => "/operating_system_versions/extended".to_string(),
+            PublicRoutes::GetOperatingSystemVersionsExecutables => "/operating_system_versions/{operating_system_version_id}/executables".to_string(),
+            PublicRoutes::GetOperatingSystemVersionsFrameworks => "/operating_system_versions/{operating_system_version_id}/frameworks".to_string(),
             PublicRoutes::GetExecutableVersions => "/executables/{id}/versions".to_string(),
             PublicRoutes::GetExecutableEntitlements => "/executable/{id}/entitlements".to_string(),
             PublicRoutes::GetDiffExecutablesOperatingSystemVersion => "/executables/diff/{from_operating_system_version_id}/{to_operating_system_version_id}".to_string(),
@@ -115,7 +119,7 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetAllFrameworks => "/frameworks/all".to_string(),
             PublicRoutes::GetFrameworkVersions => "/frameworks/{id}/versions".to_string(),
             PublicRoutes::GetFrameworkExecutables => "/frameworks/{framework_id}/executables/{operating_system_version_id}".to_string(),
-            PublicRoutes::GetExecutableFrameworks => "/executables/{executable_id}/frameworks".to_string(),
+            PublicRoutes::GetExecutableFrameworks => "/executable/{executable_operating_system_id}/frameworks".to_string(),
             PublicRoutes::GetRunningTasks => "/tasks/running".to_string(),
         }
     }

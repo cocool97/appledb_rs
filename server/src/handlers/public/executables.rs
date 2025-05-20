@@ -25,12 +25,12 @@ use crate::{crud::OperatingSystemVersionExtended, models::AppState, utils::AppRe
 )]
 pub async fn get_executable_entitlements(
     State(state): State<Arc<AppState>>,
-    Path(executable_id): Path<i64>,
+    Path(executable_operating_system_id): Path<i64>,
 ) -> AppResult<Json<Vec<Entitlement>>> {
     Ok(Json(
         state
             .db_controller
-            .crud_get_entitlements_for_executable(executable_id)
+            .crud_get_entitlements_for_executable(executable_operating_system_id)
             .await?,
     ))
 }
@@ -95,20 +95,20 @@ pub async fn get_all_executables_entitlements(
         ("from_operating_system_version_id" = i64, description = "Initial operating_system_version identifier"),
         ("to_operating_system_version_id" = i64, description = "Final operating_system_version identifier"),
     ),
-    responses((status = OK, body = Diff<Executable>))
+    responses((status = OK, body = Diff<crate::crud::ExecutableOperatingSystemVersion>))
 )]
 pub async fn diff_executables_for_versions(
     State(state): State<Arc<AppState>>,
     Path((from_operating_system_version_id, to_operating_system_version_id)): Path<(i64, i64)>,
-) -> AppResult<Json<Diff<Executable>>> {
-    let executables_from: HashSet<Executable> = state
+) -> AppResult<Json<Diff<crate::crud::ExecutableOperatingSystemVersion>>> {
+    let executables_from: HashSet<crate::crud::ExecutableOperatingSystemVersion> = state
         .db_controller
         .crud_get_operating_system_version_executables(from_operating_system_version_id)
         .await?
         .into_iter()
         .collect();
 
-    let entitlements_to: HashSet<Executable> = state
+    let executables_to: HashSet<crate::crud::ExecutableOperatingSystemVersion> = state
         .db_controller
         .crud_get_operating_system_version_executables(to_operating_system_version_id)
         .await?
@@ -119,7 +119,7 @@ pub async fn diff_executables_for_versions(
     let mut removed = vec![];
     let mut unchanged = vec![];
 
-    for executable in entitlements_to.iter() {
+    for executable in executables_to.iter() {
         if executables_from.contains(executable) {
             unchanged.push(executable.clone());
         } else {
@@ -128,7 +128,7 @@ pub async fn diff_executables_for_versions(
     }
 
     for entitlement in executables_from.iter() {
-        if !entitlements_to.contains(entitlement) {
+        if !executables_to.contains(entitlement) {
             removed.push(entitlement.clone());
         }
     }

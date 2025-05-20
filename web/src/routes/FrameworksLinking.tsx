@@ -1,100 +1,118 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useState } from "react";
 import { API_URL, GET_ALL_FRAMEWORKS_ENDPOINT } from "../Constants";
-import CustomAutocomplete from "../components/CustomAutocomplete";
-import { Typography } from "@mui/material";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { Executable } from "../types/executables";
-import { Version } from "../types/versions";
-import { Framework } from "../types/framework";
 import { CustomSearch } from "../components/CustomSearch";
+import { BarLoader } from "react-spinners";
 
-const FrameworksLinking = () => {
-    const [frameworks, setFrameworks] = useState<Framework[]>([]);
-    const [framework, setFramework] = useState<Framework | null>(null);
-    const prevFramework = useRef<Framework | null>(null);
+const FrameworksLinking = (props) => {
+  const { framework_id, operating_system_version_id } = props;
 
-    const [frameworkVersions, setFrameworkVersions] = useState<Version[]>([]);
+  const [isLoading, setLoading] = useState(false);
 
-    const [versionID, setVersionID] = useState<number | null>(null);
-    const [executables, setExecutables] = useState<Executable[]>([]);
-    const [executableSearch, setExecutableSearch] = useState("");
+  const [executables, setExecutables] = useState<Executable[]>([]);
+  const [executableSearch, setExecutableSearch] = useState("");
 
-    useEffect(() => {
-        fetch(GET_ALL_FRAMEWORKS_ENDPOINT)
-            .then((response) => response.json())
-            .then((data) => setFrameworks(data))
-            .catch((error) => console.log(error));
-    }, []);
+  useEffect(() => {
+    setLoading(true);
 
-    useEffect(() => {
-        if (framework && framework !== prevFramework.current) {
-            prevFramework.current = framework;
-            setFrameworkVersions([]);
-            setVersionID(null);
-            setExecutables([]);
+    if (!framework_id || !operating_system_version_id) {
+      setExecutables([]);
+      return;
+    }
 
-            fetch(`${API_URL}/frameworks/${framework.id}/versions`)
-                .then((response) => response.json())
-                .then((data) => setFrameworkVersions(data))
-                .catch((error) => console.log(error));
-        } else if (!framework) {
-            prevFramework.current = null;
-            setFrameworkVersions([]);
-            setVersionID(null);
-            setExecutables([]);
+    fetch(
+      `${API_URL}/frameworks/${framework_id}/executables/${operating_system_version_id}`,
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch executables");
         }
-    }, [framework]);
+        return response.json();
+      })
+      .then((data) => {
+        setExecutables(data);
+      })
+      .catch((error) => {
+        console.error(error);
+        setExecutables([]);
+      })
+      .finally(() => setLoading(false));
+  }, [framework_id, operating_system_version_id]);
 
-    useEffect(() => {
-        if (framework && versionID) {
-            setExecutables([]);
-            fetch(`${API_URL}/frameworks/${framework.id}/executables/${versionID}`)
-                .then((response) => response.json())
-                .then((data) => setExecutables(data))
-                .catch((error) => console.log(error));
-        } else {
-            setExecutables([]);
-        }
-    }, [versionID]);
+  const filteredExecutables = executables.filter((exec) =>
+    exec.full_path.toLowerCase().includes(executableSearch.toLowerCase()),
+  );
 
-    const displayVersionChoice = (version) => (version.display_name ?? "Unknown") + " - " + version.model_code + " - " + version.version;
-
-    const filteredExecutables = executables.filter(exec =>
-        exec.full_path.toLowerCase().includes(executableSearch.toLowerCase())
-    );
-
-    return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <CustomAutocomplete
-                options={frameworks.map((framework) => framework.full_path)}
-                inputLabel="Framework"
-                value={framework?.full_path || null}
-                onChange={(event, newValue) => {
-                    const selectedFramework = frameworks.find(framework => framework.full_path === newValue);
-                    setFramework(selectedFramework || null);
-                }}
-            />
-            <CustomAutocomplete
-                disabled={frameworkVersions.length === 0}
-                options={frameworkVersions.map((version) => displayVersionChoice(version))}
-                inputLabel="Available version"
-                value={versionID ? displayVersionChoice(frameworkVersions.find(v => v.id === versionID)) : null}
-                onChange={(event, newValue) => {
-                    const selectedVersion = frameworkVersions.find(v => displayVersionChoice(v) === newValue);
-                    setVersionID(selectedVersion?.id || null);
-                }}
-            />
-            {executables.length > 0 && (
-                <CustomSearch
-                    label="Filter frameworks"
-                    value={executableSearch}
-                    onChange={(e) => setExecutableSearch(e.target.value)}
-                />
-            )}
-            {filteredExecutables.map((executable, index) => (
-                <Typography key={index}>{executable.full_path}</Typography>
-            ))}
+  const renderDataTable = () => {
+    if (isLoading) {
+      return (
+        <div
+          style={{
+            width: "inherit",
+            height: "inherit",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "inherit",
+          }}
+        >
+          <BarLoader color="white" width="10rem" />
         </div>
+      );
+    }
+    return (
+      filteredExecutables.length !== 0 && (
+        <TableContainer>
+          <Table size="small" sx={{ tableLayout: "fixed" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="h6" sx={{ color: "white" }}>
+                    Executable full path
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredExecutables.map((result) => {
+                return (
+                  <TableRow key={result.id}>
+                    <TableCell>
+                      <Typography sx={{ color: "white" }}>
+                        {result.full_path}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )
     );
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      {executables.length > 0 && (
+        <CustomSearch
+          label="Filter executables"
+          value={executableSearch}
+          onChange={(e) => setExecutableSearch(e.target.value)}
+        />
+      )}
+      {renderDataTable()}
+    </div>
+  );
 };
 
 export default FrameworksLinking;
