@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { API_URL, GET_ALL_FRAMEWORKS_ENDPOINT } from "../Constants";
+import { API_URL } from "../Constants";
 import {
   Table,
   TableBody,

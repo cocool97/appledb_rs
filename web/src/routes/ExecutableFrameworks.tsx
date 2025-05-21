@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BarLoader } from "react-spinners";
-import { API_URL, GET_ALL_DEVICES_ENDPOINT } from "../Constants";
+import { API_URL } from "../Constants";
 import {
   Box,
   Table,

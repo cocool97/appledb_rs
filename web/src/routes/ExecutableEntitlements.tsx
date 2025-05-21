@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BarLoader } from "react-spinners";
-import { API_URL, GET_ALL_DEVICES_ENDPOINT } from "../Constants";
+import { API_URL } from "../Constants";
 import {
   Box,
   Table,
@@ -128,13 +128,12 @@ const ExecutableEntitlements = (props) => {
   };
 
   return (
-    <Box>
+    <>
       <Box
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-around",
-          marginBottom: "2rem",
         }}
       >
         <Box
@@ -160,7 +159,7 @@ const ExecutableEntitlements = (props) => {
       </Box>
 
       {renderDataTable()}
-    </Box>
+    </>
   );
 };
 

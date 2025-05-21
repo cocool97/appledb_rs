@@ -1,7 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   API_URL,
-  GET_ALL_EXECUTABLES_ENDPOINT,
   GET_EXTENDED_OPERATING_SYSTEM_VERSIONS,
 } from "../../Constants";
 import CustomAutocomplete from "../../components/CustomAutocomplete";
