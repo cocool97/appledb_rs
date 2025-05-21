@@ -105,7 +105,7 @@ impl From<&PublicRoutes> for String {
             PublicRoutes::GetAllExecutablesEntitlements =>"/operating_systems/{id}/executable_entitlements".to_string(),
             PublicRoutes::GetAllExecutables => "/executables/all".to_string(),
             PublicRoutes::GetDevices => "/devices/all".to_string(),
-            PublicRoutes::GetDeviceVersions => "/devices/{id}/operating_system_versions".to_string(),
+            PublicRoutes::GetDeviceVersions => "/device/{id}/operating_system_versions".to_string(),
             PublicRoutes::GetOperatingSystemVersions => "/operating_system_versions/all".to_string(),
             PublicRoutes::GetOperatingSystemVersionsById => "/operating_system_versions/{id}".to_string(),
             PublicRoutes::GetOperatingSystemVersionsExtended => "/operating_system_versions/extended".to_string(),

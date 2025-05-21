@@ -9,11 +9,8 @@ import {
   DRAWER_WIDTH,
   ENTITLEMENTS_DIFF_ROUTE,
   ENTITLEMENTS_SEARCH_ROUTE,
-  EXECUTABLE_ENTITLEMENTS_ROUTE,
-  EXECUTABLE_FRAMEWORKS_ROUTE,
   EXECUTABLES_DIFF_ROUTE,
   EXECUTABLES_ROUTE,
-  FRAMEWORK_OPERATING_SYSTEM_VERSION_EXECUTABLES,
   FRAMEWORKS_DIFF_ROUTE,
   FRAMEWORKS_ROUTE,
   HOME_ROUTE,
@@ -24,13 +21,10 @@ import Tasks from "./routes/Tasks";
 import { TitledComponent } from "./components/TitledComponent";
 import { HOME_PAGE_INFOS, TASKS_INFOS } from "./tooltip_text";
 import { Executables } from "./routes/Executables";
-import ExecutableEntitlements from "./routes/ExecutableEntitlements";
-import ExecutableFrameworks from "./routes/ExecutableFrameworks";
 import EntitlementsSearch from "./routes/EntitlementsSearch";
 import EntitlementsDiffing from "./routes/diffing/EntitlementsDiffing";
 import FrameworksDiffing from "./routes/diffing/FrameworksDiffing";
 import ExecutablesDiffing from "./routes/diffing/ExecutablesDffing";
-import FrameworksLinking from "./routes/FrameworksLinking";
 import { Frameworks } from "./routes/Frameworks";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(

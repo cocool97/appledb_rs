@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BarLoader } from "react-spinners";
-import {
-  API_URL,
-  GET_ALL_DEVICES_ENDPOINT,
-  GET_EXTENDED_OPERATING_SYSTEM_VERSIONS,
-} from "../Constants";
+import { API_URL, GET_EXTENDED_OPERATING_SYSTEM_VERSIONS } from "../Constants";
 import { CustomDataTable } from "../components/CustomDataTable";
 import { Box } from "@mui/material";
 import CustomAutocomplete from "../components/CustomAutocomplete";

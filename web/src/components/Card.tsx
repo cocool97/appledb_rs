@@ -20,10 +20,6 @@ const Card = (props) => {
         textAlign: "center",
         fontSize: "1rem",
         fontWeight: "bold",
-        transition: "transform 0.1s ease-in-out",
-        "&:hover": {
-          transform: "scale(1.05)",
-        },
       }}
     >
       <Box
