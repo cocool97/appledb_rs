@@ -26,6 +26,13 @@ import EntitlementsDiffing from "./routes/diffing/EntitlementsDiffing";
 import FrameworksDiffing from "./routes/diffing/FrameworksDiffing";
 import ExecutablesDiffing from "./routes/diffing/ExecutablesDffing";
 import { Frameworks } from "./routes/Frameworks";
+import {
+  ENTITLEMENT_ICON,
+  EXECUTABLE_ICON,
+  FRAMEWORK_ICON,
+  SEARCH_ICON,
+  TASK_ICON,
+} from "./icons";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme }) => ({
@@ -67,6 +74,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Executable information"
+        logo={EXECUTABLE_ICON}
         component={<Executables />}
       />
     ),
@@ -76,6 +84,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Framework information"
+        logo={FRAMEWORK_ICON}
         component={<Frameworks />}
       />
     ),
@@ -85,6 +94,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Entitlements - Search"
+        logo={SEARCH_ICON}
         component={<EntitlementsSearch />}
       />
     ),
@@ -94,6 +104,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Entitlements - Diff"
+        logo={ENTITLEMENT_ICON}
         component={<EntitlementsDiffing />}
       />
     ),
@@ -103,6 +114,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Frameworks - Diff"
+        logo={FRAMEWORK_ICON}
         component={<FrameworksDiffing />}
       />
     ),
@@ -112,6 +124,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Executables - Diff"
+        logo={EXECUTABLE_ICON}
         component={<ExecutablesDiffing />}
       />
     ),
@@ -122,6 +135,7 @@ const ROUTES = [
       <TitledComponent
         title="Running tasks"
         tooltip={TASKS_INFOS}
+        logo={TASK_ICON}
         component={<Tasks />}
       />
     ),
