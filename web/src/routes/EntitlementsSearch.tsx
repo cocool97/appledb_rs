@@ -6,11 +6,11 @@ import { Box } from "@mui/material";
 import CustomAutocomplete from "../components/CustomAutocomplete";
 import { CustomSearch } from "../components/CustomSearch";
 import { DeviceVersion } from "../types/device_versions";
+import DeviceVersionSearch from "../components/DeviceVersionSearch";
 
 const EntitlementsSearch = () => {
-  const [devices, setDevices] = useState<DeviceVersion[]>([]);
-
-  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
+  const [selectedDeviceVersion, setSelectedDeviceVersion] =
+    useState<DeviceVersion | null>(null);
 
   const [results, setResults] = useState({});
   const [isLoading, setLoading] = useState(false);
@@ -19,32 +19,18 @@ const EntitlementsSearch = () => {
   const [entitlementKeyInput, setEntitlementKeyInput] = useState("");
   const [entitlementValueInput, setEntitlementValueInput] = useState("");
 
-  const displayVersionChoice = (version) =>
-    (version.display_name ?? "Unknown") +
-    " - " +
-    version.model_code +
-    " - " +
-    version.version;
-
   useEffect(() => {
-    fetch(GET_EXTENDED_OPERATING_SYSTEM_VERSIONS)
-      .then((response) => response.json())
-      .then((data) => setDevices(data))
-      .catch((error) => console.log(error));
-  }, []);
-
-  useEffect(() => {
-    if (selectedDeviceId) {
+    if (selectedDeviceVersion) {
       setLoading(true);
       fetch(
-        `${API_URL}/operating_systems/${selectedDeviceId}/executable_entitlements`,
+        `${API_URL}/operating_systems/${selectedDeviceVersion.id}/executable_entitlements`,
       )
         .then((response) => response.json())
         .then((data) => setResults(data))
         .then(() => setLoading(false))
         .catch((error) => console.log(error));
     }
-  }, [selectedDeviceId]);
+  }, [selectedDeviceVersion]);
 
   const filterObject = useCallback(
     (obj) => {
@@ -107,21 +93,13 @@ const EntitlementsSearch = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-around",
-          marginBottom: "2rem",
+          marginBottom: "3rem",
+          gap: "1rem",
         }}
       >
-        <Box display="flex" flexDirection="row" marginBottom="1rem" gap={4}>
-          <CustomAutocomplete
-            options={devices.map((device) => displayVersionChoice(device))}
-            inputLabel="Device"
-            onChange={(event, newValue) => {
-              const selectedModel = devices.find(
-                (model) => displayVersionChoice(model) === newValue,
-              );
-              setSelectedDeviceId(selectedModel?.id || null);
-            }}
-          />
-        </Box>
+        <DeviceVersionSearch
+          setSelectedDeviceVersion={setSelectedDeviceVersion}
+        />
 
         <Box
           display="flex"
