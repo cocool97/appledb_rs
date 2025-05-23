@@ -128,12 +128,13 @@ const ExecutableEntitlements = (props) => {
   };
 
   return (
-    <>
+    <Box>
       <Box
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-around",
+          marginBottom: "2rem",
         }}
       >
         <Box
@@ -159,7 +160,7 @@ const ExecutableEntitlements = (props) => {
       </Box>
 
       {renderDataTable()}
-    </>
+    </Box>
   );
 };
 
