@@ -34,8 +34,8 @@ tower-http = { version = "0.6.2", features = ["cors", "fs"] }
 url = "2.5.4"
 
 # Waiting for utoipa to have another release...
-utoipa = { git = "https://github.com/juhaku/utoipa.git",  rev = "cecda0531bf7d90800af66b186055932ee730526", features = ["axum_extras"] }
-utoipa-swagger-ui = { git = "https://github.com/juhaku/utoipa.git", rev = "cecda0531bf7d90800af66b186055932ee730526", features = ["axum", "vendored"] }
+utoipa = { version = "= 5.3.1", features = ["axum_extras"] }
+utoipa-swagger-ui = { version = "= 9.0.0", features = ["axum", "vendored"] }
 
 uuid = { version = "1.16.0", features = ["v4"] }
 

@@ -2,17 +2,30 @@ import { useEffect, useState } from "react";
 import { API_URL } from "../Constants";
 import React from "react";
 import CustomAutocomplete from "../components/CustomAutocomplete";
-import { Box } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Typography,
+} from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import { ExecutableOperatingSystem } from "../types/executable_operating_system";
 import { DeviceVersion } from "../types/device_versions";
 import ExecutableEntitlements from "./ExecutableEntitlements";
 import ExecutableFrameworks from "./ExecutableFrameworks";
 import DeviceVersionSearch from "../components/DeviceVersionSearch";
+import { CustomAccordion } from "../components/CustomAccordion";
 
 const EXECUTABLE_ID_SEARCH_PARAM = "executable_id";
 
 export const Executables = () => {
+  const [expanded, setExpanded] = React.useState("");
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [selectedDeviceVersion, setSelectedDeviceVersion] =
@@ -85,15 +98,29 @@ export const Executables = () => {
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: "2rem",
           }}
         >
-          <ExecutableEntitlements
-            executable_operating_system_id={selectedExecutableId}
-          />
-
-          <ExecutableFrameworks
-            executable_operating_system_id={selectedExecutableId}
+          <CustomAccordion
+            members={[
+              {
+                title: "Entitlements",
+                summary: "What entitlements does this executable have ?",
+                component: (
+                  <ExecutableEntitlements
+                    executable_operating_system_id={selectedExecutableId}
+                  />
+                ),
+              },
+              {
+                title: "Frameworks",
+                summary: "What frameworks does this executable depend on?",
+                component: (
+                  <ExecutableFrameworks
+                    executable_operating_system_id={selectedExecutableId}
+                  />
+                ),
+              },
+            ]}
           />
         </Box>
       )}

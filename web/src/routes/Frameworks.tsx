@@ -7,6 +7,7 @@ import { DeviceVersion } from "../types/device_versions";
 import { Framework } from "../types/framework";
 import FrameworksLinking from "./FrameworksLinking";
 import DeviceVersionSearch from "../components/DeviceVersionSearch";
+import { CustomAccordion } from "../components/CustomAccordion";
 
 export const Frameworks = () => {
   const [selectedDeviceVersion, setSelectedDeviceVersion] =
@@ -60,12 +61,21 @@ export const Frameworks = () => {
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: "2rem",
           }}
         >
-          <FrameworksLinking
-            framework_id={selectedFramework.id}
-            operating_system_version_id={selectedDeviceVersion.id}
+          <CustomAccordion
+            members={[
+              {
+                title: "Linking executables",
+                summary: "What executables are using this framework ?",
+                component: (
+                  <FrameworksLinking
+                    framework_id={selectedFramework.id}
+                    operating_system_version_id={selectedDeviceVersion.id}
+                  />
+                ),
+              },
+            ]}
           />
         </Box>
       )}
