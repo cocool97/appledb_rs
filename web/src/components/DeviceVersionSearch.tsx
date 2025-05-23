@@ -33,7 +33,7 @@ const DeviceVersionSearch = (props) => {
   }, [selectedDevice]);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
+    <Box sx={{ display: "flex", flexDirection: "row", gap: 4 }}>
       <CustomAutocomplete
         options={devices.map((device) => ({
           id: device.id,
