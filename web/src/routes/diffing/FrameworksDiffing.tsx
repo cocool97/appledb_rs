@@ -90,7 +90,6 @@ const FrameworksDiffing = () => {
             const selectedExecutable = fromExecutables.find(
               (exec) => exec.full_path === newValue,
             );
-            console.log(selectedExecutable);
             setFromExecutableId(
               selectedExecutable?.executable_operating_system_id || null,
             );

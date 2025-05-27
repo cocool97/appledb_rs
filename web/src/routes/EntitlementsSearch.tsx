@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BarLoader } from "react-spinners";
-import { API_URL, GET_EXTENDED_OPERATING_SYSTEM_VERSIONS } from "../Constants";
+import { API_URL } from "../Constants";
 import { CustomDataTable } from "../components/CustomDataTable";
 import { Box } from "@mui/material";
-import CustomAutocomplete from "../components/CustomAutocomplete";
 import { CustomSearch } from "../components/CustomSearch";
-import { DeviceVersion } from "../types/device_versions";
 import DeviceVersionSearch from "../components/DeviceVersionSearch";
 
 const EntitlementsSearch = () => {
-  const [selectedDeviceVersion, setSelectedDeviceVersion] =
-    useState<DeviceVersion | null>(null);
+  const [selectedDeviceVersionId, setSelectedDeviceVersionId] = useState<
+    number | null
+  >(null);
 
   const [results, setResults] = useState({});
   const [isLoading, setLoading] = useState(false);
@@ -20,17 +19,17 @@ const EntitlementsSearch = () => {
   const [entitlementValueInput, setEntitlementValueInput] = useState("");
 
   useEffect(() => {
-    if (selectedDeviceVersion) {
+    if (selectedDeviceVersionId) {
       setLoading(true);
       fetch(
-        `${API_URL}/operating_systems/${selectedDeviceVersion.id}/executable_entitlements`,
+        `${API_URL}/operating_systems/${selectedDeviceVersionId}/executable_entitlements`,
       )
         .then((response) => response.json())
         .then((data) => setResults(data))
         .then(() => setLoading(false))
         .catch((error) => console.log(error));
     }
-  }, [selectedDeviceVersion]);
+  }, [selectedDeviceVersionId]);
 
   const filterObject = useCallback(
     (obj) => {
@@ -98,7 +97,7 @@ const EntitlementsSearch = () => {
         }}
       >
         <DeviceVersionSearch
-          setSelectedDeviceVersion={setSelectedDeviceVersion}
+          setSelectedDeviceVersionId={setSelectedDeviceVersionId}
         />
 
         <Box
