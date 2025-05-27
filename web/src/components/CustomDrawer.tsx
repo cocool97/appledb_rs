@@ -9,7 +9,7 @@ import {
   FRAMEWORKS_ROUTE,
   TASKS_ROUTE,
 } from "../Constants";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Divider,
@@ -49,11 +49,10 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const DrawerListItem = (props) => {
   const { to, icon, text } = props;
-  const navigate = useNavigate();
 
   return (
     <ListItem disablePadding>
-      <ListItemButton onClick={() => navigate(to)}>
+      <ListItemButton component={RouterLink} to={to}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={text} sx={{ color: "white" }} />
       </ListItemButton>

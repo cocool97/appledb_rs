@@ -31,3 +31,11 @@ export const FRAMEWORKS_DIFF_ROUTE = "/frameworks/diff";
 export const EXECUTABLES_DIFF_ROUTE = "/executables/diff";
 export const TASKS_ROUTE = "/tasks";
 //////////////////////////
+
+//////////////////////////
+// Search params
+export const EXECUTABLE_ID_SEARCH_PARAM = "executable_id";
+export const DEVICE_ID_SEARCH_PARAM = "device_id";
+export const DEVICE_VERSION_ID_SEARCH_PARAM = "device_version_id";
+export const FRAMEWORK_ID_SEARCH_PARAM = "framework_id";
+//////////////////////////

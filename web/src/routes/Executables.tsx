@@ -1,35 +1,20 @@
-import { useEffect, useState } from "react";
-import { API_URL } from "../Constants";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { API_URL, EXECUTABLE_ID_SEARCH_PARAM } from "../Constants";
 import CustomAutocomplete from "../components/CustomAutocomplete";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 import { ExecutableOperatingSystem } from "../types/executable_operating_system";
-import { DeviceVersion } from "../types/device_versions";
 import ExecutableEntitlements from "./ExecutableEntitlements";
 import ExecutableFrameworks from "./ExecutableFrameworks";
 import DeviceVersionSearch from "../components/DeviceVersionSearch";
 import { CustomAccordion } from "../components/CustomAccordion";
 
-const EXECUTABLE_ID_SEARCH_PARAM = "executable_id";
-
 export const Executables = () => {
-  const [expanded, setExpanded] = React.useState("");
-
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
-
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [selectedDeviceVersion, setSelectedDeviceVersion] =
-    useState<DeviceVersion | null>(null);
+  const [selectedDeviceVersionId, setSelectedDeviceVersionId] = useState<
+    number | null
+  >(null);
 
   const [executables, setExecutables] = useState<ExecutableOperatingSystem[]>(
     [],
@@ -40,16 +25,28 @@ export const Executables = () => {
     number | null
   >(executable_id ? parseInt(executable_id) : null);
 
+  const selectedExecutableOption = useMemo(() => {
+    const executable = executables.find(
+      (e) => e.executable_operating_system_id === selectedExecutableId,
+    );
+    return executable
+      ? {
+          id: executable.executable_operating_system_id,
+          label: executable.full_path,
+        }
+      : null;
+  }, [executables, selectedExecutableId]);
+
   useEffect(() => {
-    if (selectedDeviceVersion) {
+    if (selectedDeviceVersionId) {
       fetch(
-        `${API_URL}/operating_system_versions/${selectedDeviceVersion.id}/executables`,
+        `${API_URL}/operating_system_versions/${selectedDeviceVersionId}/executables`,
       )
         .then((response) => response.json())
         .then((data) => setExecutables(data))
         .catch((error) => console.log(error));
     }
-  }, [selectedDeviceVersion]);
+  }, [selectedDeviceVersionId]);
 
   return (
     <div
@@ -67,13 +64,14 @@ export const Executables = () => {
         }}
       >
         <DeviceVersionSearch
-          setSelectedDeviceVersion={setSelectedDeviceVersion}
+          setSelectedDeviceVersionId={setSelectedDeviceVersionId}
         />
 
         <CustomAutocomplete
           disabled={executables.length === 0}
           options={executables.map((executable) => executable.full_path)}
           inputLabel="Available executables"
+          value={selectedExecutableOption}
           onChange={(event, newValue) => {
             const selectedExecutable = executables.find(
               (executables) => executables.full_path === newValue,
@@ -83,11 +81,13 @@ export const Executables = () => {
 
             if (selectedExecutableId) {
               setSelectedExecutableId(selectedExecutableId ?? null);
-              searchParams.set(
-                EXECUTABLE_ID_SEARCH_PARAM,
-                selectedExecutableId.toString(),
-              );
-              setSearchParams(searchParams);
+              setSearchParams((searchParams) => {
+                searchParams.set(
+                  EXECUTABLE_ID_SEARCH_PARAM,
+                  selectedExecutableId.toString(),
+                );
+                return searchParams;
+              });
             }
           }}
         />

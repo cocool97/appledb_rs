@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import { styled, Typography } from "@mui/material";
 import logo from "../logo.png";
+import { Link as RouterLink } from "react-router-dom";
 import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -32,7 +32,6 @@ const AppBar = styled(MuiAppBar, {
 
 const CustomAppBar = (props) => {
   const { drawerOpen, handleDrawerOpen } = props;
-  const navigate = useNavigate();
 
   return (
     <AppBar
@@ -57,9 +56,10 @@ const CustomAppBar = (props) => {
           <MenuIcon />
         </IconButton>
         <IconButton
+          component={RouterLink}
+          to={HOME_ROUTE}
           style={{ backgroundColor: "transparent" }}
           sx={{ height: "64px", maxHeight: "64px" }}
-          onClick={() => navigate(HOME_ROUTE)}
         >
           <img
             style={{
