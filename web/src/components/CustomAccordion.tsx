@@ -25,7 +25,11 @@ export const CustomAccordion: React.FC<CustomAccordionProps> = ({
       {members.map((element, index) => (
         <Accordion
           key={index}
-          sx={{ backgroundColor: "transparent" }}
+          sx={{
+            backgroundColor: "transparent",
+            borderBottom: "2px solid",
+            borderColor: "white",
+          }}
           slotProps={{ transition: { unmountOnExit: true } }}
         >
           <AccordionSummary

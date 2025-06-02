@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use appledb_common::db_models::{Executable, Framework};
+use appledb_common::db_models::Framework;
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, JoinType, QueryFilter,
     QuerySelect, RelationTrait, SelectColumns, SqlErr,
@@ -119,7 +119,7 @@ impl DBController {
         &self,
         framework_id: i64,
         operating_system_version_id: i64,
-    ) -> Result<Vec<Executable>, DbErr> {
+    ) -> Result<Vec<super::ExecutableOperatingSystemVersion>, DbErr> {
         Ok(entity::prelude::Executable::find()
             .join(
                 JoinType::Join,
@@ -134,10 +134,17 @@ impl DBController {
                 entity::executable_operating_system_version::Column::OperatingSystemVersionId
                     .eq(operating_system_version_id),
             )
+            .select_only()
+            .column_as(
+                entity::executable_operating_system_version::Column::Id,
+                "executable_operating_system_id",
+            )
+            .column_as(entity::executable::Column::Name, "name")
+            .column_as(entity::executable::Column::FullPath, "full_path")
+            .into_model::<super::ExecutableOperatingSystemVersion>()
             .all(self.get_connection())
             .await?
             .into_iter()
-            .map(Executable::from)
             .collect())
     }
 }
