@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { API_URL } from "../Constants";
+import {
+  API_URL,
+  DEVICE_ID_SEARCH_PARAM,
+  DEVICE_VERSION_ID_SEARCH_PARAM,
+} from "../Constants";
 import {
   Table,
   TableBody,
@@ -9,16 +13,21 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Executable } from "../types/executables";
+import { ExecutableOperatingSystemVersion } from "../types/executables";
 import { CustomSearch } from "../components/CustomSearch";
 import { BarLoader } from "react-spinners";
+import { Link, useSearchParams } from "react-router-dom";
 
 const FrameworksLinking = (props) => {
   const { framework_id, operating_system_version_id } = props;
 
+  const [searchParams] = useSearchParams();
+
   const [isLoading, setLoading] = useState(false);
 
-  const [executables, setExecutables] = useState<Executable[]>([]);
+  const [executables, setExecutables] = useState<
+    ExecutableOperatingSystemVersion[]
+  >([]);
   const [executableSearch, setExecutableSearch] = useState("");
 
   useEffect(() => {
@@ -52,6 +61,20 @@ const FrameworksLinking = (props) => {
     exec.full_path.toLowerCase().includes(executableSearch.toLowerCase()),
   );
 
+  const getExecutableLink = (executable_id: number) => {
+    const selectedDeviceIdParam = searchParams.get(DEVICE_ID_SEARCH_PARAM);
+
+    const selectedDeviceVersionIdParam = searchParams.get(
+      DEVICE_VERSION_ID_SEARCH_PARAM,
+    );
+
+    if (!selectedDeviceIdParam || !selectedDeviceVersionIdParam) {
+      return null;
+    }
+
+    return `/executables?device_id=${selectedDeviceIdParam}&device_version_id=${selectedDeviceVersionIdParam}&executable_id=${executable_id}`;
+  };
+
   const renderDataTable = () => {
     if (isLoading) {
       return (
@@ -84,13 +107,21 @@ const FrameworksLinking = (props) => {
             </TableHead>
             <TableBody>
               {filteredExecutables.map((result) => {
+                const link = getExecutableLink(
+                  result.executable_operating_system_id,
+                );
+
+                const text = (
+                  <Typography sx={{ color: "white" }}>
+                    {result.full_path}
+                  </Typography>
+                );
+
+                const component = link ? <Link to={link}>{text}</Link> : text;
+
                 return (
-                  <TableRow key={result.id}>
-                    <TableCell>
-                      <Typography sx={{ color: "white" }}>
-                        {result.full_path}
-                      </Typography>
-                    </TableCell>
+                  <TableRow key={result.executable_operating_system_id}>
+                    <TableCell>{component}</TableCell>
                   </TableRow>
                 );
               })}

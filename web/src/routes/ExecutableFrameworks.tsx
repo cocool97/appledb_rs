@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BarLoader } from "react-spinners";
-import { API_URL } from "../Constants";
+import {
+  API_URL,
+  DEVICE_ID_SEARCH_PARAM,
+  DEVICE_VERSION_ID_SEARCH_PARAM,
+} from "../Constants";
 import {
   Box,
   Table,
@@ -13,9 +17,12 @@ import {
 } from "@mui/material";
 import { CustomSearch } from "../components/CustomSearch";
 import { Framework } from "../types/framework";
+import { Link, useSearchParams } from "react-router-dom";
 
 const ExecutableFrameworks = (props) => {
   const { executable_operating_system_id } = props;
+
+  const [searchParams] = useSearchParams();
 
   const [results, setResults] = useState<Framework[]>([]);
   const [isLoading, setLoading] = useState(false);
@@ -62,6 +69,20 @@ const ExecutableFrameworks = (props) => {
     [results, filterObject],
   );
 
+  const getFrameworkLink = (framework_id: number) => {
+    const selectedDeviceIdParam = searchParams.get(DEVICE_ID_SEARCH_PARAM);
+
+    const selectedDeviceVersionIdParam = searchParams.get(
+      DEVICE_VERSION_ID_SEARCH_PARAM,
+    );
+
+    if (!selectedDeviceIdParam || !selectedDeviceVersionIdParam) {
+      return null;
+    }
+
+    return `/frameworks?device_id=${selectedDeviceIdParam}&device_version_id=${selectedDeviceVersionIdParam}&framework_id=${framework_id}`;
+  };
+
   const renderDataTable = () => {
     if (isLoading) {
       return (
@@ -94,13 +115,19 @@ const ExecutableFrameworks = (props) => {
             </TableHead>
             <TableBody>
               {filteredResults.map((result) => {
+                const link = getFrameworkLink(result.id);
+
+                const text = (
+                  <Typography sx={{ color: "white" }}>
+                    {result.full_path}
+                  </Typography>
+                );
+
+                const component = link ? <Link to={link}>{text}</Link> : text;
+
                 return (
                   <TableRow key={result.id}>
-                    <TableCell>
-                      <Typography sx={{ color: "white" }}>
-                        {result.full_path}
-                      </Typography>
-                    </TableCell>
+                    <TableCell>{component}</TableCell>
                   </TableRow>
                 );
               })}

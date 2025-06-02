@@ -1,10 +1,6 @@
 use std::{collections::HashSet, sync::Arc};
 
-use appledb_common::{
-    api_models::Diff,
-    db_models::{Executable, Framework},
-    routes::PublicRoutes,
-};
+use appledb_common::{api_models::Diff, db_models::Framework, routes::PublicRoutes};
 use axum::{
     Json,
     extract::{Path, State},
@@ -124,12 +120,12 @@ pub async fn get_framework_versions(
         ("framework_id" = i64, description = "Framework identifier"),
         ("operating_system_version_id" = i64, description = "Operating system version identifier"),
     ),
-    responses((status = OK, body = Vec<Executable>))
+    responses((status = OK, body = Vec<crate::crud::ExecutableOperatingSystemVersion>))
 )]
 pub async fn get_framework_executables(
     State(state): State<Arc<AppState>>,
     Path((framework_id, operating_system_version_id)): Path<(i64, i64)>,
-) -> AppResult<Json<Vec<Executable>>> {
+) -> AppResult<Json<Vec<crate::crud::ExecutableOperatingSystemVersion>>> {
     Ok(Json(
         state
             .db_controller

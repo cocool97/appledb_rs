@@ -19,7 +19,12 @@ import {
 import CustomDrawer from "./components/CustomDrawer";
 import Tasks from "./routes/Tasks";
 import { TitledComponent } from "./components/TitledComponent";
-import { HOME_PAGE_INFOS, TASKS_INFOS } from "./tooltip_text";
+import {
+  EXECUTABLE_INFOS,
+  FRAMEWORK_INFOS,
+  HOME_PAGE_INFOS,
+  TASKS_INFOS,
+} from "./tooltip_text";
 import { Executables } from "./routes/Executables";
 import EntitlementsSearch from "./routes/EntitlementsSearch";
 import EntitlementsDiffing from "./routes/diffing/EntitlementsDiffing";
@@ -33,6 +38,7 @@ import {
   SEARCH_ICON,
   TASK_ICON,
 } from "./icons";
+import { NotFound } from "./routes/NotFound";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme }) => ({
@@ -74,6 +80,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Executable information"
+        tooltip={EXECUTABLE_INFOS}
         logo={EXECUTABLE_ICON}
         component={<Executables />}
       />
@@ -84,6 +91,7 @@ const ROUTES = [
     element: (
       <TitledComponent
         title="Framework information"
+        tooltip={FRAMEWORK_INFOS}
         logo={FRAMEWORK_ICON}
         component={<Frameworks />}
       />
@@ -142,7 +150,7 @@ const ROUTES = [
   },
   {
     path: "*",
-    element: <div>NOT FOUND :)</div>,
+    element: <NotFound />,
   },
 ];
 
