@@ -79,23 +79,7 @@ async fn main() -> Result<()> {
         running_tasks: Arc::new(RwLock::new(BTreeMap::new())),
     });
 
-    log::info!(
-        "{} cors domain(s) allowed: {}",
-        configuration.cors_allowed_origins.len(),
-        configuration.cors_allowed_origins.join(",")
-    );
-
-    let allowed_origins: Vec<HeaderValue> = configuration
-        .cors_allowed_origins
-        .iter()
-        .map(HeaderValue::try_from)
-        .collect::<Result<_, InvalidHeaderValue>>()?;
-
-    let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
-        .allow_origin(allowed_origins);
-
-    let app = Router::new()
+    let mut app = Router::new()
         .nest(
             AdminRoutes::route_prefix(),
             handlers::get_admin_router(configuration.serve_openapi),
@@ -107,8 +91,28 @@ async fn main() -> Result<()> {
         .fallback(handle_webapp)
         .layer(ServiceBuilder::new().layer(axum::middleware::from_fn(log_requests)))
         .layer(DefaultBodyLimit::max(configuration.http_max_body_size))
-        .layer(cors)
         .with_state(state);
+
+    if let Some(allowed_origins) = configuration.cors_allowed_origins {
+        log::info!(
+            "{} cors domain(s) allowed: {}",
+            allowed_origins.len(),
+            allowed_origins.join(",")
+        );
+
+        let allowed_origins: Vec<HeaderValue> = allowed_origins
+            .iter()
+            .map(HeaderValue::try_from)
+            .collect::<Result<_, InvalidHeaderValue>>()?;
+
+        let cors = CorsLayer::new()
+            .allow_methods([Method::GET, Method::POST])
+            .allow_origin(allowed_origins);
+
+        app = app.layer(cors);
+    } else {
+        log::info!("no cors policy setup")
+    }
 
     log::info!("Server listening on {}...", configuration.listen_mode);
     match configuration.listen_mode {

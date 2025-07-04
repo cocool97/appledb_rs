@@ -32,8 +32,8 @@ pub struct ServerConfig {
     pub database_url: String,
     /// Path to web sources
     pub web_sources_path: PathBuf,
-    /// List of CORS domains
-    pub cors_allowed_origins: Vec<String>,
+    /// List of CORS domains to allow
+    pub cors_allowed_origins: Option<Vec<String>>,
     /// Max concurrent tasks that can run concurrently
     pub max_concurrent_tasks: usize,
     /// Serve openapi documentation ?
