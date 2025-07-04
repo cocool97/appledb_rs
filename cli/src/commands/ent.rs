@@ -62,10 +62,7 @@ pub async fn parse_entitlements_command(
             let entitlements_task_uuid =
                 entitlements_parser.post_results(&server_controller).await?;
 
-            log::info!(
-                "Received entitlements task UUID: {}",
-                entitlements_task_uuid
-            );
+            log::info!("Received entitlements task UUID: {entitlements_task_uuid}",);
 
             Ok(())
         }

@@ -1,18 +1,10 @@
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DbErr, EntityTrait, QueryFilter, SqlErr,
 };
-use serde::Serialize;
-use utoipa::ToSchema;
 
 use crate::db_controller::DBController;
 
 use super::DBStatus;
-
-#[derive(Serialize, ToSchema)]
-pub struct ExecutableOperatingSystemVersionInfo {
-    entitlements_count: usize,
-    frameworks_count: usize,
-}
 
 impl DBController {
     pub async fn crud_get_or_create_executable_operating_system_version(

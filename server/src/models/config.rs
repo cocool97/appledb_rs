@@ -32,6 +32,8 @@ pub struct ServerConfig {
     pub database_url: String,
     /// Path to web sources
     pub web_sources_path: PathBuf,
+    /// List of CORS domains to allow
+    pub cors_allowed_origins: Option<Vec<String>>,
     /// Max concurrent tasks that can run concurrently
     pub max_concurrent_tasks: usize,
     /// Serve openapi documentation ?
@@ -73,7 +75,7 @@ impl FromStr for ListenMode {
 impl Display for ListenMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ListenMode::SocketAddr(socket_addr) => write!(f, "http://{}", socket_addr),
+            ListenMode::SocketAddr(socket_addr) => write!(f, "http://{socket_addr}",),
             ListenMode::UnixSocket(path) => write!(f, "unix:{}", path.display()),
         }
     }

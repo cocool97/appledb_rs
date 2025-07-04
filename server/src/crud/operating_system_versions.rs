@@ -37,11 +37,6 @@ impl Hash for ExecutableOperatingSystemVersion {
     }
 }
 
-#[derive(Serialize, ToSchema)]
-pub struct FrameworkOperatingSystemVersionInfo {
-    linked_executables_count: usize,
-}
-
 impl DBController {
     pub async fn crud_get_operating_system_version(
         &self,

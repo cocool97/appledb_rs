@@ -11,7 +11,7 @@ use axum::{
     Router,
     body::Body,
     extract::{DefaultBodyLimit, State},
-    http::{Method, Request, StatusCode},
+    http::{HeaderValue, Method, Request, StatusCode, header::InvalidHeaderValue},
     response::IntoResponse,
 };
 use clap::Parser;
@@ -26,7 +26,7 @@ use tokio::{
 };
 use tower::ServiceBuilder;
 use tower_http::{
-    cors::{Any, CorsLayer},
+    cors::CorsLayer,
     services::{ServeDir, ServeFile},
 };
 
@@ -79,11 +79,7 @@ async fn main() -> Result<()> {
         running_tasks: Arc::new(RwLock::new(BTreeMap::new())),
     });
 
-    let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
-        .allow_origin(Any);
-
-    let app = Router::new()
+    let mut app = Router::new()
         .nest(
             AdminRoutes::route_prefix(),
             handlers::get_admin_router(configuration.serve_openapi),
@@ -95,8 +91,28 @@ async fn main() -> Result<()> {
         .fallback(handle_webapp)
         .layer(ServiceBuilder::new().layer(axum::middleware::from_fn(log_requests)))
         .layer(DefaultBodyLimit::max(configuration.http_max_body_size))
-        .layer(cors)
         .with_state(state);
+
+    if let Some(allowed_origins) = configuration.cors_allowed_origins {
+        log::info!(
+            "{} cors domain(s) allowed: {}",
+            allowed_origins.len(),
+            allowed_origins.join(",")
+        );
+
+        let allowed_origins: Vec<HeaderValue> = allowed_origins
+            .iter()
+            .map(HeaderValue::try_from)
+            .collect::<Result<_, InvalidHeaderValue>>()?;
+
+        let cors = CorsLayer::new()
+            .allow_methods([Method::GET, Method::POST])
+            .allow_origin(allowed_origins);
+
+        app = app.layer(cors);
+    } else {
+        log::info!("no cors policy setup")
+    }
 
     log::info!("Server listening on {}...", configuration.listen_mode);
     match configuration.listen_mode {
@@ -109,7 +125,7 @@ async fn main() -> Result<()> {
             if path.try_exists()? {
                 log::info!("Removing old unix socket...");
                 std::fs::remove_file(&path)
-                    .with_context(|| format!("cannot delete unix socket at path {:?}", path))?;
+                    .with_context(|| format!("cannot delete unix socket at path {path:?}",))?;
             }
 
             Ok(axum::serve(UnixListener::bind(path)?, app.into_make_service()).await?)

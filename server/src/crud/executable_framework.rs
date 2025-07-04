@@ -21,9 +21,7 @@ impl DBController {
             Err(db_err) => {
                 if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
                     log::debug!(
-                        "executable / framework association already exists {} / {}",
-                        executable_operating_system_version_id,
-                        framework_id
+                        "executable / framework association already exists {executable_operating_system_version_id} / {framework_id}",
                     );
                     Ok(())
                 } else {

@@ -16,6 +16,10 @@ web_sources_path: web/dist
 max_concurrent_tasks: 10
 
 serve_openapi: false
+
+cors_allowed_origins:
+  - https://mydomain1
+  - https://mydomain2
 ```
 
 ## Configuration reference
@@ -28,3 +32,4 @@ serve_openapi: false
 |web_sources_path| Path to static website files|`string`|
 |max_concurrent_tasks| Maximum concurrent insertion tasks | `integer`|
 |serve_openapi| Expose or not openapi documentation |`boolean`|
+|cors_allowed_origins| List of CORS domains to allow | `option[list[string]]` |

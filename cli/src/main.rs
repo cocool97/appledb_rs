@@ -38,7 +38,7 @@ async fn main() -> Result<()> {
     };
 
     if let Err(e) = res {
-        log::error!("{}", e);
+        log::error!("{e}");
     }
 
     Ok(())
