@@ -72,7 +72,7 @@ pub async fn post_executable_frameworks(
     let task = tokio::spawn(async move {
         tokio::time::sleep(Duration::from_secs(TOKIO_TASK_SPAWN_DELAY)).await;
         match post_executable_frameworks_inner(db_controller, task_progress, frameworks).await {
-            Ok(res) => log::info!("Insertion OK: {}", res),
+            Ok(res) => log::info!("Insertion OK: {res}",),
             Err(e) => log::error!("got error while inserting: {e}"),
         }
 

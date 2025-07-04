@@ -65,5 +65,5 @@ fn format_duration(start_time: DateTime<Utc>) -> String {
     let duration = now.signed_duration_since(start_time);
     let mins = duration.num_minutes();
     let secs = duration.num_seconds() % 60;
-    format!("{:02}m{:02}s", mins, secs)
+    format!("{mins:02}m{secs:02}s")
 }

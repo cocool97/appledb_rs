@@ -62,7 +62,7 @@ pub async fn parse_framework_subcommand(
 
             let frameworks_task_uuid = frameworks_parser.post_results(&server_controller).await?;
 
-            log::info!("Received frameworks task UUID: {}", frameworks_task_uuid);
+            log::info!("Received frameworks task UUID: {frameworks_task_uuid}");
 
             Ok(())
         }

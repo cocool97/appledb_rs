@@ -75,7 +75,7 @@ impl FromStr for ListenMode {
 impl Display for ListenMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ListenMode::SocketAddr(socket_addr) => write!(f, "http://{}", socket_addr),
+            ListenMode::SocketAddr(socket_addr) => write!(f, "http://{socket_addr}",),
             ListenMode::UnixSocket(path) => write!(f, "unix:{}", path.display()),
         }
     }

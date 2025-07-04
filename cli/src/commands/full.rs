@@ -76,14 +76,11 @@ pub async fn parse_full_subcommand(
             let entitlements_task_uuid =
                 entitlements_parser.post_results(&server_controller).await?;
 
-            log::info!(
-                "Received entitlements task UUID: {}",
-                entitlements_task_uuid
-            );
+            log::info!("Received entitlements task UUID: {entitlements_task_uuid}",);
 
             let frameworks_task_uuid = frameworks_parser.post_results(&server_controller).await?;
 
-            log::info!("Received frameworks task UUID: {}", frameworks_task_uuid);
+            log::info!("Received frameworks task UUID: {frameworks_task_uuid}");
 
             Ok(())
         }

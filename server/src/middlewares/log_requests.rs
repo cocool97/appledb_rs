@@ -18,15 +18,12 @@ pub async fn log_requests(request: Request<Body>, next: Next) -> Response<Body> 
     let duration = start_time.elapsed();
     let status = response.status().as_u16();
 
-    let log_message = format!(
-        "[{} {} {:?}] - {} - {:?}",
-        method, uri, version, status, duration
-    );
+    let log_message = format!("[{method} {uri} {version:?}] - {status} - {duration:?}",);
 
     if response.status().is_client_error() || response.status().is_server_error() {
-        log::error!("{}", log_message);
+        log::error!("{log_message}",);
     } else {
-        log::info!("{}", log_message);
+        log::info!("{log_message}",);
     }
 
     response
