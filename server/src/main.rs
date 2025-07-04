@@ -11,7 +11,7 @@ use axum::{
     Router,
     body::Body,
     extract::{DefaultBodyLimit, State},
-    http::{Method, Request, StatusCode},
+    http::{HeaderValue, Method, Request, StatusCode, header::InvalidHeaderValue},
     response::IntoResponse,
 };
 use clap::Parser;
@@ -26,7 +26,7 @@ use tokio::{
 };
 use tower::ServiceBuilder;
 use tower_http::{
-    cors::{Any, CorsLayer},
+    cors::CorsLayer,
     services::{ServeDir, ServeFile},
 };
 
@@ -79,9 +79,21 @@ async fn main() -> Result<()> {
         running_tasks: Arc::new(RwLock::new(BTreeMap::new())),
     });
 
+    log::info!(
+        "{} cors domain(s) allowed: {}",
+        configuration.cors_allowed_origins.len(),
+        configuration.cors_allowed_origins.join(",")
+    );
+
+    let allowed_origins: Vec<HeaderValue> = configuration
+        .cors_allowed_origins
+        .iter()
+        .map(HeaderValue::try_from)
+        .collect::<Result<_, InvalidHeaderValue>>()?;
+
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
-        .allow_origin(Any);
+        .allow_origin(allowed_origins);
 
     let app = Router::new()
         .nest(
