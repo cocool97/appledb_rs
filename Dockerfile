@@ -1,7 +1,7 @@
 ARG HTTP_PROXY=""
 ARG HTTPS_PROXY=""
 
-FROM docker.io/library/rust:1.85-alpine AS BUILDER
+FROM docker.io/library/rust:1.85-alpine AS rust_builder
 
 RUN mkdir /app-builder
 WORKDIR /app-builder
@@ -24,7 +24,7 @@ COPY server server
 
 RUN cargo build --release
 
-FROM docker.io/library/node:18.20-alpine3.21 AS WEB_BUILDER
+FROM docker.io/library/node:18.20-alpine3.21 AS web_builder
 
 RUN mkdir /app
 
@@ -41,10 +41,9 @@ FROM docker.io/library/alpine:3.21
 RUN mkdir /app
 RUN mkdir /app/dist
 
-COPY --from=WEB_BUILDER /app/dist /app/dist
-COPY --from=BUILDER /app-builder/target/release/appledb_server /app
+COPY --from=web_builder /app/dist /app/dist
+COPY --from=rust_builder /app-builder/target/release/appledb_server /app
 
 ENV CONFIG_PATH="/app/config.yaml"
 
 CMD [ "/app/appledb_server"]
-
