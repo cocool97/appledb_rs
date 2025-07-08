@@ -36,3 +36,18 @@ With an IPSW mounted on local filesystem, a `POST` request can be made on `/api/
     },
 }
 ```
+
+## Watch a local directory for parsing results
+
+It is possible to let `appledb_rs` watch for files dropped in a local directory.
+
+This can be pretty useful when parsing results cannot be sent over http but are uploaded as files.
+
+To activate local directory watch just add `watched_directory` in the configuration file, having it point to an existing directory.
+
+Parsing is done using distinct file extensions:
+
+- `entitlements` or `ent` for entitlement results
+- `framework` or `frameworks` for framework results
+
+Tasks run from a local upload are referred as `local` in tasks progress API results.
