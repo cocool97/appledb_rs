@@ -35,6 +35,8 @@ url = "2.5.4"
 utoipa = { version = "5.4.0", features = ["axum_extras"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum", "vendored"] }
 uuid = { version = "1.16.0", features = ["v4"] }
+inotify = "0.11.0"
+futures = "0.3.31"
 
 #####################################
 # Debian package build instructions #

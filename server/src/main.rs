@@ -1,4 +1,5 @@
 mod crud;
+mod data_watcher;
 mod db_controller;
 mod handlers;
 mod middlewares;
@@ -29,6 +30,8 @@ use tower_http::{
     cors::CorsLayer,
     services::{ServeDir, ServeFile},
 };
+
+use crate::data_watcher::DataWatcher;
 
 // Models coming from https://gist.github.com/adamawolf/3048717
 pub static APPLE_MODELS: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
@@ -91,7 +94,7 @@ async fn main() -> Result<()> {
         .fallback(handle_webapp)
         .layer(ServiceBuilder::new().layer(axum::middleware::from_fn(log_requests)))
         .layer(DefaultBodyLimit::max(configuration.http_max_body_size))
-        .with_state(state);
+        .with_state(state.clone());
 
     if let Some(allowed_origins) = configuration.cors_allowed_origins {
         log::info!(
@@ -112,6 +115,16 @@ async fn main() -> Result<()> {
         app = app.layer(cors);
     } else {
         log::info!("no cors policy setup")
+    }
+
+    if let Some(watched_directory) = configuration.watched_directory {
+        log::info!(
+            "starting file monitoring at path {}",
+            watched_directory.display()
+        );
+        let watcher = DataWatcher::new(watched_directory, state.clone())?;
+
+        tokio::spawn(watcher.start_watch());
     }
 
     log::info!("Server listening on {}...", configuration.listen_mode);

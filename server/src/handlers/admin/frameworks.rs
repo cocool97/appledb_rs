@@ -1,7 +1,7 @@
-use anyhow::anyhow;
+use anyhow::{anyhow, bail};
 use appledb_common::{
     IPSWFrameworks,
-    api_models::{TaskProgress, TaskType},
+    api_models::{TaskProgress, TaskSource, TaskType},
     routes::AdminRoutes,
 };
 use axum::{Json, extract::State};
@@ -12,11 +12,7 @@ use tokio::sync::RwLock;
 use uuid::Uuid;
 
 use crate::{
-    Result,
-    crud::DBStatus,
-    db_controller::DBController,
-    models::AppState,
-    utils::{AppError, AppResult},
+    Result, crud::DBStatus, db_controller::DBController, models::AppState, utils::AppResult,
 };
 
 const TOKIO_TASK_SPAWN_DELAY: u64 = 5;
@@ -46,14 +42,20 @@ pub async fn post_executable_frameworks(
     State(state): State<Arc<AppState>>,
     Json(frameworks): Json<IPSWFrameworks>,
 ) -> AppResult<Json<String>> {
+    let task_uuid = post_executable_frameworks_public(state, frameworks, TaskSource::Api).await?;
+    Ok(Json(task_uuid.to_string()))
+}
+
+pub async fn post_executable_frameworks_public(
+    state: Arc<AppState>,
+    frameworks: IPSWFrameworks,
+    task_source: TaskSource,
+) -> Result<Uuid> {
     // Check if we can run this task
     {
         let running_tasks = state.running_tasks.read().await;
         if running_tasks.len() > state.max_concurrent_tasks {
-            log::error!("Too many tasks running. Aborting this one");
-            return AppResult::Err(AppError::from(anyhow!(
-                "Too many tasks running. Aborting this one"
-            )));
+            bail!("Too many tasks running. Aborting this one");
         }
     }
 
@@ -62,6 +64,7 @@ pub async fn post_executable_frameworks(
 
     let progress = Arc::new(RwLock::new(TaskProgress::new(
         TaskType::PostFrameworks,
+        task_source,
         frameworks.executable_frameworks.len(),
     )));
 
@@ -89,7 +92,7 @@ pub async fn post_executable_frameworks(
         running_tasks.insert(task_uuid, (progress, task));
     }
 
-    Ok(Json(task_uuid.to_string()))
+    Ok(task_uuid)
 }
 
 async fn post_executable_frameworks_inner(

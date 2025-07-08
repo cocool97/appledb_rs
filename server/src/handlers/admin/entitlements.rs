@@ -1,9 +1,9 @@
 use std::{collections::HashSet, fmt::Display, sync::Arc, time::Duration};
 
-use anyhow::{Result, anyhow};
+use anyhow::{Result, anyhow, bail};
 use appledb_common::{
     IPSWEntitlements, IPSWExecutableEntitlements,
-    api_models::{TaskProgress, TaskType},
+    api_models::{TaskProgress, TaskSource, TaskType},
     routes::AdminRoutes,
 };
 use axum::{Json, extract::State};
@@ -12,12 +12,7 @@ use serde_json::Value;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-use crate::{
-    crud::DBStatus,
-    db_controller::DBController,
-    models::AppState,
-    utils::{AppError, AppResult},
-};
+use crate::{crud::DBStatus, db_controller::DBController, models::AppState, utils::AppResult};
 
 #[derive(Default, Debug)]
 struct EntitlementsInsertionStatus {
@@ -110,14 +105,21 @@ pub async fn post_executable_entitlements(
     State(state): State<Arc<AppState>>,
     Json(entitlements): Json<IPSWEntitlements>,
 ) -> AppResult<Json<String>> {
+    let task_uuid =
+        post_executable_entitlements_public(state, entitlements, TaskSource::Api).await?;
+    Ok(Json(task_uuid.to_string()))
+}
+
+pub async fn post_executable_entitlements_public(
+    state: Arc<AppState>,
+    entitlements: IPSWEntitlements,
+    task_source: TaskSource,
+) -> Result<Uuid> {
     // Check if we can run this task
     {
         let running_entitlements_tasks = state.running_tasks.read().await;
         if running_entitlements_tasks.len() > state.max_concurrent_tasks {
-            log::error!("Too many tasks running. Aborting this one");
-            return AppResult::Err(AppError::from(anyhow!(
-                "Too many tasks running. Aborting this one"
-            )));
+            bail!("Too many tasks running. Aborting this one")
         }
     }
 
@@ -126,6 +128,7 @@ pub async fn post_executable_entitlements(
 
     let progress = Arc::new(RwLock::new(TaskProgress::new(
         TaskType::PostEntitlements,
+        task_source,
         entitlements.executable_entitlements.len(),
     )));
 
@@ -153,7 +156,7 @@ pub async fn post_executable_entitlements(
         running_entitlements_tasks.insert(task_uuid, (progress, task));
     }
 
-    Ok(Json(task_uuid.to_string()))
+    Ok(task_uuid)
 }
 
 async fn post_executable_entitlements_inner(
