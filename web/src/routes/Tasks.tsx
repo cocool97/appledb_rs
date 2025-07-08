@@ -29,7 +29,7 @@ interface TasksListProps {
 const TasksList = ({ tasks }: TasksListProps) => (
   <List sx={{ width: "100%" }}>
     {Object.entries(tasks).map(
-      ([task_uuid, { task_type, start_time, done, total }]) => {
+      ([task_uuid, { task_type, task_source, start_time, done, total }]) => {
         const progress = total > 0 ? (done / total) * 100 : 0;
         const readableDate = new Date(start_time * 1000).toLocaleString();
 
@@ -52,6 +52,9 @@ const TasksList = ({ tasks }: TasksListProps) => (
               sx={{ color: "white", fontWeight: "bold" }}
             >
               {task_type}
+              <Typography variant="caption" sx={{ color: "gray", ml: "1rem" }}>
+                source: {task_source}
+              </Typography>
             </Typography>
             <Typography variant="caption" sx={{ color: "gray" }}>
               UUID: {task_uuid}

@@ -38,6 +38,8 @@ pub struct ServerConfig {
     pub max_concurrent_tasks: usize,
     /// Serve openapi documentation ?
     pub serve_openapi: bool,
+    /// Path to a directory where data to ingest can be dropped
+    pub watched_directory: Option<PathBuf>,
 }
 
 #[derive(Deserialize)]

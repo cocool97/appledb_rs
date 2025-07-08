@@ -10,17 +10,25 @@ pub enum TaskType {
 }
 
 #[derive(Clone, Deserialize, Serialize, ToSchema)]
+pub enum TaskSource {
+    Local,
+    Api,
+}
+
+#[derive(Clone, Deserialize, Serialize, ToSchema)]
 pub struct TaskProgress {
     task_type: TaskType,
+    task_source: TaskSource,
     start_time: u64,
     pub done: usize,
     pub total: usize,
 }
 
 impl TaskProgress {
-    pub fn new(task_type: TaskType, total: usize) -> Self {
+    pub fn new(task_type: TaskType, task_source: TaskSource, total: usize) -> Self {
         Self {
             task_type,
+            task_source,
             start_time: SystemTime::now()
                 .duration_since(UNIX_EPOCH)
                 .unwrap_or(Duration::from_secs(0))

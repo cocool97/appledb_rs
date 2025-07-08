@@ -12,6 +12,7 @@ pub fn setup_logger() {
 
 pub type AppResult<T> = Result<T, AppError>;
 
+#[derive(Debug)]
 pub struct AppError {
     e: anyhow::Error,
 }
