@@ -54,18 +54,18 @@ pub enum EntSubCommands {
 #[derive(Clone, ValueEnum)]
 pub enum OptsPlatform {
     Ios,
+    IpadOS,
     MacOS,
-    WatchOS,
-    TvOS,
+    VisionOS,
 }
 
 impl Display for OptsPlatform {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             OptsPlatform::Ios => write!(f, "ios"),
+            OptsPlatform::IpadOS => write!(f, "ipados"),
             OptsPlatform::MacOS => write!(f, "macos"),
-            OptsPlatform::WatchOS => write!(f, "watchos"),
-            OptsPlatform::TvOS => write!(f, "tvos"),
+            OptsPlatform::VisionOS => write!(f, "visionos"),
         }
     }
 }
@@ -74,9 +74,9 @@ impl From<OptsPlatform> for Platform {
     fn from(value: OptsPlatform) -> Self {
         match value {
             OptsPlatform::Ios => Self::Ios,
+            OptsPlatform::IpadOS => Self::IpadOS,
             OptsPlatform::MacOS => Self::MacOS,
-            OptsPlatform::WatchOS => Self::WatchOS,
-            OptsPlatform::TvOS => Self::TvOS,
+            OptsPlatform::VisionOS => Self::VisionOS,
         }
     }
 }
@@ -85,9 +85,9 @@ impl From<Platform> for OptsPlatform {
     fn from(value: Platform) -> Self {
         match value {
             Platform::Ios => Self::Ios,
+            Platform::IpadOS => Self::IpadOS,
             Platform::MacOS => Self::MacOS,
-            Platform::WatchOS => Self::WatchOS,
-            Platform::TvOS => Self::TvOS,
+            Platform::VisionOS => Self::VisionOS,
         }
     }
 }
@@ -121,7 +121,7 @@ pub enum FrameworksSubcommands {
         /// Version from which this IPSW is originated
         #[clap(short = 'v', long = "version")]
         version: String,
-        /// Device model (under iPhone17,5 - iPad15,5)...
+        /// Device model (e.g iPhone17,5 - iPad15,5 ...)
         #[clap(short = 'm', long = "model_code")]
         model_code: String,
     },

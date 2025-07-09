@@ -54,10 +54,6 @@ impl MigrationTrait for Migration {
                 id: ActiveValue::not_set(),
                 name: ActiveValue::Set("visionos".to_string()),
             },
-            entity::operating_system::ActiveModel {
-                id: ActiveValue::not_set(),
-                name: ActiveValue::Set("tvos".to_string()),
-            },
         ])
         .on_conflict(OnConflict::column(Column::Name).do_nothing().to_owned())
         .exec(db)
