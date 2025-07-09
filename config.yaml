@@ -14,4 +14,4 @@ serve_openapi: true
 cors_allowed_origins:
   - http://localhost:5173
 
-watched_directory: /tmp/appledb
+watched_directory: data/watcher
