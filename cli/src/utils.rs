@@ -13,7 +13,7 @@ pub fn set_logger(debug: bool) -> Result<()> {
     Ok(())
 }
 
-pub fn parse_macho(data: &[u8]) -> Result<Option<MachOBinary>> {
+pub fn parse_macho(data: &[u8]) -> Result<Option<MachOBinary<'_>>> {
     let macho = match MachOBinary::parse(data) {
         Ok(macho) => macho,
         Err(e) => return Err(e.into()),

@@ -21,19 +21,24 @@ async fn main() -> Result<()> {
 
     let res = match opts.command {
         OptsSubCommands::Ent(ent_sub_commands) => {
-            parse_entitlements_command(opts.server_url, ent_sub_commands).await
+            parse_entitlements_command(opts.server_url, opts.insecure, ent_sub_commands).await
         }
         OptsSubCommands::OperatingSystem(operating_systems_subcommands) => {
-            parse_os_subcommand(opts.server_url, operating_systems_subcommands).await
+            parse_os_subcommand(
+                opts.server_url,
+                opts.insecure,
+                operating_systems_subcommands,
+            )
+            .await
         }
         OptsSubCommands::Tasks(tasks_subcommands) => {
-            parse_tasks_command(opts.server_url, tasks_subcommands).await
+            parse_tasks_command(opts.server_url, opts.insecure, tasks_subcommands).await
         }
         OptsSubCommands::Frameworks(frameworks_subcommands) => {
-            parse_framework_subcommand(opts.server_url, frameworks_subcommands).await
+            parse_framework_subcommand(opts.server_url, opts.insecure, frameworks_subcommands).await
         }
         OptsSubCommands::Full(full_subcommand) => {
-            parse_full_subcommand(opts.server_url, full_subcommand).await
+            parse_full_subcommand(opts.server_url, opts.insecure, full_subcommand).await
         }
     };
 

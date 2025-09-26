@@ -12,6 +12,7 @@ use tokio::{fs::File, io::AsyncReadExt};
 
 pub async fn parse_framework_subcommand(
     server_url: String,
+    insecure: bool,
     subcommand: FrameworksSubcommands,
 ) -> Result<()> {
     match subcommand {
@@ -58,7 +59,7 @@ pub async fn parse_framework_subcommand(
                 }
             }
 
-            let server_controller = ServerController::new(server_url)?;
+            let server_controller = ServerController::new(server_url, insecure)?;
 
             let frameworks_task_uuid = frameworks_parser.post_results(&server_controller).await?;
 

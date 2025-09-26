@@ -11,6 +11,9 @@ pub struct Opts {
     pub debug: bool,
     #[clap(subcommand)]
     pub command: OptsSubCommands,
+    /// Allow insecure TLS connections. Be careful when using this option!
+    #[clap(long = "insecure")]
+    pub insecure: bool,
 }
 
 #[derive(Subcommand)]
