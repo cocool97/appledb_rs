@@ -7,14 +7,18 @@ use chrono::{DateTime, Utc};
 
 use crate::{models::TasksSubcommands, server_controller::ServerController};
 
-pub async fn parse_tasks_command(server_url: String, subcommand: TasksSubcommands) -> Result<()> {
+pub async fn parse_tasks_command(
+    server_url: String,
+    insecure: bool,
+    subcommand: TasksSubcommands,
+) -> Result<()> {
     match subcommand {
-        TasksSubcommands::Follow { interval } => follow_tasks(server_url, interval).await,
+        TasksSubcommands::Follow { interval } => follow_tasks(server_url, insecure, interval).await,
     }
 }
 
-async fn follow_tasks(server_url: String, interval: u64) -> Result<()> {
-    let server_controller = ServerController::new(server_url)?;
+async fn follow_tasks(server_url: String, insecure: bool, interval: u64) -> Result<()> {
+    let server_controller = ServerController::new(server_url, insecure)?;
     let multi_progress = MultiProgress::new();
 
     let mut bars: HashMap<String, ProgressBar> = HashMap::new();

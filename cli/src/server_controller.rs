@@ -28,10 +28,18 @@ pub struct ServerController {
 }
 
 impl ServerController {
-    pub fn new(server_url: String) -> Result<Self> {
-        let client = ClientBuilder::new().gzip(true).build()?;
+    pub fn new(server_url: String, insecure: bool) -> Result<Self> {
+        let mut client = ClientBuilder::new().gzip(true);
+        if insecure {
+            client = client
+                .danger_accept_invalid_certs(true)
+                .danger_accept_invalid_hostnames(true);
+        }
 
-        Ok(Self { client, server_url })
+        Ok(Self {
+            client: client.build()?,
+            server_url,
+        })
     }
 
     fn gen_url<S: AsRef<str>>(&self, path: S) -> String {

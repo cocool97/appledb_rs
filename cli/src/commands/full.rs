@@ -12,6 +12,7 @@ use tokio::io::AsyncReadExt;
 
 pub async fn parse_full_subcommand(
     server_url: String,
+    insecure: bool,
     full_subcommand: FullSubcommand,
 ) -> Result<()> {
     match full_subcommand {
@@ -71,7 +72,7 @@ pub async fn parse_full_subcommand(
                 }
             }
 
-            let server_controller = ServerController::new(server_url)?;
+            let server_controller = ServerController::new(server_url, insecure)?;
 
             let entitlements_task_uuid =
                 entitlements_parser.post_results(&server_controller).await?;

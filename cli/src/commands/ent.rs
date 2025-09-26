@@ -12,6 +12,7 @@ use crate::{
 
 pub async fn parse_entitlements_command(
     server_url: String,
+    insecure: bool,
     subcommand: EntSubCommands,
 ) -> Result<()> {
     match subcommand {
@@ -57,7 +58,7 @@ pub async fn parse_entitlements_command(
                 }
             }
 
-            let server_controller = ServerController::new(server_url)?;
+            let server_controller = ServerController::new(server_url, insecure)?;
 
             let entitlements_task_uuid =
                 entitlements_parser.post_results(&server_controller).await?;

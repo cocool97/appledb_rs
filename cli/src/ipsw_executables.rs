@@ -23,10 +23,10 @@ impl Iterator for IPSWExecutablesIterator {
         match self.walkdir.next() {
             Some(item) => match item {
                 Ok(item) => {
-                    if let Ok(is_executable) = path_is_macho(item.path()) {
-                        if is_executable {
-                            return Some(Ok(item.into_path()));
-                        }
+                    if let Ok(is_executable) = path_is_macho(item.path())
+                        && is_executable
+                    {
+                        return Some(Ok(item.into_path()));
                     }
 
                     Some(Err(anyhow!("path is not an executable")))
