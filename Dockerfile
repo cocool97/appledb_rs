@@ -1,7 +1,7 @@
 ARG HTTP_PROXY=""
 ARG HTTPS_PROXY=""
 
-FROM docker.io/library/rust:1.85-alpine AS rust_builder
+FROM docker.io/library/rust:1.90-alpine AS rust_builder
 
 RUN mkdir /app-builder
 WORKDIR /app-builder
