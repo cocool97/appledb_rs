@@ -25,7 +25,10 @@ impl DataWatcher {
 
         inotify
             .watches()
-            .add(&watch_root_path, WatchMask::CLOSE_WRITE)
+            .add(
+                &watch_root_path,
+                WatchMask::CLOSE_WRITE | WatchMask::MOVED_TO,
+            )
             .context("cannot add watcher")?;
 
         Ok(Self {
@@ -40,11 +43,14 @@ impl DataWatcher {
         let mut stream = self.inotify.into_event_stream(&mut buffer)?;
 
         while let Some(Ok(event)) = stream.next().await {
-            if let Err(e) =
-                Self::handle_event(&self.watch_root_path, self.state.clone(), event).await
-            {
-                log::error!("{e}")
-            }
+            let state = self.state.clone();
+            let watch_root_path = self.watch_root_path.clone();
+
+            tokio::spawn(async move {
+                if let Err(e) = Self::handle_event(&watch_root_path, state, event).await {
+                    log::error!("{e}")
+                }
+            });
         }
 
         Ok(())
@@ -55,6 +61,7 @@ impl DataWatcher {
         state: Arc<AppState>,
         event: Event<OsString>,
     ) -> Result<()> {
+        log::debug!("got event {:?}", event.mask);
         let file_path = event
             .name
             .as_ref()
