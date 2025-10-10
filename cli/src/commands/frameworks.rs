@@ -52,9 +52,7 @@ pub async fn parse_framework_subcommand(
                             );
                         }
                     }
-                    Ok(None) => {
-                        continue;
-                    }
+                    Ok(None) => {}
                     Err(e) => log::error!("error while parsing macho {}: {e}", entry.display()),
                 }
             }

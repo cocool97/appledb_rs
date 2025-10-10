@@ -59,7 +59,7 @@ pub async fn diff_frameworks_for_executables(
     let mut removed = vec![];
     let mut unchanged = vec![];
 
-    for framework in frameworks_to.iter() {
+    for framework in &frameworks_to {
         if frameworks_from.contains(framework) {
             unchanged.push(framework.clone());
         } else {
@@ -67,7 +67,7 @@ pub async fn diff_frameworks_for_executables(
         }
     }
 
-    for framework in frameworks_from.iter() {
+    for framework in &frameworks_from {
         if !frameworks_to.contains(framework) {
             removed.push(framework.clone());
         }

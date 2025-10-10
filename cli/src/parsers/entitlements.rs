@@ -32,7 +32,7 @@ impl IPSWParser for EntitlementsParser {
             let json_value = serde_json::to_value(plist_value)?;
 
             self.ipsw_entitlements.add_executable_entitlements(
-                full_absolute_path.as_ref().to_string_lossy(),
+                &full_absolute_path.as_ref().to_string_lossy(),
                 json_value,
             );
         }

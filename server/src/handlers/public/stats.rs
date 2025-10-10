@@ -11,7 +11,7 @@ use crate::{models::AppState, utils::AppResult};
     responses((status = OK, body = ServerStats))
 )]
 pub async fn get_stats(State(state): State<Arc<AppState>>) -> AppResult<Json<ServerStats>> {
-    let stats = ServerStats {
+    Ok(Json(ServerStats {
         known_devices: state.db_controller.crud_get_devices_count().await?,
         known_operating_system_versions: state
             .db_controller
@@ -20,7 +20,5 @@ pub async fn get_stats(State(state): State<Arc<AppState>>) -> AppResult<Json<Ser
         known_entitlements: state.db_controller.crud_get_entitlements_count().await?,
         known_executables: state.db_controller.crud_get_executables_count().await?,
         known_frameworks: state.db_controller.crud_get_frameworks_count().await?,
-    };
-
-    Ok(Json(stats))
+    }))
 }

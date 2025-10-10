@@ -138,16 +138,15 @@ async fn post_executable_frameworks_inner(
                     match db_error {
                         SqlErr::UniqueConstraintViolation(_) => {
                             log::debug!(
-                                "Framework {} already exists for executable {}. Likely a twin...",
-                                framework_id,
+                                "Framework {framework_id} already exists for executable {}. Likely a twin...",
                                 executable_status.db_identifier()
                             );
                             continue;
                         }
-                        e => return Err(anyhow!("Unexpected database error: {:?}", e)),
+                        e => return Err(anyhow!("Unexpected database error: {e:?}")),
                     }
                 }
-                return Err(anyhow!("Unexpected database error: {:?}", e));
+                return Err(anyhow!("Unexpected database error: {e:?}"));
             }
         }
 

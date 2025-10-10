@@ -20,15 +20,15 @@ pub async fn read_configuration<P: AsRef<Path>>(path: P) -> Result<ServerConfig>
 #[derive(Deserialize)]
 pub struct ServerConfig {
     /// Server listen mode
-    /// Can be http://127.0.0.1 or unix:/path/to/socket
+    /// Can be <http://127.0.0.1> or <unix:/path/to/socket>
     #[serde(deserialize_with = "deserialize_listen_mode")]
     pub listen_mode: ListenMode,
     /// Maximum HTTP body size
     pub http_max_body_size: usize,
     /// Path to database
     /// e.g:
-    /// Postgres: postgres://username:pass@host/schema_name
-    /// SQLite: sqlite://path/to/db.sqlite?mode=rwc
+    /// `Postgres`: <postgres://username:pass@host/schema_name>
+    /// `SQLite`: <sqlite://path/to/db.sqlite?mode=rwc>
     pub database_url: String,
     /// Path to web sources
     pub web_sources_path: PathBuf,

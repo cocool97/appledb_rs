@@ -13,7 +13,7 @@ pub struct IPSWEntitlements {
     pub model_code: String,
     /// Software version of the platform
     pub version: String,
-    /// Entitlements storage: key=EXECUTABLE_FULLPATH; value=ENTITLEMENTS
+    /// Entitlements storage: `key=EXECUTABLE_FULLPATH`; `value=ENTITLEMENTS`
     pub executable_entitlements: BTreeMap<String, serde_json::Value>,
 }
 
@@ -29,7 +29,7 @@ impl IPSWEntitlements {
 
     pub fn add_executable_entitlements<S: ToString>(
         &mut self,
-        executable_fullpath: S,
+        executable_fullpath: &S,
         entitlements: serde_json::Value,
     ) {
         self.executable_entitlements

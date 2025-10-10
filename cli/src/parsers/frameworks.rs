@@ -23,7 +23,7 @@ impl IPSWParser for FrameworksParser {
         macho: &apple_codesign::MachOBinary<'_>,
     ) -> anyhow::Result<()> {
         self.ipsw_frameworks.add_executable_frameworks(
-            full_absolute_path.as_ref().to_string_lossy().to_string(),
+            &full_absolute_path.as_ref().to_string_lossy(),
             macho
                 .macho
                 .libs
@@ -34,7 +34,7 @@ impl IPSWParser for FrameworksParser {
                         return None;
                     }
 
-                    Some(v.to_string())
+                    Some((*v).to_string())
                 })
                 .collect(),
         );

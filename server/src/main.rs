@@ -114,7 +114,7 @@ async fn main() -> Result<()> {
 
         app = app.layer(cors);
     } else {
-        log::info!("no cors policy setup")
+        log::info!("no cors policy setup");
     }
 
     if let Some(watched_directory) = configuration.watched_directory {
@@ -137,8 +137,9 @@ async fn main() -> Result<()> {
         ListenMode::UnixSocket(path) => {
             if path.try_exists()? {
                 log::info!("Removing old unix socket...");
-                std::fs::remove_file(&path)
-                    .with_context(|| format!("cannot delete unix socket at path {path:?}",))?;
+                std::fs::remove_file(&path).with_context(|| {
+                    format!("cannot delete unix socket at path {}", path.display())
+                })?;
             }
 
             Ok(axum::serve(UnixListener::bind(path)?, app.into_make_service()).await?)

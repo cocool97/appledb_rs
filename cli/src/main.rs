@@ -17,7 +17,7 @@ use models::{Opts, OptsSubCommands};
 async fn main() -> Result<()> {
     let opts = Opts::parse();
 
-    utils::set_logger(opts.debug)?;
+    utils::set_logger(opts.debug);
 
     let res = match opts.command {
         OptsSubCommands::Ent(ent_sub_commands) => {

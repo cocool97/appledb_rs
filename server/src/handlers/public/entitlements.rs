@@ -39,7 +39,7 @@ pub async fn diff_entitlements_for_executables(
     let mut removed = vec![];
     let mut unchanged = vec![];
 
-    for entitlement in entitlements_to.iter() {
+    for entitlement in &entitlements_to {
         if entitlements_from.contains(entitlement) {
             unchanged.push(entitlement.clone());
         } else {
@@ -47,7 +47,7 @@ pub async fn diff_entitlements_for_executables(
         }
     }
 
-    for entitlement in entitlements_from.iter() {
+    for entitlement in &entitlements_from {
         if !entitlements_to.contains(entitlement) {
             removed.push(entitlement.clone());
         }

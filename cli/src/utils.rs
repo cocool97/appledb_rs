@@ -1,7 +1,7 @@
 use anyhow::Result;
 use apple_codesign::MachOBinary;
 
-pub fn set_logger(debug: bool) -> Result<()> {
+pub fn set_logger(debug: bool) {
     if std::env::var("RUST_LOG").is_err() {
         let log_level = if debug { "debug" } else { "info" };
 
@@ -9,8 +9,6 @@ pub fn set_logger(debug: bool) -> Result<()> {
     }
 
     env_logger::init();
-
-    Ok(())
 }
 
 pub fn parse_macho(data: &[u8]) -> Result<Option<MachOBinary<'_>>> {
