@@ -157,12 +157,10 @@ impl DBController {
         Ok(os_versions_with_os
             .into_iter()
             .filter_map(|(os_version, device_opt)| {
-                let device = match device_opt {
-                    Some(device) => device,
-                    None => return None,
-                };
-
-                Some(ExtendedOperatingSystemVersions::from((os_version, device)))
+                Some(ExtendedOperatingSystemVersions::from((
+                    os_version,
+                    device_opt?,
+                )))
             })
             .collect())
     }

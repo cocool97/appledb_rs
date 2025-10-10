@@ -215,15 +215,14 @@ async fn post_executable_entitlements_inner(
                     match db_error {
                         SqlErr::UniqueConstraintViolation(_) => {
                             log::debug!(
-                                "Entitlement {} already exists for executable {}.",
-                                entitlement_id,
+                                "Entitlement {} already exists for executable {entitlement_id}.",
                                 executable_status.db_identifier()
                             );
                         }
-                        e => return Err(anyhow!("Unexpected database error: {:?}", e)),
+                        e => return Err(anyhow!("Unexpected database error: {e:?}")),
                     }
                 }
-                return Err(anyhow!("Unexpected database error: {:?}", e));
+                return Err(anyhow!("Unexpected database error: {e:?}"));
             }
         }
 

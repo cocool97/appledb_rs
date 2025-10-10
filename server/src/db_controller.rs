@@ -31,7 +31,7 @@ impl DBController {
                 log::info!("postgres database backend selected");
                 Self::get_postgres_connection(url).await?
             }
-            scheme => bail!("unknown scheme {}", scheme),
+            scheme => bail!("unknown scheme {scheme}"),
         };
 
         // Run needed migrations
@@ -46,9 +46,8 @@ impl DBController {
     }
 
     async fn get_sqlite_connection(url: Url) -> Result<DatabaseConnection> {
-        let database_path = match url.host_str() {
-            Some(url) => url,
-            None => bail!("sqlite url without a path..."),
+        let Some(database_path) = url.host_str() else {
+            bail!("sqlite url without a path...");
         };
 
         let options = SqliteConnectOptions::default()

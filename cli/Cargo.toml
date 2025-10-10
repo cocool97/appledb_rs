@@ -21,7 +21,7 @@ indicatif = "0.18.0"
 log = "0.4.28"
 plist = { version = "1.8.0", features = ["serde"] }
 reqwest = { version = "0.12.23", features = ["gzip"] }
-serde = "1.0.227"
+serde = "1.0.228"
 serde_json = { version = "1.0.145", features = ["std"] }
 tokio = { version = "1.47.1", features = ["full"] }
 walkdir = { version = "2.5.0" }

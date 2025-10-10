@@ -11,7 +11,7 @@ version.workspace = true
 [dependencies]
 anyhow = "1.0.100"
 entity = { path = "../entity" }
-serde = "1.0.227"
+serde = "1.0.228"
 serde_json = "1.0.145"
 strum = "0.27.2"
 strum_macros = "0.27.2"

@@ -97,7 +97,7 @@ impl DBController {
                     model.update(self.get_connection()).await?;
                 }
                 None => {
-                    log::error!("Unknown device model {model_code}...")
+                    log::error!("Unknown device model {model_code}...");
                 }
             }
         }

@@ -32,8 +32,7 @@ pub struct OperatingSystemVersionExtended {
 impl DBStatus {
     pub fn db_identifier(&self) -> i64 {
         match self {
-            DBStatus::AlreadyExists(id) => *id,
-            DBStatus::Created(id) => *id,
+            DBStatus::AlreadyExists(id) | DBStatus::Created(id) => *id,
         }
     }
 }

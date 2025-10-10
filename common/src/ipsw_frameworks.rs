@@ -13,7 +13,7 @@ pub struct IPSWFrameworks {
     pub model_code: String,
     /// Software version of the platform
     pub version: String,
-    /// Frameworks storage: key=EXECUTABLE_FULLPATH; value=FRAMEWORKS
+    /// Frameworks storage: `key=EXECUTABLE_FULLPATH`; `value=FRAMEWORKS`
     pub executable_frameworks: BTreeMap<String, Vec<String>>,
 }
 
@@ -29,7 +29,7 @@ impl IPSWFrameworks {
 
     pub fn add_executable_frameworks<S: ToString>(
         &mut self,
-        executable_fullpath: S,
+        executable_fullpath: &S,
         frameworks: Vec<String>,
     ) {
         self.executable_frameworks

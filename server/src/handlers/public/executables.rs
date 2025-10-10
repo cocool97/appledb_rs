@@ -119,7 +119,7 @@ pub async fn diff_executables_for_versions(
     let mut removed = vec![];
     let mut unchanged = vec![];
 
-    for executable in executables_to.iter() {
+    for executable in &executables_to {
         if executables_from.contains(executable) {
             unchanged.push(executable.clone());
         } else {
@@ -127,7 +127,7 @@ pub async fn diff_executables_for_versions(
         }
     }
 
-    for entitlement in executables_from.iter() {
+    for entitlement in &executables_from {
         if !executables_to.contains(entitlement) {
             removed.push(entitlement.clone());
         }

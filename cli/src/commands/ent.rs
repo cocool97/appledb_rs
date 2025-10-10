@@ -51,9 +51,7 @@ pub async fn parse_entitlements_command(
                             );
                         }
                     }
-                    Ok(None) => {
-                        continue;
-                    }
+                    Ok(None) => {}
                     Err(e) => log::error!("error while parsing macho {}: {e}", entry.display()),
                 }
             }
