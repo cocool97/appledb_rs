@@ -10,33 +10,29 @@ repository.workspace = true
 version.workspace = true
 
 [dependencies]
-anyhow = "1.0.100"
-appledb_common = { path = "../common" }
-axum = { version = "0.8.6", features = ["macros"] }
-axum-macros = "0.5.0"
-clap = { version = "4.5.48", features = ["derive", "env"] }
-entity = { path = "../entity" }
-env_logger = "0.11.8"
-log = "0.4.28"
-migration = { path = "../migration" }
-sea-orm = { version = "1.1.17", features = [
-    "runtime-tokio-rustls",
-    "sqlx-sqlite",
-    "sqlx-postgres",
-] }
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.145"
-strum = "0.27.2"
-serde_norway = "0.9.42"
-tokio = { version = "1.47.1", features = ["fs", "rt", "rt-multi-thread"] }
-tower = "0.5.2"
-tower-http = { version = "0.6.6", features = ["cors", "fs"] }
-url = "2.5.7"
-utoipa = { version = "5.4.0", features = ["axum_extras"] }
-utoipa-swagger-ui = { version = "9.0.2", features = ["axum", "vendored"] }
-uuid = { version = "1.18.1", features = ["v4"] }
-inotify = "0.11.0"
-futures = "0.3.31"
+anyhow = { workspace = true }
+appledb_common = { workspace = true }
+axum = { workspace = true, features = ["macros"] }
+axum-macros = { workspace = true }
+clap = { workspace = true, features = ["derive", "env"] }
+entity = { workspace = true }
+env_logger = { workspace = true }
+log = { workspace = true }
+migration = { workspace = true }
+sea-orm = { workspace = true, features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+strum = { workspace = true }
+serde_norway = { workspace = true }
+tokio = { workspace = true, features = ["fs", "rt", "rt-multi-thread"] }
+tower = { workspace = true }
+tower-http = { workspace = true, features = ["cors", "fs"] }
+url = { workspace = true }
+utoipa = { workspace = true, features = ["axum_extras"] }
+utoipa-swagger-ui = { workspace = true, features = ["axum", "vendored"] }
+uuid = { workspace = true, features = ["v4"] }
+inotify = { workspace = true }
+futures = { workspace = true }
 
 #####################################
 # Debian package build instructions #
