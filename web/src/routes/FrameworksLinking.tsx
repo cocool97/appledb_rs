@@ -5,6 +5,7 @@ import {
   DEVICE_VERSION_ID_SEARCH_PARAM,
 } from "../Constants";
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -92,8 +93,9 @@ const FrameworksLinking = (props) => {
         </div>
       );
     }
-    return (
-      filteredExecutables.length !== 0 && (
+
+    if (filteredExecutables.length !== 0) {
+      return (
         <TableContainer>
           <Table size="small" sx={{ tableLayout: "fixed" }}>
             <TableHead>
@@ -128,8 +130,10 @@ const FrameworksLinking = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-      )
-    );
+      );
+    } else {
+      return <Box sx={{ textAlign: "center" }}>No data available...</Box>;
+    }
   };
 
   return (

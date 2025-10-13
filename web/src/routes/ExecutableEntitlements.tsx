@@ -85,8 +85,9 @@ const ExecutableEntitlements = (props) => {
         </div>
       );
     }
-    return (
-      results.length !== 0 && (
+
+    if (results.length !== 0) {
+      return (
         <TableContainer>
           <Table size="small" sx={{ tableLayout: "fixed" }}>
             <TableHead>
@@ -123,8 +124,10 @@ const ExecutableEntitlements = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-      )
-    );
+      );
+    } else {
+      return <Box sx={{ textAlign: "center" }}>No data available...</Box>;
+    }
   };
 
   return (
