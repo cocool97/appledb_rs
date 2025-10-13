@@ -57,12 +57,12 @@ impl DBController {
 
     pub async fn crud_get_or_create_operating_system_version_by_platform_and_version(
         &self,
-        platform_name: String,
+        platform_name: &str,
         model_code: String,
         version: String,
     ) -> Result<OperatingSystemVersion> {
         let operating_system = entity::prelude::OperatingSystem::find()
-            .filter(entity::operating_system::Column::Name.eq(&platform_name))
+            .filter(entity::operating_system::Column::Name.eq(platform_name))
             .one(self.get_connection())
             .await?
             .ok_or(anyhow!("Operating system not found"))?;

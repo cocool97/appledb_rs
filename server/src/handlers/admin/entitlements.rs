@@ -129,7 +129,7 @@ pub async fn post_executable_entitlements_public(
     let progress = Arc::new(RwLock::new(TaskProgress::new(
         TaskType::PostEntitlements,
         task_source,
-        entitlements.executable_entitlements.len(),
+        entitlements.executable_entitlements.len() as u64,
     )));
 
     let db_controller = state.db_controller.clone();
@@ -166,7 +166,7 @@ async fn post_executable_entitlements_inner(
 ) -> Result<EntitlementsInsertionStatus> {
     let operating_system_version = db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
-            entitlements.platform.name().to_string(),
+            entitlements.platform.name(),
             entitlements.model_code,
             entitlements.version,
         )
@@ -228,7 +228,7 @@ async fn post_executable_entitlements_inner(
 
         {
             let mut progress = progress.write().await;
-            progress.done += 1;
+            progress.increment_done();
         }
 
         log::debug!(
