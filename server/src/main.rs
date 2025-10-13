@@ -7,7 +7,7 @@ mod models;
 mod utils;
 
 use anyhow::{Context, Result};
-use appledb_common::routes::{AdminRoutes, PublicRoutes};
+use appledb_common::routes::{ADMIN_ROUTES_PREFIX, PUBLIC_ROUTES_PREFIX};
 use axum::{
     Router,
     body::Body,
@@ -84,11 +84,11 @@ async fn main() -> Result<()> {
 
     let mut app = Router::new()
         .nest(
-            AdminRoutes::route_prefix(),
+            ADMIN_ROUTES_PREFIX,
             handlers::get_admin_router(configuration.serve_openapi),
         )
         .nest(
-            PublicRoutes::route_prefix(),
+            PUBLIC_ROUTES_PREFIX,
             handlers::get_public_router(configuration.serve_openapi),
         )
         .fallback(handle_webapp)

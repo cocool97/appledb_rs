@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use anyhow::{Result, bail};
 use appledb_common::api_models::{ServerErrorResponse, TaskProgress};
 use appledb_common::db_models::OperatingSystem;
-use appledb_common::routes::{AdminRoutes, PublicRoutes};
+use appledb_common::routes::{ADMIN_ROUTES_PREFIX, PUBLIC_ROUTES_PREFIX};
 use appledb_common::{IPSWEntitlements, IPSWFrameworks};
 use reqwest::{Client, ClientBuilder, StatusCode};
 use serde::Serialize;
@@ -47,11 +47,11 @@ impl ServerController {
     }
 
     fn gen_admin_url<S: AsRef<str>>(&self, path: S) -> String {
-        self.gen_url(format!("{}{}", AdminRoutes::route_prefix(), path.as_ref()))
+        self.gen_url(format!("{ADMIN_ROUTES_PREFIX}{}", path.as_ref()))
     }
 
     fn gen_public_url<S: AsRef<str>>(&self, path: S) -> String {
-        self.gen_url(format!("{}{}", PublicRoutes::route_prefix(), path.as_ref()))
+        self.gen_url(format!("{PUBLIC_ROUTES_PREFIX}{}", path.as_ref()))
     }
 
     async fn get<T: DeserializeOwned>(&self, url: String) -> Result<T> {
@@ -63,7 +63,7 @@ impl ServerController {
     }
 
     pub async fn get_operating_systems(&self) -> Result<Vec<OperatingSystem>> {
-        self.get(self.gen_public_url(PublicRoutes::GetOperatingSystems.to_string()))
+        self.get(self.gen_public_url("/operating_systems/all"))
             .await
     }
 
@@ -72,24 +72,17 @@ impl ServerController {
         entitlements: IPSWEntitlements,
     ) -> Result<String> {
         return self
-            .post(
-                self.gen_admin_url(AdminRoutes::PostExecutableEntitlements.to_string()),
-                entitlements,
-            )
+            .post(self.gen_admin_url("/executable/entitlements"), entitlements)
             .await;
     }
 
     pub async fn post_executable_frameworks(&self, frameworks: IPSWFrameworks) -> Result<String> {
         return self
-            .post(
-                self.gen_admin_url(AdminRoutes::PostExecutableFrameworks.to_string()),
-                frameworks,
-            )
+            .post(self.gen_admin_url("/executable/frameworks"), frameworks)
             .await;
     }
 
     pub async fn get_running_tasks(&self) -> Result<BTreeMap<String, TaskProgress>> {
-        self.get(self.gen_public_url(PublicRoutes::GetRunningTasks.to_string()))
-            .await
+        self.get(self.gen_public_url("/tasks/running")).await
     }
 }

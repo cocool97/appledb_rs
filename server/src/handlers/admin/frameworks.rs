@@ -2,7 +2,6 @@ use anyhow::{anyhow, bail};
 use appledb_common::{
     IPSWFrameworks,
     api_models::{TaskProgress, TaskSource, TaskType},
-    routes::AdminRoutes,
 };
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
@@ -35,7 +34,7 @@ impl Display for FrameworkInsertionStatus {
 
 #[utoipa::path(
     post,
-    path = &AdminRoutes::PostExecutableFrameworks,
+    path = "/executable/frameworks",
     responses((status = OK, body = String))
 )]
 pub async fn post_executable_frameworks(

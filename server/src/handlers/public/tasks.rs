@@ -1,13 +1,13 @@
 use std::{collections::BTreeMap, sync::Arc};
 
-use appledb_common::{api_models::TaskProgress, routes::PublicRoutes};
+use appledb_common::api_models::TaskProgress;
 use axum::{Json, extract::State};
 
 use crate::{models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetRunningTasks,
+    path = "/tasks/running",
     responses((status = OK, body = BTreeMap<String, TaskProgress>))
 )]
 pub async fn get_running_tasks(

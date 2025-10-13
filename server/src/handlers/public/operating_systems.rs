@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use appledb_common::{db_models::OperatingSystem, routes::PublicRoutes};
+use appledb_common::db_models::OperatingSystem;
 use axum::{
     Json,
     extract::{Path, State},
@@ -10,7 +10,7 @@ use crate::{models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetOperatingSystems,
+    path = "/operating_systems/all",
     responses((status = OK, body = Vec<OperatingSystem>))
 )]
 pub async fn get_operating_systems(
@@ -23,7 +23,7 @@ pub async fn get_operating_systems(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetOperatingSystemById,
+    path = "/operating_systems/{id}",
     params(
         ("id" = i32, description = "Operating system identifier to retrieve"),
     ),

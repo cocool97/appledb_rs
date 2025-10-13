@@ -1,6 +1,6 @@
 use std::{collections::HashSet, sync::Arc};
 
-use appledb_common::{api_models::Diff, db_models::Framework, routes::PublicRoutes};
+use appledb_common::{api_models::Diff, db_models::Framework};
 use axum::{
     Json,
     extract::{Path, State},
@@ -10,7 +10,7 @@ use crate::{crud::OperatingSystemVersionExtended, models::AppState, utils::AppRe
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetExecutableFrameworks,
+    path = "/executable/{executable_operating_system_id}/frameworks",
     params(
         ("executable_operating_system_id" = i64, description = "Executable identifier"),
     ),
@@ -30,7 +30,7 @@ pub async fn get_executable_frameworks(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetDiffFrameworksExecutables,
+    path = "/frameworks/diff/{from_executable_id}/{to_executable_id}",
     params(
         ("from_executable_id" = i64, description = "Initial executable identifier"),
         ("to_executable_id" = i64, description = "Final executable identifier"),
@@ -82,7 +82,7 @@ pub async fn diff_frameworks_for_executables(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetAllFrameworks,
+    path = "/frameworks/all",
     params(
     ),
     responses((status = OK, body = Vec<Framework>))
@@ -95,7 +95,7 @@ pub async fn get_all_frameworks(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetFrameworkVersions,
+    path = "/frameworks/{id}/versions",
     params(
         ("id" = i64, description = "Framework identifier"),
     ),
@@ -115,7 +115,7 @@ pub async fn get_framework_versions(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetFrameworkExecutables,
+    path = "/frameworks/{framework_id}/executables/{operating_system_version_id}",
     params(
         ("framework_id" = i64, description = "Framework identifier"),
         ("operating_system_version_id" = i64, description = "Operating system version identifier"),

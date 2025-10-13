@@ -3,7 +3,6 @@ use std::sync::Arc;
 use appledb_common::{
     api_models::ExtendedOperatingSystemVersions,
     db_models::{Framework, OperatingSystemVersion},
-    routes::PublicRoutes,
 };
 use axum::{
     Json,
@@ -14,7 +13,7 @@ use crate::{models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetOperatingSystemVersions,
+    path = "/operating_system_versions/all",
     responses((status = OK, body = Vec<OperatingSystemVersion>))
 )]
 pub async fn get_operating_system_versions(
@@ -30,7 +29,7 @@ pub async fn get_operating_system_versions(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetOperatingSystemVersionsById,
+    path = "/operating_system_versions/{id}",
     params(
         ("id" = i32, description = "Operating system version identifier to retrieve"),
     ),
@@ -50,7 +49,7 @@ pub async fn get_operating_system_versions_by_id(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetOperatingSystemVersionsExtended,
+    path = "/operating_system_versions/extended",
     responses((status = OK, body = Vec<ExtendedOperatingSystemVersions>))
 )]
 pub async fn get_extended_operating_system_versions(
@@ -66,7 +65,7 @@ pub async fn get_extended_operating_system_versions(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetOperatingSystemVersionsExecutables,
+    path = "/operating_system_versions/{operating_system_version_id}/executables",
     params(
         ("operating_system_version_id" = i32, description = "Operating system version identifier to get executables from"),
     ),
@@ -86,7 +85,7 @@ pub async fn get_operating_system_version_executables(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetOperatingSystemVersionsFrameworks,
+    path = "/operating_system_versions/{operating_system_version_id}/frameworks",
     params(
         ("operating_system_version_id" = i32, description = "Operating system version identifier to get executables from"),
     ),

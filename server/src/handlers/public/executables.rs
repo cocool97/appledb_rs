@@ -6,7 +6,6 @@ use std::{
 use appledb_common::{
     api_models::{Diff, ExecutableInfos},
     db_models::{Entitlement, Executable},
-    routes::PublicRoutes,
 };
 use axum::{
     Json,
@@ -17,7 +16,7 @@ use crate::{crud::OperatingSystemVersionExtended, models::AppState, utils::AppRe
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetExecutableEntitlements,
+    path = "/executable/{id}/entitlements",
     params(
         ("id" = i64, description = "Executable identifier"),
     ),
@@ -37,7 +36,7 @@ pub async fn get_executable_entitlements(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetExecutableVersions,
+    path = "/executables/{id}/versions",
     params(
         ("id" = i64, description = "Executable identifier"),
     ),
@@ -57,7 +56,7 @@ pub async fn get_executable_versions(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetAllExecutables,
+    path = "/executables/all",
     params(
     ),
     responses((status = OK, body = Vec<Executable>))
@@ -70,7 +69,7 @@ pub async fn get_all_executables(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetAllExecutablesEntitlements,
+    path = "/operating_systems/{id}/executable_entitlements",
     params(
         ("operating_system_version_id" = i64, description = "Operating system version identifier"),
     ),
@@ -90,7 +89,7 @@ pub async fn get_all_executables_entitlements(
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetDiffExecutablesOperatingSystemVersion,
+    path = "/executables/diff/{from_operating_system_version_id}/{to_operating_system_version_id}",
     params(
         ("from_operating_system_version_id" = i64, description = "Initial operating_system_version identifier"),
         ("to_operating_system_version_id" = i64, description = "Final operating_system_version identifier"),
