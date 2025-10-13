@@ -55,12 +55,17 @@ impl DBController {
             .await
     }
 
-    pub async fn crud_get_or_create_operating_system_version_by_platform_and_version(
+    pub async fn crud_get_or_create_operating_system_version_by_platform_and_version<
+        S: AsRef<str>,
+    >(
         &self,
-        platform_name: &str,
-        model_code: String,
-        version: String,
+        platform_name: S,
+        model_code: S,
+        version: S,
     ) -> Result<OperatingSystemVersion> {
+        let version = version.as_ref();
+        let platform_name = platform_name.as_ref();
+
         let operating_system = entity::prelude::OperatingSystem::find()
             .filter(entity::operating_system::Column::Name.eq(platform_name))
             .one(self.get_connection())
@@ -68,7 +73,7 @@ impl DBController {
             .ok_or(anyhow!("Operating system not found"))?;
 
         let device_id = self
-            .crud_get_or_create_device(model_code.clone())
+            .crud_get_or_create_device(&model_code)
             .await?
             .db_identifier();
 
@@ -76,18 +81,22 @@ impl DBController {
             id: ActiveValue::NotSet,
             device_id: ActiveValue::Set(device_id),
             operating_system_id: ActiveValue::Set(operating_system.id),
-            version: ActiveValue::Set(version.clone()),
+            version: ActiveValue::Set(version.to_string()),
         };
 
         match new_os_version.insert(self.get_connection()).await {
             Ok(inserted) => {
-                log::info!("Created new OS version {version} for {platform_name}/{model_code}");
+                log::info!(
+                    "Created new OS version {version} for {}/{}",
+                    platform_name,
+                    model_code.as_ref()
+                );
                 Ok(inserted.into())
             }
             Err(db_err) => {
                 if let Some(SqlErr::UniqueConstraintViolation(_)) = db_err.sql_err() {
                     let existing = entity::prelude::OperatingSystemVersion::find()
-                        .filter(entity::operating_system_version::Column::Version.eq(&version))
+                        .filter(entity::operating_system_version::Column::Version.eq(version))
                         .filter(entity::operating_system_version::Column::OperatingSystemId.eq(operating_system.id))
                         .filter(entity::operating_system_version::Column::DeviceId.eq(device_id))
                         .one(self.get_connection())

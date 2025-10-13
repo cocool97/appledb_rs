@@ -43,14 +43,17 @@ impl DBController {
         Ok(entitlements)
     }
 
-    pub async fn crud_get_or_create_entitlement<S: ToString>(
+    pub async fn crud_get_or_create_entitlement<S: AsRef<str>>(
         &self,
         key: S,
         value: S,
     ) -> Result<DBStatus, DbErr> {
+        let key = key.as_ref();
+        let value = value.as_ref();
+
         if let Some(entitlement) = entity::prelude::Entitlement::find()
-            .filter(entity::entitlement::Column::Key.eq(key.to_string()))
-            .filter(entity::entitlement::Column::Value.eq(value.to_string()))
+            .filter(entity::entitlement::Column::Key.eq(key))
+            .filter(entity::entitlement::Column::Value.eq(value))
             .one(self.get_connection())
             .await?
         {

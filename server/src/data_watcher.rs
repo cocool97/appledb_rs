@@ -21,7 +21,7 @@ pub struct DataWatcher {
 }
 
 impl DataWatcher {
-    pub fn new(watch_root_path: PathBuf, state: Arc<AppState>) -> Result<Self> {
+    pub fn new<P: AsRef<Path>>(watch_root_path: P, state: Arc<AppState>) -> Result<Self> {
         let inotify = Inotify::init()?;
 
         inotify
@@ -35,7 +35,7 @@ impl DataWatcher {
         Ok(Self {
             inotify,
             state,
-            watch_root_path,
+            watch_root_path: watch_root_path.as_ref().to_path_buf(),
         })
     }
 
@@ -57,7 +57,7 @@ impl DataWatcher {
         Ok(())
     }
 
-    pub async fn handle_event(
+    async fn handle_event(
         watch_root_path: &Path,
         state: Arc<AppState>,
         event: Event<OsString>,

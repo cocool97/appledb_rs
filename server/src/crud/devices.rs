@@ -27,20 +27,20 @@ impl DBController {
             .await
     }
 
-    pub async fn crud_get_or_create_device<S: ToString>(
+    pub async fn crud_get_or_create_device<S: AsRef<str>>(
         &self,
         model: S,
     ) -> Result<DBStatus, DbErr> {
-        let model_code = model.to_string();
+        let model_code = model.as_ref();
 
         let display_name = APPLE_MODELS
-            .get(&model_code)
+            .get(model_code)
             .cloned()
             .inspect(|name| log::info!("Found display name for device {model_code} -> {name}"));
 
         let new_device = entity::device::ActiveModel {
             id: ActiveValue::NotSet,
-            model_code: ActiveValue::Set(model_code.clone()),
+            model_code: ActiveValue::Set(model_code.to_string()),
             display_name: ActiveValue::Set(display_name),
         };
 
