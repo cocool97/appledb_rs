@@ -167,8 +167,8 @@ async fn post_executable_entitlements_inner(
     let operating_system_version = db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
             entitlements.platform.name(),
-            entitlements.model_code,
-            entitlements.version,
+            &entitlements.model_code,
+            &entitlements.version,
         )
         .await?;
 
