@@ -4,7 +4,6 @@ use anyhow::{Result, anyhow, bail};
 use appledb_common::{
     IPSWEntitlements, IPSWExecutableEntitlements,
     api_models::{TaskProgress, TaskSource, TaskType},
-    routes::AdminRoutes,
 };
 use axum::{Json, extract::State};
 use sea_orm::SqlErr;
@@ -98,7 +97,7 @@ const TOKIO_TASK_SPAWN_DELAY: u64 = 5;
 
 #[utoipa::path(
     post,
-    path = &AdminRoutes::PostExecutableEntitlements,
+    path = "/executable/entitlements",
     responses((status = OK, body = String))
 )]
 pub async fn post_executable_entitlements(

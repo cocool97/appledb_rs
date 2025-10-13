@@ -1,5 +1,7 @@
+use appledb_common::routes::PUBLIC_ROUTES_PREFIX;
 use std::sync::Arc;
-use strum::EnumCount;
+use utoipa::openapi::OpenApi;
+use utoipa_axum::{router::OpenApiRouter, routes};
 
 use crate::handlers::public::{
     devices::{
@@ -27,9 +29,7 @@ use crate::handlers::public::{
     operating_systems::{__path_get_operating_system_by_id, __path_get_operating_systems},
     stats::__path_get_stats,
 };
-use appledb_common::routes::PublicRoutes;
-use axum::{Router, routing::get};
-use utoipa::OpenApi;
+use axum::Router;
 use utoipa_swagger_ui::{Config, SwaggerUi};
 
 use crate::models::AppState;
@@ -48,178 +48,42 @@ use super::{
     tasks::{__path_get_running_tasks, get_running_tasks},
 };
 
-pub fn setup_public_openapi_router(router: Router<Arc<AppState>>) -> Router<Arc<AppState>> {
-    log::info!("Serve public openapi documentation");
-    #[derive(OpenApi)]
-    #[openapi(paths(
-        get_stats,
-        get_operating_systems,
-        get_operating_system_by_id,
-        get_devices,
-        get_device_operating_system_versions,
-        get_operating_system_versions,
-        get_operating_system_versions_by_id,
-        get_extended_operating_system_versions,
-        get_operating_system_version_executables,
-        get_operating_system_version_frameworks,
-        get_executable_versions,
-        get_all_executables,
-        get_all_executables_entitlements,
-        get_executable_entitlements,
-        diff_executables_for_versions,
-        diff_entitlements_for_executables,
-        diff_frameworks_for_executables,
-        get_executable_frameworks,
-        get_all_frameworks,
-        get_framework_versions,
-        get_framework_executables,
-        get_running_tasks
-    ))]
-    struct ApiDoc;
-
-    // Update each path to add PUBLIC_ROUTES prefix
-    let mut openapi = ApiDoc::openapi();
-    openapi.info.title = format!("{} - public API documentation", env!("CARGO_PKG_NAME"));
-    openapi.paths.paths = openapi
-        .paths
-        .paths
-        .iter_mut()
-        .map(|(path, item)| {
-            (
-                format!("{}{}", PublicRoutes::route_prefix(), path),
-                item.to_owned(),
-            )
-        })
-        .collect();
-
-    // Check that every registered endpoint is documented (only in debug builds)
-    debug_assert_eq!(
-        openapi.paths.paths.len(),
-        PublicRoutes::COUNT,
-        "all public handlers aren't documented..."
-    );
-
-    router.merge(
-        SwaggerUi::new("/swagger")
-            .config(Config::from(
-                PublicRoutes::route_prefix().to_owned() + "/openapi.json",
-            ))
-            .url("/openapi.json", openapi),
-    )
-}
-
 pub fn get_public_router(with_openapi: bool) -> Router<Arc<AppState>> {
-    let mut router = Router::new();
+    // Need to duplicate routes!() macro: https://github.com/juhaku/utoipa/issues/1372
+    let (router, openapi): (Router<Arc<AppState>>, OpenApi) = OpenApiRouter::new()
+        .routes(routes!(get_stats,))
+        .routes(routes!(get_operating_systems))
+        .routes(routes!(get_operating_system_by_id))
+        .routes(routes!(get_devices))
+        .routes(routes!(get_device_operating_system_versions))
+        .routes(routes!(get_operating_system_versions))
+        .routes(routes!(get_operating_system_versions_by_id))
+        .routes(routes!(get_extended_operating_system_versions))
+        .routes(routes!(get_operating_system_version_executables))
+        .routes(routes!(get_operating_system_version_frameworks))
+        .routes(routes!(get_executable_versions))
+        .routes(routes!(get_all_executables))
+        .routes(routes!(get_all_executables_entitlements))
+        .routes(routes!(get_executable_entitlements))
+        .routes(routes!(diff_executables_for_versions))
+        .routes(routes!(diff_entitlements_for_executables))
+        .routes(routes!(diff_frameworks_for_executables))
+        .routes(routes!(get_executable_frameworks))
+        .routes(routes!(get_all_frameworks))
+        .routes(routes!(get_framework_versions))
+        .routes(routes!(get_framework_executables))
+        .routes(routes!(get_running_tasks))
+        .split_for_parts();
 
     if with_openapi {
-        router = setup_public_openapi_router(router);
-    }
+        log::info!("Serve public openapi documentation");
 
-    router
-        // ##################
-        // Stats
-        // ##################
-        .route(&PublicRoutes::GetStats.to_string(), get(get_stats))
-        // ##################
-        // Operating systems
-        // ##################
-        .route(
-            &PublicRoutes::GetOperatingSystems.to_string(),
-            get(get_operating_systems),
+        router.merge(
+            SwaggerUi::new("/swagger")
+                .config(Config::from(format!("{PUBLIC_ROUTES_PREFIX}/openapi.json")))
+                .url("/openapi.json", openapi),
         )
-        .route(
-            &PublicRoutes::GetOperatingSystemById.to_string(),
-            get(get_operating_system_by_id),
-        )
-        // ##################
-        // Devices
-        // ##################
-        .route(&PublicRoutes::GetDevices.to_string(), get(get_devices))
-        .route(
-            &PublicRoutes::GetDeviceVersions.to_string(),
-            get(get_device_operating_system_versions),
-        )
-        // ##################
-        // Operating system versions
-        // ##################
-        .route(
-            &PublicRoutes::GetOperatingSystemVersions.to_string(),
-            get(get_operating_system_versions),
-        )
-        .route(
-            &PublicRoutes::GetOperatingSystemVersionsById.to_string(),
-            get(get_operating_system_versions_by_id),
-        )
-        .route(
-            &PublicRoutes::GetOperatingSystemVersionsExtended.to_string(),
-            get(get_extended_operating_system_versions),
-        )
-        .route(
-            &PublicRoutes::GetOperatingSystemVersionsExecutables.to_string(),
-            get(get_operating_system_version_executables),
-        )
-        .route(
-            &PublicRoutes::GetOperatingSystemVersionsFrameworks.to_string(),
-            get(get_operating_system_version_frameworks),
-        )
-        // ##################
-        // Executables
-        // ##################
-        .route(
-            &PublicRoutes::GetAllExecutablesEntitlements.to_string(),
-            get(get_all_executables_entitlements),
-        )
-        .route(
-            &PublicRoutes::GetExecutableVersions.to_string(),
-            get(get_executable_versions),
-        )
-        .route(
-            &PublicRoutes::GetAllExecutables.to_string(),
-            get(get_all_executables),
-        )
-        .route(
-            &PublicRoutes::GetDiffExecutablesOperatingSystemVersion.to_string(),
-            get(diff_executables_for_versions),
-        )
-        // ##################
-        // Entitlements
-        // ##################
-        .route(
-            &PublicRoutes::GetExecutableEntitlements.to_string(),
-            get(get_executable_entitlements),
-        )
-        .route(
-            &PublicRoutes::GetDiffEntitlementsExecutables.to_string(),
-            get(diff_entitlements_for_executables),
-        )
-        // ##################
-        // Frameworks
-        // ##################
-        .route(
-            &PublicRoutes::GetDiffFrameworksExecutables.to_string(),
-            get(diff_frameworks_for_executables),
-        )
-        .route(
-            &PublicRoutes::GetExecutableFrameworks.to_string(),
-            get(get_executable_frameworks),
-        )
-        .route(
-            &PublicRoutes::GetAllFrameworks.to_string(),
-            get(get_all_frameworks),
-        )
-        .route(
-            &PublicRoutes::GetFrameworkVersions.to_string(),
-            get(get_framework_versions),
-        )
-        .route(
-            &PublicRoutes::GetFrameworkExecutables.to_string(),
-            get(get_framework_executables),
-        )
-        // ##################
-        // Tasks
-        // ##################
-        .route(
-            &PublicRoutes::GetRunningTasks.to_string(),
-            get(get_running_tasks),
-        )
+    } else {
+        router
+    }
 }

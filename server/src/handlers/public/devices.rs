@@ -1,9 +1,6 @@
 use std::sync::Arc;
 
-use appledb_common::{
-    db_models::{Device, OperatingSystemVersion},
-    routes::PublicRoutes,
-};
+use appledb_common::db_models::{Device, OperatingSystemVersion};
 use axum::{
     Json,
     extract::{Path, State},
@@ -13,7 +10,7 @@ use crate::{models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetDevices,
+    path = "/devices/all",
     responses((status = OK, body = Vec<Device>))
 )]
 pub async fn get_devices(State(state): State<Arc<AppState>>) -> AppResult<Json<Vec<Device>>> {
@@ -22,7 +19,7 @@ pub async fn get_devices(State(state): State<Arc<AppState>>) -> AppResult<Json<V
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetDeviceVersions,
+    path = "/device/{id}/operating_system_versions",
     responses((status = OK, body = Vec<OperatingSystemVersion>))
 )]
 pub async fn get_device_operating_system_versions(

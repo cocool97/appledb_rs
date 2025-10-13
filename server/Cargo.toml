@@ -22,7 +22,6 @@ migration = { workspace = true }
 sea-orm = { workspace = true, features = ["runtime-tokio-rustls", "sqlx-sqlite", "sqlx-postgres"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
-strum = { workspace = true }
 serde_norway = { workspace = true }
 tokio = { workspace = true, features = ["fs", "rt", "rt-multi-thread"] }
 tower = { workspace = true }
@@ -33,6 +32,7 @@ utoipa-swagger-ui = { workspace = true, features = ["axum", "vendored"] }
 uuid = { workspace = true, features = ["v4"] }
 inotify = { workspace = true }
 futures = { workspace = true }
+utoipa-axum = "0.2.0"
 
 #####################################
 # Debian package build instructions #

@@ -1,6 +1,6 @@
 use std::{collections::HashSet, sync::Arc, vec};
 
-use appledb_common::{api_models::Diff, db_models::Entitlement, routes::PublicRoutes};
+use appledb_common::{api_models::Diff, db_models::Entitlement};
 use axum::{
     Json,
     extract::{Path, State},
@@ -10,7 +10,7 @@ use crate::{models::AppState, utils::AppResult};
 
 #[utoipa::path(
     get,
-    path = PublicRoutes::GetDiffEntitlementsExecutables,
+    path = "/entitlements/diff/{from_executable_id}/{to_executable_id}",
     params(
         ("from_executable_id" = i64, description = "Initial executable identifier"),
         ("to_executable_id" = i64, description = "Final executable identifier"),
