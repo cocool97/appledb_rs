@@ -65,7 +65,7 @@ pub async fn post_executable_frameworks_public(
     let progress = Arc::new(RwLock::new(TaskProgress::new(
         TaskType::PostFrameworks,
         task_source,
-        frameworks.executable_frameworks.len(),
+        frameworks.executable_frameworks.len() as u64,
     )));
 
     let db_controller = state.db_controller.clone();
@@ -102,7 +102,7 @@ async fn post_executable_frameworks_inner(
 ) -> Result<FrameworkInsertionStatus> {
     let operating_system_version = db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
-            frameworks.platform.name().to_string(),
+            frameworks.platform.name(),
             frameworks.model_code,
             frameworks.version,
         )
@@ -152,7 +152,7 @@ async fn post_executable_frameworks_inner(
 
         {
             let mut progress = progress.write().await;
-            progress.done += 1;
+            progress.increment_done();
         }
 
         log::debug!(

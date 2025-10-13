@@ -115,7 +115,7 @@ impl Deref for EventFilePath {
 impl Drop for EventFilePath {
     fn drop(&mut self) {
         match std::fs::remove_file(&self.0) {
-            Ok(_) => log::info!("removed event file at path {}", self.0.display()),
+            Ok(()) => log::info!("removed event file at path {}", self.0.display()),
             Err(e) => log::error!("cannot remove event file at path {}: {e}", self.0.display()),
         }
     }

@@ -45,7 +45,7 @@ async fn follow_tasks(server_url: String, insecure: bool, interval: u64) -> Resu
 
         for (task_uuid, progress) in &running_tasks {
             let pb = bars.entry(task_uuid.clone()).or_insert_with(|| {
-                let pb = multi_progress.add(ProgressBar::new(progress.total as u64));
+                let pb = multi_progress.add(ProgressBar::new(progress.total()));
                 pb.set_style(pb_style.clone());
                 pb
             });
@@ -57,7 +57,7 @@ async fn follow_tasks(server_url: String, insecure: bool, interval: u64) -> Resu
             let msg = format!("{task_uuid} | {elapsed}");
 
             pb.set_message(msg);
-            pb.set_position(progress.done as u64);
+            pb.set_position(progress.done());
         }
 
         tokio::time::sleep(Duration::from_secs(interval)).await;
