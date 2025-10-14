@@ -22,7 +22,7 @@ COPY entity entity
 COPY migration migration
 COPY server server
 
-RUN cargo build --release
+RUN cargo build --release -p appledb_server
 
 FROM docker.io/library/node:18.20-alpine3.21 AS web_builder
 
