@@ -1,5 +1,7 @@
 use appledb_common::{IPSWFrameworks, Platform};
 
+use crate::data_writers::DataWriter;
+
 use super::IPSWParser;
 
 const OWN_FRAMEWORK_NAME: &str = "self";
@@ -42,12 +44,9 @@ impl IPSWParser for FrameworksParser {
         Ok(())
     }
 
-    async fn post_results(
-        self,
-        server_controller: &crate::server_controller::ServerController,
-    ) -> anyhow::Result<String> {
-        log::info!("Sending frameworks to server...");
-        server_controller
+    async fn post_results(self, data_writer: &dyn DataWriter) -> anyhow::Result<()> {
+        log::info!("Sending frameworks to writer...");
+        data_writer
             .post_executable_frameworks(self.ipsw_frameworks)
             .await
     }

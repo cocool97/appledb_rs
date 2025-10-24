@@ -1,17 +1,19 @@
 mod commands;
+mod data_writers;
 mod ipsw_executables;
 mod models;
 mod parsers;
-mod server_controller;
 mod utils;
 
 use anyhow::Result;
 use clap::Parser;
 use commands::{
     parse_entitlements_command, parse_framework_subcommand, parse_full_subcommand,
-    parse_os_subcommand, parse_tasks_command,
+    parse_tasks_command,
 };
-use models::{Opts, OptsSubCommands};
+use models::{AppleDBSubcommand, Opts};
+
+use crate::models::ParsingType;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -20,25 +22,24 @@ async fn main() -> Result<()> {
     utils::set_logger(opts.debug);
 
     let res = match opts.command {
-        OptsSubCommands::Ent(ent_sub_commands) => {
-            parse_entitlements_command(opts.server_url, opts.insecure, ent_sub_commands).await
+        AppleDBSubcommand::Parse {
+            parsing_type,
+            output,
+            command,
+        } => {
+            let data_writer =
+                utils::data_writer_from_ops(opts.server_url, opts.insecure, output).await?;
+
+            match parsing_type {
+                ParsingType::Full => parse_full_subcommand(data_writer.as_ref(), command).await,
+                ParsingType::Ent => parse_entitlements_command(data_writer.as_ref(), command).await,
+                ParsingType::Frameworks => {
+                    parse_framework_subcommand(data_writer.as_ref(), command).await
+                }
+            }
         }
-        OptsSubCommands::OperatingSystem(operating_systems_subcommands) => {
-            parse_os_subcommand(
-                opts.server_url,
-                opts.insecure,
-                operating_systems_subcommands,
-            )
-            .await
-        }
-        OptsSubCommands::Tasks(tasks_subcommands) => {
-            parse_tasks_command(opts.server_url, opts.insecure, tasks_subcommands).await
-        }
-        OptsSubCommands::Frameworks(frameworks_subcommands) => {
-            parse_framework_subcommand(opts.server_url, opts.insecure, frameworks_subcommands).await
-        }
-        OptsSubCommands::Full(full_subcommand) => {
-            parse_full_subcommand(opts.server_url, opts.insecure, full_subcommand).await
+        AppleDBSubcommand::Tasks { command } => {
+            parse_tasks_command(opts.server_url, opts.insecure, command).await
         }
     };
 
