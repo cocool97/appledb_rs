@@ -3,55 +3,45 @@ use clap::{Parser, Subcommand, ValueEnum};
 use std::{fmt::Display, path::PathBuf};
 
 #[derive(Parser)]
+#[command(version, about, long_about)]
 pub struct Opts {
-    /// Path to configuration file
-    #[clap(short = 's', long = "server-url")]
-    pub server_url: String,
+    /// Set default log level to DEBUG
     #[clap(long = "debug")]
     pub debug: bool,
+    /// Path to configuration file
+    #[clap(short = 's', long = "server-url")]
+    pub server_url: Option<String>,
     #[clap(subcommand)]
-    pub command: OptsSubCommands,
+    pub command: AppleDBSubcommand,
     /// Allow insecure TLS connections. Be careful when using this option!
     #[clap(long = "insecure")]
     pub insecure: bool,
 }
 
 #[derive(Subcommand)]
-pub enum OptsSubCommands {
-    /// Entitlement related subcommands
-    #[clap(subcommand)]
-    Ent(EntSubCommands),
-    /// Operating system related subcommands
-    #[clap(subcommand)]
-    OperatingSystem(OperatingSystemsSubcommands),
-    /// Get running tasks information
-    #[clap(subcommand)]
-    Tasks(TasksSubcommands),
-    /// Parse executables linked frameworks
-    #[clap(subcommand)]
-    Frameworks(FrameworksSubcommands),
-    /// Parse everything !
-    #[clap(subcommand)]
-    Full(FullSubcommand),
+pub enum AppleDBSubcommand {
+    /// Parse data from all mach-o executables in a directory.
+    Parse {
+        /// Type of parsing desired
+        parsing_type: ParsingType,
+        /// Optional output directory
+        #[clap(short = 'o', long = "output")]
+        output: Option<PathBuf>,
+        #[clap(flatten)]
+        command: ParseSubcommand,
+    },
+    /// Interact with server-side tasks
+    Tasks {
+        #[clap(subcommand)]
+        command: TasksSubcommands,
+    },
 }
 
-#[derive(Subcommand)]
-pub enum EntSubCommands {
-    /// Parse and send entitlements of all mach-o executables in a directory.
-    Parse {
-        /// Path to local mount point where ipsw is already mounted
-        #[clap(short = 'd', long = "mount-point")]
-        mount_point: PathBuf,
-        /// Platform from which this IPSW mount is originated
-        #[clap(short = 'p', long = "platform")]
-        platform: OptsPlatform,
-        /// Version from which this IPSW is originated
-        #[clap(short = 'v', long = "version")]
-        version: String,
-        /// Device model (under iPhone17,5 - iPad15,5)...
-        #[clap(short = 'm', long = "model_code")]
-        model_code: String,
-    },
+#[derive(Clone, ValueEnum)]
+pub enum ParsingType {
+    Full,
+    Ent,
+    Frameworks,
 }
 
 #[derive(Clone, ValueEnum)]
@@ -96,14 +86,7 @@ impl From<Platform> for OptsPlatform {
 }
 
 #[derive(Subcommand)]
-pub enum OperatingSystemsSubcommands {
-    /// List known operating systems
-    List {},
-}
-
-#[derive(Subcommand)]
 pub enum TasksSubcommands {
-    /// Follow running tasks
     Follow {
         /// Polling interval
         #[clap(long = "interval", default_value_t = 5)]
@@ -111,40 +94,18 @@ pub enum TasksSubcommands {
     },
 }
 
-#[derive(Subcommand)]
-pub enum FrameworksSubcommands {
-    /// Parse frameworks
-    Parse {
-        /// Path to local mount point where ipsw is already mounted
-        #[clap(short = 'd', long = "mount-point")]
-        mount_point: PathBuf,
-        /// Platform from which this IPSW mount is originated
-        #[clap(short = 'p', long = "platform")]
-        platform: OptsPlatform,
-        /// Version from which this IPSW is originated
-        #[clap(short = 'v', long = "version")]
-        version: String,
-        /// Device model (e.g iPhone17,5 - iPad15,5 ...)
-        #[clap(short = 'm', long = "model_code")]
-        model_code: String,
-    },
-}
-
-#[derive(Subcommand)]
-pub enum FullSubcommand {
-    /// Parse and send everything related to given IPSW.
-    Parse {
-        /// Path to local mount point where ipsw is already mounted
-        #[clap(short = 'd', long = "mount-point")]
-        mount_point: PathBuf,
-        /// Platform from which this IPSW mount is originated
-        #[clap(short = 'p', long = "platform")]
-        platform: OptsPlatform,
-        /// Version from which this IPSW is originated
-        #[clap(short = 'v', long = "version")]
-        version: String,
-        /// Device model (under iPhone17,5 - iPad15,5)...
-        #[clap(short = 'm', long = "model_code")]
-        model_code: String,
-    },
+#[derive(Parser)]
+pub struct ParseSubcommand {
+    /// Path to local mount point where ipsw is already mounted
+    #[clap(short = 'd', long = "mount-point")]
+    pub mount_point: PathBuf,
+    /// Platform from which this IPSW mount is originated
+    #[clap(short = 'p', long = "platform")]
+    pub platform: OptsPlatform,
+    /// Version from which this IPSW is originated
+    #[clap(short = 'v', long = "version")]
+    pub version: String,
+    /// Device model (under iPhone17,5 - iPad15,5)...
+    #[clap(short = 'm', long = "model_code")]
+    pub model_code: String,
 }

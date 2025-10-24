@@ -3,7 +3,7 @@ use std::{io::Cursor, path::Path};
 use apple_codesign::MachOBinary;
 use appledb_common::{IPSWEntitlements, Platform};
 
-use crate::server_controller::ServerController;
+use crate::data_writers::DataWriter;
 
 use super::parser::IPSWParser;
 
@@ -40,9 +40,9 @@ impl IPSWParser for EntitlementsParser {
         Ok(())
     }
 
-    async fn post_results(self, server_controller: &ServerController) -> anyhow::Result<String> {
-        log::info!("Sending entitlements to server...");
-        server_controller
+    async fn post_results(self, data_writer: &dyn DataWriter) -> anyhow::Result<()> {
+        log::info!("Sending entitlements to writer...");
+        data_writer
             .post_executable_entitlements(self.ipsw_entitlements)
             .await
     }

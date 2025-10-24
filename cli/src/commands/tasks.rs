@@ -2,16 +2,21 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::collections::{HashMap, HashSet};
 use std::time::Duration;
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use chrono::{DateTime, Utc};
 
-use crate::{models::TasksSubcommands, server_controller::ServerController};
+use crate::data_writers::ServerController;
+use crate::models::TasksSubcommands;
 
 pub async fn parse_tasks_command(
-    server_url: String,
+    server_url: Option<String>,
     insecure: bool,
     subcommand: TasksSubcommands,
 ) -> Result<()> {
+    let Some(server_url) = server_url else {
+        bail!("missing --server-url argument");
+    };
+
     match subcommand {
         TasksSubcommands::Follow { interval } => follow_tasks(server_url, insecure, interval).await,
     }

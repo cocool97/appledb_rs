@@ -13,6 +13,7 @@ version.workspace = true
 anyhow = { workspace = true }
 apple-codesign = { workspace = true }
 appledb_common = { workspace = true }
+async-trait = { workspace = true }
 base64 = { workspace = true }
 chrono = { workspace = true }
 clap = { workspace = true, features = ["derive"] }

@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::fmt::Display;
 use utoipa::ToSchema;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, ToSchema)]
@@ -28,5 +29,11 @@ impl Platform {
             Platform::MacOS => "macos",
             Platform::VisionOS => "visionos",
         }
+    }
+}
+
+impl Display for Platform {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name())
     }
 }

@@ -32,7 +32,7 @@ utoipa-swagger-ui = { workspace = true, features = ["axum", "vendored"] }
 uuid = { workspace = true, features = ["v4"] }
 inotify = { workspace = true }
 futures = { workspace = true }
-utoipa-axum = "0.2.0"
+utoipa-axum = { workspace = true }
 
 #####################################
 # Debian package build instructions #

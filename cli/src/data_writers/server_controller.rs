@@ -2,12 +2,13 @@ use std::collections::BTreeMap;
 
 use anyhow::{Result, bail};
 use appledb_common::api_models::{ServerErrorResponse, TaskProgress};
-use appledb_common::db_models::OperatingSystem;
 use appledb_common::routes::{ADMIN_ROUTES_PREFIX, PUBLIC_ROUTES_PREFIX};
 use appledb_common::{IPSWEntitlements, IPSWFrameworks};
 use reqwest::{Client, ClientBuilder, StatusCode};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
+
+use crate::data_writers::data_writer::DataWriter;
 
 macro_rules! response_to_result {
     ($response:expr) => {{
@@ -62,27 +63,30 @@ impl ServerController {
         response_to_result!(self.client.post(&url).json(&data).send().await?)
     }
 
-    pub async fn get_operating_systems(&self) -> Result<Vec<OperatingSystem>> {
-        self.get(self.gen_public_url("/operating_systems/all"))
-            .await
-    }
-
-    pub async fn post_executable_entitlements(
-        &self,
-        entitlements: IPSWEntitlements,
-    ) -> Result<String> {
-        return self
-            .post(self.gen_admin_url("/executable/entitlements"), entitlements)
-            .await;
-    }
-
-    pub async fn post_executable_frameworks(&self, frameworks: IPSWFrameworks) -> Result<String> {
-        return self
-            .post(self.gen_admin_url("/executable/frameworks"), frameworks)
-            .await;
-    }
-
     pub async fn get_running_tasks(&self) -> Result<BTreeMap<String, TaskProgress>> {
         self.get(self.gen_public_url("/tasks/running")).await
+    }
+}
+
+#[async_trait::async_trait]
+impl DataWriter for ServerController {
+    async fn post_executable_entitlements(&self, entitlements: IPSWEntitlements) -> Result<()> {
+        let task_uuid: String = self
+            .post(self.gen_admin_url("/executable/entitlements"), entitlements)
+            .await?;
+
+        log::info!("Received entitlements task UUID: {task_uuid}");
+
+        Ok(())
+    }
+
+    async fn post_executable_frameworks(&self, frameworks: IPSWFrameworks) -> Result<()> {
+        let task_uuid: String = self
+            .post(self.gen_admin_url("/executable/frameworks"), frameworks)
+            .await?;
+
+        log::info!("Received frameworks task UUID: {task_uuid}");
+
+        Ok(())
     }
 }
