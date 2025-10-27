@@ -13,12 +13,13 @@ use super::DBStatus;
 impl DBController {
     pub async fn crud_get_devices(&self) -> Result<Vec<Device>, DbErr> {
         Ok(entity::prelude::Device::find()
-            .order_by_desc(entity::device::Column::ModelCode)
+            .find_with_related(entity::prelude::OperatingSystemVersion)
+            .order_by_desc(entity::device::Column::Id)
             .all(self.get_connection())
             .await?
             .into_iter()
-            .map(Device::from)
-            .collect::<Vec<Device>>())
+            .map(|v| v.into())
+            .collect())
     }
 
     pub async fn crud_get_devices_count(&self) -> Result<u64, DbErr> {

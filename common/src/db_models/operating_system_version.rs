@@ -1,7 +1,7 @@
 use serde::Serialize;
 use utoipa::ToSchema;
 
-#[derive(Debug, Serialize, ToSchema)]
+#[derive(Debug, Serialize, PartialEq, Eq, Hash, Clone, ToSchema)]
 pub struct OperatingSystemVersion {
     pub id: i64,
     pub version: String,
