@@ -7,6 +7,7 @@ import {
   EXECUTABLES_ROUTE,
   FRAMEWORKS_DIFF_ROUTE,
   FRAMEWORKS_ROUTE,
+  KNOWN_DEVICES_ROUTE,
   TASKS_ROUTE,
 } from "../Constants";
 import { Link as RouterLink } from "react-router-dom";
@@ -30,6 +31,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Collapse } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {
+  DEVICE_ICON,
   DIFFERENCE_ICON,
   ENTITLEMENT_ICON,
   EXECUTABLE_ICON,
@@ -180,6 +182,13 @@ const CustomDrawer = (props) => {
             categoryIcon={DIFFERENCE_ICON}
           />
         </List>
+
+        <DrawerListItem
+          to={KNOWN_DEVICES_ROUTE}
+          icon={DEVICE_ICON}
+          text="Known devices"
+        />
+        <Divider />
       </Box>
 
       <Box>
