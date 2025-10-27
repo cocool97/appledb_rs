@@ -29,6 +29,7 @@ export const ENTITLEMENTS_SEARCH_ROUTE = "/entitlements/search";
 export const ENTITLEMENTS_DIFF_ROUTE = "/entitlements/diff";
 export const FRAMEWORKS_DIFF_ROUTE = "/frameworks/diff";
 export const EXECUTABLES_DIFF_ROUTE = "/executables/diff";
+export const KNOWN_DEVICES_ROUTE = "/devices";
 export const TASKS_ROUTE = "/tasks";
 //////////////////////////
 

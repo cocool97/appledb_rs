@@ -14,6 +14,7 @@ import {
   FRAMEWORKS_DIFF_ROUTE,
   FRAMEWORKS_ROUTE,
   HOME_ROUTE,
+  KNOWN_DEVICES_ROUTE,
   TASKS_ROUTE,
 } from "./Constants";
 import CustomDrawer from "./components/CustomDrawer";
@@ -32,6 +33,7 @@ import FrameworksDiffing from "./routes/diffing/FrameworksDiffing";
 import ExecutablesDiffing from "./routes/diffing/ExecutablesDffing";
 import { Frameworks } from "./routes/Frameworks";
 import {
+  DEVICE_ICON,
   ENTITLEMENT_ICON,
   EXECUTABLE_ICON,
   FRAMEWORK_ICON,
@@ -39,6 +41,7 @@ import {
   TASK_ICON,
 } from "./icons";
 import { NotFound } from "./routes/NotFound";
+import DevicesList from "./routes/DevicesList";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme }) => ({
@@ -134,6 +137,16 @@ const ROUTES = [
         title="Executables - Diff"
         logo={EXECUTABLE_ICON}
         component={<ExecutablesDiffing />}
+      />
+    ),
+  },
+  {
+    path: KNOWN_DEVICES_ROUTE,
+    element: (
+      <TitledComponent
+        title="Known devices"
+        logo={DEVICE_ICON}
+        component={<DevicesList />}
       />
     ),
   },
