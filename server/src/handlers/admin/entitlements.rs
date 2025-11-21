@@ -1,6 +1,6 @@
 use std::{collections::HashSet, fmt::Display, sync::Arc, time::Duration};
 
-use anyhow::{Result, anyhow, bail};
+use anyhow::{Result, anyhow};
 use appledb_common::{
     IPSWEntitlements, IPSWExecutableEntitlements,
     api_models::{TaskProgress, TaskSource, TaskType},
@@ -114,20 +114,12 @@ pub async fn post_executable_entitlements_public(
     entitlements: IPSWEntitlements,
     task_source: TaskSource,
 ) -> Result<Uuid> {
-    // Check if we can run this task
-    {
-        let running_entitlements_tasks = state.running_tasks.read().await;
-        if running_entitlements_tasks.len() > state.max_concurrent_tasks {
-            bail!("Too many tasks running. Aborting this one")
-        }
-    }
-
     let task_uuid = Uuid::new_v4();
     log::debug!("New task will spawn with uuid={task_uuid}...");
 
     let progress = Arc::new(RwLock::new(TaskProgress::new(
         TaskType::PostEntitlements,
-        task_source,
+        task_source.to_string(),
         entitlements.executable_entitlements.len() as u64,
     )));
 
@@ -146,6 +138,12 @@ pub async fn post_executable_entitlements_public(
         {
             let mut running_entitlements_tasks = running_tasks.write().await;
             running_entitlements_tasks.remove(&task_uuid);
+        }
+
+        // Drop semaphore to let other tasks do the job if this is a LocalTask
+        if let TaskSource::Local(permit) = task_source {
+            drop(permit);
+            log::debug!("released semaphore permit...");
         }
     });
 

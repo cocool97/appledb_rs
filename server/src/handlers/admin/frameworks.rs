@@ -1,4 +1,4 @@
-use anyhow::{anyhow, bail};
+use anyhow::anyhow;
 use appledb_common::{
     IPSWFrameworks,
     api_models::{TaskProgress, TaskSource, TaskType},
@@ -50,20 +50,12 @@ pub async fn post_executable_frameworks_public(
     frameworks: IPSWFrameworks,
     task_source: TaskSource,
 ) -> Result<Uuid> {
-    // Check if we can run this task
-    {
-        let running_tasks = state.running_tasks.read().await;
-        if running_tasks.len() > state.max_concurrent_tasks {
-            bail!("Too many tasks running. Aborting this one");
-        }
-    }
-
     let task_uuid = Uuid::new_v4();
     log::debug!("New task will spawn with uuid={task_uuid}...");
 
     let progress = Arc::new(RwLock::new(TaskProgress::new(
         TaskType::PostFrameworks,
-        task_source,
+        task_source.to_string(),
         frameworks.executable_frameworks.len() as u64,
     )));
 
@@ -82,6 +74,12 @@ pub async fn post_executable_frameworks_public(
         {
             let mut running_tasks = running_tasks.write().await;
             running_tasks.remove(&task_uuid);
+        }
+
+        // Drop semaphore to let other tasks do the job if this is a LocalTask
+        if let TaskSource::Local(permit) = task_source {
+            drop(permit);
+            log::debug!("released semaphore permit...");
         }
     });
 

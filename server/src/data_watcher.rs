@@ -12,12 +12,16 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
-use tokio::fs::File;
+use tokio::{
+    fs::File,
+    sync::{OwnedSemaphorePermit, Semaphore},
+};
 
 pub struct DataWatcher {
     inotify: Inotify,
     state: Arc<AppState>,
     watch_root_path: PathBuf,
+    semaphore: Arc<Semaphore>,
 }
 
 impl DataWatcher {
@@ -32,10 +36,13 @@ impl DataWatcher {
             )
             .context("cannot add watcher")?;
 
+        let semaphore = Arc::new(Semaphore::new(state.max_concurrent_tasks));
+
         Ok(Self {
             inotify,
             state,
             watch_root_path: watch_root_path.as_ref().to_path_buf(),
+            semaphore,
         })
     }
 
@@ -47,8 +54,14 @@ impl DataWatcher {
             let state = self.state.clone();
             let watch_root_path = self.watch_root_path.clone();
 
+            let permit = self.semaphore.clone().acquire_owned().await?;
+            log::debug!(
+                "semaphore acquired, {} left before blocking",
+                permit.num_permits()
+            );
+
             tokio::spawn(async move {
-                if let Err(e) = Self::handle_event(&watch_root_path, state, event).await {
+                if let Err(e) = Self::handle_event(&watch_root_path, state, event, permit).await {
                     log::error!("got error while handling event: {e}");
                 }
             });
@@ -61,6 +74,7 @@ impl DataWatcher {
         watch_root_path: &Path,
         state: Arc<AppState>,
         event: Event<OsString>,
+        permit: OwnedSemaphorePermit,
     ) -> Result<()> {
         log::debug!("got event {:?}", event.mask);
         let file_path = event
@@ -84,13 +98,15 @@ impl DataWatcher {
                 log::info!("got entitlements at path {}", full_file_path.display());
                 let entitlements: IPSWEntitlements = serde_json::from_reader(&mut event_file)
                     .with_context(|| "cannot parse entitlements content")?;
-                post_executable_entitlements_public(state, entitlements, TaskSource::Local).await?;
+                post_executable_entitlements_public(state, entitlements, TaskSource::Local(permit))
+                    .await?;
             }
             b"framework" | b"frameworks" => {
                 log::info!("got frameworks at path {}", full_file_path.display());
                 let frameworks: IPSWFrameworks = serde_json::from_reader(&mut event_file)
                     .with_context(|| "cannot parse frameworks content")?;
-                post_executable_frameworks_public(state, frameworks, TaskSource::Local).await?;
+                post_executable_frameworks_public(state, frameworks, TaskSource::Local(permit))
+                    .await?;
             }
             _ => {
                 bail!("unknown extension for path {}", full_file_path.display());
