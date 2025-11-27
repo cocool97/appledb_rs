@@ -34,8 +34,8 @@ pub struct TaskProgress {
     task_type: TaskType,
     task_source: String,
     start_time: u64,
-    done: u64,
-    total: u64,
+    pub done: u64,
+    pub total: u64,
 }
 
 impl TaskProgress {
@@ -54,13 +54,5 @@ impl TaskProgress {
 
     pub fn increment_done(&mut self) {
         self.done += 1;
-    }
-
-    pub fn done(&self) -> u64 {
-        self.done
-    }
-
-    pub fn total(&self) -> u64 {
-        self.total
     }
 }

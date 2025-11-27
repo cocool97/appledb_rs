@@ -21,19 +21,16 @@ impl Platform {
             _ => None,
         }
     }
-
-    pub fn name(&self) -> &'static str {
-        match self {
-            Platform::Ios => "ios",
-            Platform::IpadOS => "ipados",
-            Platform::MacOS => "macos",
-            Platform::VisionOS => "visionos",
-        }
-    }
 }
 
 impl Display for Platform {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name())
+        let name = match self {
+            Platform::Ios => "ios",
+            Platform::IpadOS => "ipados",
+            Platform::MacOS => "macos",
+            Platform::VisionOS => "visionos",
+        };
+        write!(f, "{name}")
     }
 }

@@ -163,7 +163,7 @@ async fn post_executable_entitlements_inner(
 ) -> Result<EntitlementsInsertionStatus> {
     let operating_system_version = db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
-            entitlements.platform.name(),
+            &entitlements.platform.to_string(),
             &entitlements.model_code,
             &entitlements.version,
         )

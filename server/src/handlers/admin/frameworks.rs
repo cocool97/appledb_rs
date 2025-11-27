@@ -99,7 +99,7 @@ async fn post_executable_frameworks_inner(
 ) -> Result<FrameworkInsertionStatus> {
     let operating_system_version = db_controller
         .crud_get_or_create_operating_system_version_by_platform_and_version(
-            frameworks.platform.name(),
+            &frameworks.platform.to_string(),
             &frameworks.model_code,
             &frameworks.version,
         )
