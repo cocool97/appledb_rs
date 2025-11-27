@@ -18,7 +18,7 @@ impl DBController {
             .all(self.get_connection())
             .await?
             .into_iter()
-            .map(|v| v.into())
+            .map(std::convert::Into::into)
             .collect())
     }
 
